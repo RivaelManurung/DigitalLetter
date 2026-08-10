@@ -1,0 +1,116 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.card {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1.4rem, 2.6vw, 2.2rem);
+  list-style: none;
+}
+
+.cardTitle {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--c-text);
+}
+
+.card :global(.body-text) {
+  font-size: var(--text-sm);
+  line-height: 1.72;
+}
+
+/* ── grid: seragam, tenang ── */
+
+.grid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  padding: 0;
+  margin: 0;
+}
+
+/* ── bento: ritme tidak seragam, kartu pertama & keempat lebih besar ── */
+
+.bento {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  grid-template-columns: repeat(2, 1fr);
+  padding: 0;
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  .bento {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(150px, auto);
+  }
+
+  .bento > li {
+    grid-column: span 2;
+  }
+
+  .bento > li:nth-child(6n + 1) {
+    grid-column: span 3;
+  }
+
+  .bento > li:nth-child(6n + 2) {
+    grid-column: span 3;
+  }
+
+  .bento > li:nth-child(6n + 6) {
+    grid-column: span 4;
+  }
+}
+
+@media (max-width: 899px) {
+  .bento > li:first-child {
+    grid-column: span 2;
+  }
+}
+
+/* ── numbered: daftar editorial, tanpa kartu ── */
+
+.numbered {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-top: 1px solid color-mix(in srgb, var(--c-text) 14%, transparent);
+}
+
+.numberedItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1rem, 4vw, 3rem);
+  padding-block: clamp(1.4rem, 3vw, 2.4rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text) 14%, transparent);
+  transition: background var(--dur-normal) ease;
+}
+
+.numberedItem:hover {
+  background: color-mix(in srgb, var(--c-text) 4%, transparent);
+}
+
+.numberedIndex {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  color: var(--c-accent);
+  letter-spacing: 0.1em;
+  padding-top: 0.15em;
+}
+
+.numberedBody {
+  display: grid;
+  gap: 0.5rem;
+}

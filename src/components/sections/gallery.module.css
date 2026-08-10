@@ -1,0 +1,136 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.gallery {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  min-width: 0;
+}
+
+.figure {
+  margin: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--c-bg-soft) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c-text) 12%, transparent);
+}
+
+.img {
+  object-fit: cover;
+  transition: transform calc(var(--dur-slow)) var(--ease-out-expo);
+}
+
+.item:hover .img {
+  transform: scale(1.05);
+}
+
+.caption {
+  text-align: center;
+  font-family: var(--ff-script);
+  font-size: var(--text-sm);
+  color: var(--c-accent-soft);
+}
+
+/* ── grid ── */
+
+.grid {
+  display: grid;
+  gap: clamp(0.9rem, 2vw, 1.6rem);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+/* ── masonry: kolom, tinggi bervariasi ── */
+
+.masonry {
+  column-count: 2;
+  column-gap: clamp(0.9rem, 2vw, 1.6rem);
+}
+
+@media (min-width: 900px) {
+  .masonry {
+    column-count: 3;
+  }
+}
+
+.masonry .item {
+  break-inside: avoid;
+  margin-bottom: clamp(0.9rem, 2vw, 1.6rem);
+}
+
+.masonry .item:nth-child(3n + 1) .frame {
+  aspect-ratio: 3 / 4;
+}
+.masonry .item:nth-child(3n + 2) .frame {
+  aspect-ratio: 1 / 1;
+}
+.masonry .item:nth-child(3n + 3) .frame {
+  aspect-ratio: 4 / 5;
+}
+
+/* ── polaroid: bingkai putih, sedikit miring ── */
+
+.polaroid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(1.2rem, 3vw, 2.4rem);
+}
+
+.polaroid .item {
+  width: clamp(190px, 26vw, 260px);
+}
+
+.polaroid .figure {
+  padding: 0.75rem 0.75rem 1.4rem;
+  background: color-mix(in srgb, var(--c-text) 92%, var(--c-accent-soft));
+  border-radius: 3px;
+  box-shadow: 0 18px 46px color-mix(in srgb, var(--c-bg-deep) 55%, transparent);
+  transition: transform var(--dur-normal) var(--ease-out-expo);
+}
+
+.polaroid .frame {
+  border-radius: 1px;
+  aspect-ratio: 1 / 1;
+}
+
+.polaroid .caption {
+  color: color-mix(in srgb, var(--c-bg-deep) 75%, transparent);
+}
+
+.polaroid .item:nth-child(4n + 1) .figure {
+  transform: rotate(-2.4deg);
+}
+.polaroid .item:nth-child(4n + 2) .figure {
+  transform: rotate(1.8deg);
+}
+.polaroid .item:nth-child(4n + 3) .figure {
+  transform: rotate(-1.2deg);
+}
+.polaroid .item:nth-child(4n + 4) .figure {
+  transform: rotate(2.6deg);
+}
+
+.polaroid .item:hover .figure {
+  transform: rotate(0deg) scale(1.03);
+}

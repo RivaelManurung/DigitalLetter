@@ -1,0 +1,137 @@
+.wrap {
+  display: grid;
+  place-items: center;
+}
+
+.card {
+  display: grid;
+  gap: var(--space-md);
+  justify-items: center;
+  text-align: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  max-width: 780px;
+  margin-inline: auto;
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.body {
+  margin-inline: auto;
+}
+
+.body p + p {
+  margin-top: var(--space-sm);
+}
+
+.signature {
+  margin-top: var(--space-sm);
+}
+
+.cardCrown {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.cardCrown > :nth-child(1) {
+  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
+}
+.cardCrown > :nth-child(2) {
+  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
+  animation-delay: calc(0.4s * var(--motion-speed));
+}
+.cardCrown > :nth-child(3) {
+  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
+  animation-delay: calc(0.8s * var(--motion-speed));
+}
+
+@keyframes crownFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ── paper ── */
+
+.paper {
+  position: relative;
+  background: color-mix(in srgb, var(--c-text) 94%, var(--c-accent-soft));
+  color: var(--c-bg-deep);
+  border-radius: var(--radius-sm);
+  box-shadow:
+    0 26px 70px color-mix(in srgb, var(--c-bg-deep) 55%, transparent),
+    0 2px 0 color-mix(in srgb, var(--c-bg-deep) 12%, transparent);
+}
+
+.paper :global(.eyebrow) {
+  color: color-mix(in srgb, var(--c-accent) 80%, var(--c-bg-deep));
+}
+
+.paper :global(.display),
+.paper :global(.signature) {
+  color: var(--c-bg-deep);
+}
+
+.paper :global(.body-text) {
+  color: color-mix(in srgb, var(--c-bg-deep) 78%, transparent);
+}
+
+.paperFold {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 46%,
+    color-mix(in srgb, var(--c-bg-deep) 7%, transparent) 50%,
+    transparent 54%
+  );
+}
+
+/* ── minimal ── */
+
+.minimal {
+  display: grid;
+  gap: var(--space-md);
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: left;
+  padding-inline: clamp(0rem, 2vw, 1rem);
+}
+
+.minimal .body {
+  margin-inline: 0;
+}
+
+.minimalRule {
+  width: 64px;
+  height: 1px;
+  background: var(--c-accent);
+}
+
+/* ── glass ── */
+
+.glassCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.glassCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 60% 40% at 50% 0%,
+    var(--c-glow) 0%,
+    transparent 70%
+  );
+  opacity: 0.5;
+}

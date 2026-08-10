@@ -1,0 +1,90 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - button "Buka surat" [ref=f4e4] [cursor=pointer]:
+      - paragraph [ref=f4e15]: ketuk untuk membuka
+    - main [ref=f4e16]:
+      - generic [ref=f4e18]:
+        - paragraph [ref=f4e20]: sebuah surat yang mekar
+        - heading [level=1] [ref=f4e22]:
+          - text: Untukmu,
+          - emphasis [ref=f4e23]: Segalanya Bagiku
+        - paragraph [ref=f4e25]: Setiap kelopak menyimpan bisikan tentang betapa berartinya kamu.
+        - generic [ref=f4e43]: gulir untuk melanjutkan
+      - generic [ref=f4e48]:
+        - paragraph [ref=f4e68]: dari hatiku
+        - heading "Kamu adalah mimpi terliarku yang jadi nyata." [level=2] [ref=f4e69]
+        - generic [ref=f4e70]:
+          - paragraph [ref=f4e71]: Di dunia yang penuh hal biasa, kamu adalah yang luar biasa. Caramu tertawa, caramu peduli, caramu sekadar ada — semuanya mengisi setiap sudut duniaku dengan sesuatu yang tak pernah kutahu aku butuhkan.
+          - paragraph [ref=f4e72]: Bunga-bunga ini tidak akan pernah cukup. Tidak ada kata yang cukup. Tapi semuanya membawa setiap rasa yang tak terucap, terselip di antara kelopaknya seperti surat-surat kecil yang menunggu ditemukan.
+        - paragraph [ref=f4e73]: — Selalu milikmu
+      - generic [ref=f4e75]:
+        - generic [ref=f4e76]:
+          - paragraph [ref=f4e77]: seribu alasan
+          - heading "Kenapa Aku Mencintaimu" [level=2] [ref=f4e78]
+        - list [ref=f4e79]:
+          - listitem [ref=f4e80]:
+            - heading "Senyummu" [level=3] [ref=f4e85]
+            - paragraph [ref=f4e86]: Menerangi setiap ruangan, dan setiap sudut hatiku.
+          - listitem [ref=f4e87]:
+            - heading "Jiwamu" [level=3] [ref=f4e91]
+            - paragraph [ref=f4e92]: Langka, tulus, dan lebih indah dari bunga mana pun.
+          - listitem [ref=f4e93]:
+            - heading "Kebaikanmu" [level=3] [ref=f4e101]
+            - paragraph [ref=f4e102]: Caramu mencintai dunia membuatku ingin jadi lebih baik.
+          - listitem [ref=f4e103]:
+            - heading "Tawamu" [level=3] [ref=f4e106]
+            - paragraph [ref=f4e107]: Suara terbaik di semesta. Melodi favoritku, selalu.
+          - listitem [ref=f4e108]:
+            - heading "Kekuatanmu" [level=3] [ref=f4e116]
+            - paragraph [ref=f4e117]: Kamu melewati semuanya dengan begitu anggun.
+          - listitem [ref=f4e118]:
+            - heading "Kamu Apa Adanya" [level=3] [ref=f4e121]
+            - paragraph [ref=f4e122]: Setiap versi dirimu — kamu lebih dari cukup.
+      - generic [ref=f4e124]:
+        - generic [ref=f4e125]:
+          - paragraph [ref=f4e126]: taman rahasia kita
+          - heading "Taman yang Tumbuh Hanya Untukmu" [level=2] [ref=f4e127]
+        - list [ref=f4e128]:
+          - listitem [ref=f4e129]:
+            - generic [ref=f4e130]:
+              - generic:
+                - strong: Mawar
+                - generic: Cinta Tanpa Akhir
+          - listitem [ref=f4e137]:
+            - generic [ref=f4e138]:
+              - generic:
+                - strong: Sakura
+                - generic: Keindahan Lembut
+          - listitem [ref=f4e148]:
+            - generic [ref=f4e149]:
+              - generic:
+                - strong: Teratai
+                - generic: Hati yang Murni
+          - listitem [ref=f4e159]:
+            - generic [ref=f4e160]:
+              - generic:
+                - strong: Kembang Sepatu
+                - generic: Gairah yang Halus
+          - listitem [ref=f4e171]:
+            - generic [ref=f4e172]:
+              - generic:
+                - strong: Daisy
+                - generic: Kesetiaan
+          - listitem [ref=f4e185]:
+            - generic [ref=f4e186]:
+              - generic:
+                - strong: Tulip
+                - generic: Kebahagiaan Sempurna
+          - listitem [ref=f4e193]:
+            - generic [ref=f4e194]:
+              - generic:
+                - strong: Bunga Matahari
+                - generic: Hangat & Ceria
+        - paragraph [ref=f4e209]: arahkan kursor ke tiap bunga untuk melihat maknanya
+      - generic [ref=f4e211]:
+        - generic [ref=f4e246]:
+          - paragraph [ref=f4e247]: selalu & selamanya
+          - heading "Kamu Dicintai Melebihi Kata" [level=2] [ref=f4e248]
+          - paragraph [ref=f4e249]: Ke mana pun hidup membawa kita, ketahuilah bahwa di suatu tempat di semesta ini, ada taman yang mekar dengan setiap rasa yang pernah kusimpan untukmu. Kamu layak mendapatkan dunia.
+        - paragraph [ref=f4e251]: Dibuat dengan cinta, hanya untukmu
+  - alert [ref=f4e252]

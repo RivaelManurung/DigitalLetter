@@ -1,0 +1,41 @@
+.flowerMark {
+  display: block;
+  filter: drop-shadow(0 6px 22px var(--c-glow));
+}
+
+.flowerSpin {
+  transform-origin: 50% 50%;
+  animation: markSpin calc(46s * var(--motion-speed)) linear infinite;
+}
+
+/* transform-box: fill-box membuat 50% 50% mengacu ke kotak kelopak itu
+   sendiri, bukan ke viewBox — tanpa ini kelopak berputar mengelilingi
+   sudut kiri-atas SVG. */
+.petal {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: petalBreathe calc(5.5s * var(--motion-speed)) ease-in-out infinite;
+}
+
+@keyframes markSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes petalBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+.glyph {
+  display: block;
+  filter: drop-shadow(0 3px 12px color-mix(in srgb, var(--c-glow) 70%, transparent));
+}

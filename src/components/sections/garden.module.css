@@ -1,0 +1,128 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.garden {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(0.8rem, 3vw, 2.6rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  min-height: 240px;
+}
+
+.scatter {
+  align-items: center;
+}
+
+.stalk {
+  position: relative;
+}
+
+.stalkInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.bloom {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  transform-origin: 50% 100%;
+  animation: sway calc(5.5s * var(--motion-speed)) ease-in-out infinite;
+  transition: transform var(--dur-normal) var(--ease-out-expo);
+}
+
+.stalk:nth-child(2n) .bloom {
+  animation-delay: calc(-1.4s * var(--motion-speed));
+}
+.stalk:nth-child(3n) .bloom {
+  animation-delay: calc(-2.7s * var(--motion-speed));
+}
+
+.stalk:hover .bloom,
+.stalk:focus-within .bloom {
+  transform: scale(1.18) translateY(-6px);
+}
+
+.stem {
+  flex: 1;
+  width: 2px;
+  min-height: 60px;
+  background: linear-gradient(
+    to bottom,
+    var(--c-accent-soft),
+    color-mix(in srgb, var(--c-accent) 35%, transparent)
+  );
+  opacity: 0.7;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translate(-50%, 8px);
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.6rem 0.95rem;
+  min-width: 130px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-normal) var(--ease-out-expo),
+    transform var(--dur-normal) var(--ease-out-expo);
+  z-index: 5;
+}
+
+.tooltip strong {
+  font-family: var(--ff-display);
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--c-text);
+}
+
+.tooltip span {
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  color: var(--c-accent-soft);
+}
+
+.stalk:hover .tooltip,
+.stalk:focus-within .tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.note {
+  margin-top: var(--space-lg);
+  text-align: center;
+  font-family: var(--ff-script);
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}

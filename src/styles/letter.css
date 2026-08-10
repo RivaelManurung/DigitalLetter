@@ -1,0 +1,324 @@
+/* ============================================================
+   ENGINE — nyawa halaman surat.
+   Dibangun sekali, diwarisi SEMUA desain. Tidak ada satu pun
+   warna, font, atau durasi yang hardcoded di sini: semuanya
+   membaca custom property yang dipasang dari DesignSpec.
+   ============================================================ */
+
+.letter-root {
+  position: relative;
+  min-height: 100dvh;
+  /* Warna dasar dipasang di elemen, bukan hanya di lapisan fixed —
+     kalau tidak, area overscroll dan halaman panjang menampilkan
+     latar putih dokumen. */
+  background: var(--c-bg-deep);
+  color: var(--c-text);
+  font-family: var(--ff-body);
+  overflow-x: clip;
+
+  --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.8rem);
+  --text-sm: clamp(0.84rem, 0.8rem + 0.18vw, 0.94rem);
+  --text-base: clamp(1rem, 0.94rem + 0.3vw, 1.13rem);
+  --text-lg: clamp(1.2rem, 1.08rem + 0.55vw, 1.45rem);
+  --text-xl: clamp(1.5rem, 1.25rem + 1.1vw, 2.1rem);
+  --text-2xl: clamp(2rem, 1.5rem + 2.2vw, 3.2rem);
+  --text-hero: clamp(2.8rem, 1.6rem + 5.2vw, 6.4rem);
+
+  --space-sm: 1rem;
+  --space-md: 1.75rem;
+  --space-lg: 3rem;
+  --space-xl: 5rem;
+  --space-section: clamp(4rem, 3rem + 5vw, 9rem);
+  --measure: 62ch;
+}
+
+.letter-root *,
+.letter-root *::before,
+.letter-root *::after {
+  box-sizing: border-box;
+}
+
+/* ── Lapisan permukaan: satu background tetap di belakang segalanya ── */
+
+.surface-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background: var(--surface-bg);
+}
+
+.surface-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 35% at 20% 20%, var(--c-glow) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 30% at 80% 15%, var(--c-glow) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 35% at 15% 80%, var(--c-glow) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, var(--c-glow) 0%, transparent 50%);
+  opacity: 0.55;
+  animation: bg-breathe calc(12s * var(--motion-speed)) ease-in-out infinite
+    alternate;
+}
+
+/* Vignette + grain sebagai lapisan terpisah supaya intensitasnya bisa disetel */
+.surface-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: -9;
+  pointer-events: none;
+  opacity: var(--surface-vignette);
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 45%,
+    transparent 40%,
+    color-mix(in srgb, var(--c-bg-deep) 92%, transparent) 100%
+  );
+}
+
+.surface-grain {
+  position: fixed;
+  inset: 0;
+  z-index: -8;
+  pointer-events: none;
+  opacity: calc(var(--surface-grain) * 0.14);
+  background-image: var(--grain-url);
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+}
+
+@keyframes bg-breathe {
+  from {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.75;
+    transform: scale(1.06);
+  }
+}
+
+/* ── Canvas partikel: satu layer fixed di atas background, di bawah konten ── */
+
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Kaca ── */
+
+.glass {
+  background: var(--c-glass);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+  border: 1px solid color-mix(in srgb, var(--c-text) 14%, transparent);
+  border-radius: var(--radius);
+  box-shadow:
+    0 10px 44px color-mix(in srgb, var(--c-bg-deep) 55%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--c-text) 12%, transparent);
+}
+
+/* ── Section & tipografi dasar ── */
+
+.section {
+  position: relative;
+  z-index: 3;
+  padding-block: var(--space-section);
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+.section-inner {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+/* Memakai --c-accent, bukan --c-accent-soft: pada tema terang, aksen lembut
+   nyaris menghilang di atas latar krem. Aksen penuh tetap terbaca di
+   kedua arah tema. */
+.eyebrow {
+  font-family: var(--ff-script);
+  font-size: var(--text-sm);
+  letter-spacing: 0.16em;
+  color: var(--c-accent);
+  margin-bottom: var(--space-sm);
+}
+
+.display {
+  font-family: var(--ff-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  color: var(--c-text);
+  text-wrap: balance;
+}
+
+.display em {
+  font-style: italic;
+  color: var(--c-accent);
+}
+
+.body-text {
+  font-size: var(--text-base);
+  line-height: 1.85;
+  color: var(--c-text-muted);
+  max-width: var(--measure);
+}
+
+.body-text strong {
+  color: var(--c-text);
+  font-weight: 500;
+}
+
+.signature {
+  font-family: var(--ff-script);
+  font-size: var(--text-lg);
+  color: var(--c-accent);
+}
+
+/* ── Scroll reveal: tiga gaya, dipilih lewat DesignSpec.motion.reveal ── */
+
+[data-reveal] {
+  opacity: 0;
+  transition:
+    opacity calc(var(--dur-slow)) var(--ease-out-expo),
+    transform calc(var(--dur-slow)) var(--ease-out-expo),
+    filter calc(var(--dur-slow)) var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+[data-reveal="fade-up"] {
+  transform: translate3d(0, 28px, 0);
+}
+[data-reveal="blur-in"] {
+  filter: blur(14px);
+  transform: scale(1.02);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  will-change: auto;
+}
+
+/* ── Intro gate ── */
+
+.intro-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: var(--c-bg-deep);
+  transition: opacity calc(var(--dur-slow) * 1.6) var(--ease-out-expo);
+}
+
+.intro-gate.is-opening {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-hint {
+  margin-top: var(--space-lg);
+  font-family: var(--ff-script);
+  font-size: var(--text-base);
+  color: var(--c-accent-soft);
+  letter-spacing: 0.12em;
+  animation: hint-pulse calc(2.4s * var(--motion-speed)) ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.intro-trigger {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  color: inherit;
+}
+
+.intro-trigger:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 12px;
+  border-radius: var(--radius);
+}
+
+/* ── Utilitas ── */
+
+.center-stack {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-md);
+}
+
+.hover-lift {
+  transition:
+    transform var(--dur-normal) var(--ease-out-expo),
+    box-shadow var(--dur-normal) var(--ease-out-expo);
+}
+
+.hover-lift:hover {
+  transform: translate3d(0, -6px, 0);
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--c-glow) 60%, transparent);
+}
+
+/* ── Mode preview ───────────────────────────────────────────
+   Di dashboard, surat dirender di dalam panel. Semua lapisan
+   `fixed` harus dikurung ke dalam panel itu, kalau tidak ia
+   akan menutupi seluruh layar dashboard.
+   ─────────────────────────────────────────────────────────── */
+
+.letter-root[data-preview='true'] {
+  position: relative;
+  isolation: isolate;
+  /* menjadikan elemen ini containing block untuk anak yang position:fixed */
+  transform: translateZ(0);
+  min-height: 100%;
+}
+
+.letter-root[data-preview='true'] .surface-layer,
+.letter-root[data-preview='true'] .surface-vignette,
+.letter-root[data-preview='true'] .surface-grain,
+.letter-root[data-preview='true'] .particle-canvas {
+  position: absolute;
+}
+
+.letter-root[data-preview='true'] .section {
+  padding-block: clamp(3rem, 6vw, 6rem);
+}
+
+/* ── Hormati preferensi pengguna. Tidak bisa dinegosiasi. ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-root *,
+  .letter-root *::before,
+  .letter-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .particle-canvas {
+    display: none;
+  }
+}

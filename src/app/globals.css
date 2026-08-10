@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Dashboard shell — netral, tidak boleh bocor ke halaman surat.
+   Halaman surat memakai token miliknya sendiri (lihat letter.css).
+   ============================================================ */
+
+:root {
+  --background: #ffffff;
+  --foreground: #0b0a0c;
+  --muted: #f5f4f6;
+  --muted-fg: #6b6873;
+  --border: #e6e4ea;
+  --primary: #18161b;
+  --primary-fg: #ffffff;
+  --ring: #b9b4c4;
+  --danger: #c0392b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0c0b0e;
+    --foreground: #f2f0f5;
+    --muted: #17161b;
+    --muted-fg: #9c98a6;
+    --border: #26242c;
+    --primary: #f2f0f5;
+    --primary-fg: #0c0b0e;
+    --ring: #4a4655;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-fg);
+  --color-ring: var(--ring);
+  --color-danger: var(--danger);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
