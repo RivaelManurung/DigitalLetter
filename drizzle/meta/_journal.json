@@ -15,6 +15,13 @@
       "when": 1786337416798,
       "tag": "0001_nappy_otto_octavius",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786354487022,
+      "tag": "0002_oval_inhumans",
+      "breakpoints": true
     }
   ]
 }

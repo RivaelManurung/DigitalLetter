@@ -1,5 +1,7 @@
-import { parseSectionContent, resolveVariant } from '@/design/blocks';
+import type { BlockRegistry } from '@/design/blocks/resolve';
+import { isCustomType, parseWith, resolveVariantWith } from '@/design/blocks/resolve';
 import type { DesignSpec, MediaRecord, SectionRecord } from '@/design/types';
+import { CustomSection } from '../sections/custom';
 import { BLOCK_RENDERERS } from './block-renderers';
 
 type Props = {
@@ -7,27 +9,48 @@ type Props = {
   design: DesignSpec;
   media: MediaRecord[];
   letterId: string;
+  registry: BlockRegistry;
 };
 
 /**
- * Menghubungkan satu SectionRecord ke komponennya. Tipe yang tidak punya
- * renderer (mis. `intro`, yang dirender IntroGate di shell) menghasilkan null,
- * bukan galat — surat lama dengan tipe yang sudah dihapus tetap bisa dibuka.
+ * Menghubungkan satu SectionRecord ke komponennya.
+ *
+ * Block bawaan punya komponennya sendiri di BLOCK_RENDERERS. Block bikinan
+ * sendiri semuanya dirender CustomSection, yang menyusun tampilan dari spec
+ * field-nya. Tipe yang tidak dikenal menghasilkan null, bukan galat — surat
+ * lama dengan block yang sudah dihapus tetap bisa dibuka.
  */
-export function SectionRenderer({ section, design, media, letterId }: Props) {
-  const Renderer = BLOCK_RENDERERS[section.type];
-  if (!Renderer) return null;
+export function SectionRenderer({ section, design, media, letterId, registry }: Props) {
+  const block = registry.get(section.type);
+  if (!block) return null;
 
-  // Varian per-section menang atas varian bawaan desain.
-  const variant = resolveVariant(
+  const variant = resolveVariantWith(
+    registry,
     section.type,
     section.variant,
-    design.variants[section.type],
+    design.variants[section.type as keyof typeof design.variants],
   );
+
+  const content = parseWith(registry, section.type, section.content);
+
+  if (isCustomType(section.type)) {
+    return (
+      <CustomSection
+        content={content}
+        design={design}
+        variant={variant}
+        media={media}
+        fields={block.fields}
+      />
+    );
+  }
+
+  const Renderer = BLOCK_RENDERERS[section.type as keyof typeof BLOCK_RENDERERS];
+  if (!Renderer) return null;
 
   return (
     <Renderer
-      content={parseSectionContent(section.type, section.content)}
+      content={content}
       design={design}
       variant={variant}
       media={media}

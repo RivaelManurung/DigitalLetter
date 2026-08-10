@@ -2,15 +2,45 @@
  * Uji round-trip template markdown: sections → markdown → parse → sections.
  * Dijalankan manual: npx tsx scripts/roundtrip-check.ts
  */
-import {
-  SECTION_TYPES,
-  starterContent,
-  parseSectionContent,
-  BLOCKS,
-} from '@/design/blocks';
+import { SECTION_TYPES, starterContent, BLOCKS } from '@/design/blocks';
+import { createRegistry, parseWith, starterWith } from '@/design/blocks/resolve';
 import { sectionsToMarkdown } from '@/lib/markdown/serialize';
 import { parseLetterMarkdown } from '@/lib/markdown/parse';
 import type { SectionRecord } from '@/design/types';
+
+/**
+ * Satu block bikinan sendiri ikut diuji — jalur inilah yang paling rawan,
+ * karena schema-nya dibangkitkan saat jalan, bukan ditulis tangan.
+ */
+const CUSTOM = {
+  slug: 'sponsor',
+  label: 'Sponsor',
+  note: 'Daftar sponsor acara.',
+  layout: 'cards',
+  spec: {
+    fields: [
+      { key: 'intro', label: 'Pengantar', kind: 'longtext', starter: 'Terima kasih kepada:' },
+      { key: 'sejak', label: 'Sejak', kind: 'datetime', starter: '2026-01-05T09:30' },
+      { key: 'tampil', label: 'Tampilkan logo', kind: 'switch', starter: 'true' },
+      { key: 'jumlah', label: 'Jumlah', kind: 'number', min: 0, max: 99, starter: '7' },
+      {
+        key: 'daftar',
+        label: 'Sponsor',
+        kind: 'list',
+        itemLabel: 'sponsor',
+        max: 20,
+        fields: [
+          { key: 'nama', label: 'Nama', kind: 'text', starter: 'Kopi Nusantara' },
+          { key: 'kelas', label: 'Kelas', kind: 'select', options: ['Emas', 'Perak'], starter: 'Emas' },
+          { key: 'catatan', label: 'Catatan', kind: 'longtext', starter: 'Mitra utama.' },
+        ],
+      },
+    ],
+  },
+  starter: {},
+};
+
+const registry = createRegistry([CUSTOM]);
 
 const sections: SectionRecord[] = SECTION_TYPES.map((type, i) => ({
   id: `s-${i}`,
@@ -20,6 +50,25 @@ const sections: SectionRecord[] = SECTION_TYPES.map((type, i) => ({
   variant: '',
   content: starterContent(type),
 }));
+
+// Block bikinan sendiri, dengan satu item di daftarnya.
+const customStarter = starterWith(registry, 'c:sponsor');
+sections.push({
+  id: 'custom-1',
+  type: 'c:sponsor',
+  order: 200,
+  enabled: true,
+  variant: 'list',
+  content: {
+    ...customStarter,
+    eyebrow: 'didukung oleh',
+    title: 'Sponsor Kami',
+    daftar: [
+      { nama: 'Kopi Nusantara', kelas: 'Emas', catatan: 'Mitra utama.' },
+      { nama: 'Batik Ayu', kelas: 'Perak', catatan: 'Penyedia seragam.' },
+    ],
+  },
+});
 
 // Block berulang — dua "Surat" dan dua "Galeri" dalam satu surat.
 sections.push({
@@ -39,8 +88,8 @@ sections.push({
   content: { ...starterContent('gallery'), title: 'Galeri Kedua' },
 });
 
-const md = sectionsToMarkdown(sections);
-const parsed = parseLetterMarkdown(md);
+const md = sectionsToMarkdown(sections, { registry });
+const parsed = parseLetterMarkdown(md, registry);
 
 console.log(`sections keluar : ${sections.length}`);
 console.log(`sections terbaca: ${parsed.sections.length}`);
@@ -62,8 +111,8 @@ for (const section of [...sections].sort((a, b) => a.order - b.order)) {
   }
 
   // Impor menggabungkan ke konten yang ada, persis seperti Server Action.
-  const before = parseSectionContent(section.type, section.content);
-  const after = parseSectionContent(section.type, {
+  const before = parseWith(registry, section.type, section.content);
+  const after = parseWith(registry, section.type, {
     ...section.content,
     ...match.content,
   });

@@ -6,6 +6,7 @@ import { Copy, Download, FileText, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SectionRecord } from '@/design/types';
 import { importSectionsMarkdown } from '@/lib/actions/letter';
+import type { BlockRegistry } from '@/design/blocks/resolve';
 import { markdownFileName, sectionsToMarkdown } from '@/lib/markdown/serialize';
 import { AI_PROMPT } from '@/lib/markdown/prompt';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ type Props = {
   letterId: string;
   slug: string;
   sections: SectionRecord[];
+  registry: BlockRegistry;
   onImported: (sections: SectionRecord[]) => void;
 };
 
@@ -25,14 +27,20 @@ const MAX_BYTES = 200_000;
  * (termasuk dengan bantuan AI), lalu unggah kembali. Serialisasi dilakukan di
  * browser karena datanya sudah ada di state editor — tidak perlu round-trip.
  */
-export function MarkdownTools({ letterId, slug, sections, onImported }: Props) {
+export function MarkdownTools({
+  letterId,
+  slug,
+  sections,
+  registry,
+  onImported,
+}: Props) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [warnings, setWarnings] = useState<string[]>([]);
 
   function handleDownload() {
-    const markdown = sectionsToMarkdown(sections);
+    const markdown = sectionsToMarkdown(sections, { registry });
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 

@@ -123,13 +123,14 @@ export type BlockDef<S extends z.ZodTypeAny = z.ZodTypeAny> = {
   group: BlockGroup;
 };
 
-export type BlockGroup = 'dasar' | 'nikahan' | 'interaksi' | 'perayaan';
+export type BlockGroup = 'dasar' | 'nikahan' | 'interaksi' | 'perayaan' | 'custom';
 
 export const GROUP_LABEL: Record<BlockGroup, string> = {
   dasar: 'Dasar',
   nikahan: 'Nikahan',
   interaksi: 'Interaksi',
   perayaan: 'Perayaan',
+  custom: 'Buatanmu',
 };
 
 /** Identitas fungsi: menjaga inferensi tipe schema tetap utuh saat dideklarasikan. */

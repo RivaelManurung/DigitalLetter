@@ -18,15 +18,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  BLOCKS,
-  GROUP_LABEL,
-  SECTION_LABEL,
-  SECTION_TYPES,
-  SECTION_VARIANTS,
-  type BlockGroup,
-} from '@/design/blocks';
-import type { MediaRecord, SectionRecord, SectionType } from '@/design/types';
+import { GROUP_LABEL, type BlockGroup } from '@/design/blocks';
+import type { BlockRegistry } from '@/design/blocks/resolve';
+import type { MediaRecord, SectionRecord } from '@/design/types';
 import { variantLabel } from '@/design/variant-labels';
 import {
   addSection,
@@ -47,10 +41,22 @@ type Props = {
   slug: string;
   sections: SectionRecord[];
   media: MediaRecord[];
+  registry: BlockRegistry;
   onChange: (sections: SectionRecord[]) => void;
 };
 
-export function ContentPanel({ letterId, slug, sections, media, onChange }: Props) {
+export function ContentPanel({
+  letterId,
+  slug,
+  sections,
+  media,
+  registry,
+  onChange,
+}: Props) {
+  /** Nama section; tipe yang definisinya hilang tetap punya label. */
+  const labelOf = (type: string) => registry.get(type)?.label ?? type;
+  const variantsOf = (type: string) =>
+    (registry.get(type)?.variants ?? []) as readonly string[];
   const [openId, setOpenId] = useState<string | null>(null);
   // Form section menyimpan draft lokal; setelah impor form itu harus
   // dipasang ulang agar isinya ikut berganti, bukan menahan nilai lama.
@@ -108,7 +114,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
   }
 
   function handleDelete(section: SectionRecord) {
-    if (!confirm(`Hapus section "${SECTION_LABEL[section.type]}"? Isinya ikut hilang.`)) {
+    if (!confirm(`Hapus section "${labelOf(section.type)}"? Isinya ikut hilang.`)) {
       return;
     }
 
@@ -126,11 +132,11 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
     });
   }
 
-  function handleAdd(type: SectionType) {
+  function handleAdd(type: string) {
     start(async () => {
       const result = await addSection({ letterId, type });
       if (!result.ok) toast.error(result.error);
-      else toast.success(`Section ${SECTION_LABEL[type]} ditambahkan`);
+      else toast.success(`Section ${labelOf(type)} ditambahkan`);
     });
   }
 
@@ -149,12 +155,15 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
 
   // Block boleh berulang — yang disembunyikan hanya block bertanda unique
   // yang sudah dipakai (mis. Pembuka, yang melapisi seluruh halaman).
-  const available = SECTION_TYPES.filter(
-    (type) => !BLOCKS[type].unique || !sections.some((s) => s.type === type),
-  );
+  const available = registry
+    .types()
+    .filter((type) => {
+      const block = registry.get(type);
+      return block && (!block.unique || !sections.some((s) => s.type === type));
+    });
 
-  const grouped = available.reduce<Record<string, SectionType[]>>((acc, type) => {
-    const group = BLOCKS[type].group;
+  const grouped = available.reduce<Record<string, string[]>>((acc, type) => {
+    const group = registry.get(type)?.group ?? 'dasar';
     (acc[group] ??= []).push(type);
     return acc;
   }, {});
@@ -168,7 +177,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
               <SortableRow
                 key={section.id}
                 section={section}
-                label={SECTION_LABEL[section.type]}
+                label={labelOf(section.type)}
                 open={openId === section.id}
                 onOpenToggle={() =>
                   setOpenId((id) => (id === section.id ? null : section.id))
@@ -176,7 +185,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
                 onToggleEnabled={() => handleToggle(section)}
                 onDelete={() => handleDelete(section)}
               >
-                {SECTION_VARIANTS[section.type].length > 1 && (
+                {variantsOf(section.type).length > 1 && (
                   <Field
                     label="Varian layout"
                     hint="Khusus section ini. Kosong = ikut varian bawaan desain."
@@ -187,7 +196,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
                       onChange={(e) => handleVariantChange(section, e.target.value)}
                     >
                       <option value="">Ikut desain</option>
-                      {SECTION_VARIANTS[section.type].map((variant) => (
+                      {variantsOf(section.type).map((variant) => (
                         <option key={variant} value={variant}>
                           {variantLabel(variant)}
                         </option>
@@ -200,6 +209,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
                   key={`${section.id}-${revision}`}
                   section={section}
                   media={media}
+                  registry={registry}
                   onLocalChange={(content) =>
                     onChange(
                       sections.map((s) =>
@@ -229,11 +239,11 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
                     key={type}
                     variant="outline"
                     size="sm"
-                    title={BLOCKS[type].note}
+                    title={registry.get(type)?.note}
                     onClick={() => handleAdd(type)}
                   >
                     <Plus size={12} />
-                    {SECTION_LABEL[type]}
+                    {labelOf(type)}
                   </Button>
                 ))}
               </div>
@@ -246,6 +256,7 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
         letterId={letterId}
         slug={slug}
         sections={sections}
+        registry={registry}
         onImported={(next) => {
           onChange(next);
           setRevision((n) => n + 1);

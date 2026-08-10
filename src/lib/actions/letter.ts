@@ -4,12 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { and, asc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { letter, media, section } from '@/db/schema';
-import { designSchema, slugSchema, SECTION_SCHEMAS } from '@/design/schemas';
+import { customBlock, letter, letterTemplate, media, section } from '@/db/schema';
+import { designSchema, slugSchema } from '@/design/schemas';
 import { getPreset } from '@/design/presets';
-import { BLOCKS, SECTION_TYPES, starterContent, type SectionType } from '@/design/blocks';
+import { createRegistry, parseWith, starterWith } from '@/design/blocks/resolve';
 import { OCCASIONS, isOccasionId, type OccasionId } from '@/design/occasions';
-import type { SectionRecord } from '@/design/types';
+import type { DesignSpec, SectionRecord } from '@/design/types';
 import { hashPassword, requireAdmin } from '@/lib/auth';
 import { parseLetterMarkdown } from '@/lib/markdown/parse';
 import { defaultSectionsFor } from '@/lib/defaults';
@@ -42,7 +42,10 @@ const createSchema = z.object({
   recipientName: z.string().trim().max(80).default(''),
   slug: slugSchema.optional(),
   preset: z.string().min(1).optional(),
+  /** occasion bawaan; diabaikan bila templateId diisi */
   occasion: z.string().default('love'),
+  /** template bikinan sendiri — menang atas occasion */
+  templateId: z.string().uuid().optional(),
 });
 
 export async function createLetter(input: unknown): Promise<ActionResult<{ id: string }>> {
@@ -56,10 +59,13 @@ export async function createLetter(input: unknown): Promise<ActionResult<{ id: s
     const [existing] = await db.select({ id: letter.id }).from(letter).where(eq(letter.slug, slug)).limit(1);
     if (existing) return { ok: false, error: `Slug "${slug}" sudah dipakai.` };
 
-    // Occasion menentukan susunan section awal sekaligus preset bawaannya;
-    // preset yang dipilih user tetap menang bila disebut.
+    // Template bikinan sendiri menang atas occasion bawaan.
+    const template = data.templateId ? await loadTemplate(data.templateId) : null;
+
     const occasion: OccasionId = isOccasionId(data.occasion) ? data.occasion : 'love';
-    const design = getPreset(data.preset ?? OCCASIONS[occasion].preset);
+    const design = template?.design
+      ? template.design
+      : getPreset(data.preset ?? template?.preset ?? OCCASIONS[occasion].preset);
 
     const [created] = await db
       .insert(letter)
@@ -72,9 +78,11 @@ export async function createLetter(input: unknown): Promise<ActionResult<{ id: s
       .returning({ id: letter.id });
 
     // Section awal supaya editor tidak menyambut user dengan halaman kosong
-    await db.insert(section).values(
-      defaultSectionsFor(created.id, data.recipientName || data.title, occasion),
-    );
+    const rows = template
+      ? await sectionsFromTemplate(created.id, template, data.recipientName || data.title)
+      : defaultSectionsFor(created.id, data.recipientName || data.title, occasion);
+
+    if (rows.length) await db.insert(section).values(rows);
 
     refresh();
     return { ok: true, data: { id: created.id } };
@@ -201,13 +209,17 @@ export async function updateSectionContent(input: unknown): Promise<ActionResult
     const { sectionId, type, content } = z
       .object({
         sectionId: z.string().uuid(),
-        type: z.enum(SECTION_TYPES as [SectionType, ...SectionType[]]),
+        type: z.string().min(1).max(60),
         content: z.unknown(),
       })
       .parse(input);
 
     // Validasi ulang di server dengan schema tipe section yang bersangkutan
-    const parsed = SECTION_SCHEMAS[type as SectionType].parse(content ?? {});
+    const registry = await loadRegistry();
+    const block = registry.get(type);
+    if (!block) return { ok: false, error: `Tipe section "${type}" tidak dikenal.` };
+
+    const parsed = block.schema.parse(content ?? {});
 
     await db
       .update(section)
@@ -265,9 +277,13 @@ export async function addSection(input: unknown): Promise<ActionResult> {
     const { letterId, type } = z
       .object({
         letterId: z.string().uuid(),
-        type: z.enum(SECTION_TYPES as [SectionType, ...SectionType[]]),
+        type: z.string().min(1).max(60),
       })
       .parse(input);
+
+    const registry = await loadRegistry();
+    const block = registry.get(type);
+    if (!block) return { ok: false, error: `Tipe section "${type}" tidak dikenal.` };
 
     const rows = await db
       .select({ type: section.type, order: section.order })
@@ -277,8 +293,8 @@ export async function addSection(input: unknown): Promise<ActionResult> {
 
     // Block bertanda unique hanya boleh sekali — dijaga di server, bukan
     // hanya disembunyikan di UI.
-    if (BLOCKS[type].unique && rows.some((row) => row.type === type)) {
-      return { ok: false, error: `Section "${BLOCKS[type].label}" hanya boleh satu.` };
+    if (block.unique && rows.some((row) => row.type === type)) {
+      return { ok: false, error: `Section "${block.label}" hanya boleh satu.` };
     }
 
     const nextOrder = rows.length ? Math.max(...rows.map((r) => r.order)) + 1 : 0;
@@ -290,7 +306,7 @@ export async function addSection(input: unknown): Promise<ActionResult> {
       enabled: true,
       variant: '',
       // Section baru berisi naskah, bukan form kosong.
-      content: starterContent(type),
+      content: starterWith(registry, type),
     });
 
     await touchLetter(letterId);
@@ -315,7 +331,11 @@ export async function setSectionVariant(input: unknown): Promise<ActionResult> {
 
     if (!row) return { ok: false, error: 'Section tidak ditemukan.' };
 
-    const allowed = BLOCKS[row.type].variants as readonly string[];
+    const registry = await loadRegistry();
+    const block = registry.get(row.type);
+    if (!block) return { ok: false, error: `Tipe section "${row.type}" tidak dikenal.` };
+
+    const allowed = block.variants as readonly string[];
     if (variant !== '' && !allowed.includes(variant)) {
       return { ok: false, error: `Varian "${variant}" tidak dikenal.` };
     }
@@ -368,7 +388,8 @@ export async function importSectionsMarkdown(
     await requireAdmin();
     const { letterId, markdown } = importSchema.parse(input);
 
-    const parsed = parseLetterMarkdown(markdown);
+    const registry = await loadRegistry();
+    const parsed = parseLetterMarkdown(markdown, registry);
     if (!parsed.sections.length) {
       return { ok: false, error: parsed.warnings[0] ?? 'Berkas tidak berisi section.' };
     }
@@ -383,7 +404,7 @@ export async function importSectionsMarkdown(
 
     // Satu tipe boleh punya beberapa section, jadi pencocokan memakai
     // kemunculan ke-n dalam urutan yang ada — bukan tipe saja.
-    const occurrences = new Map<SectionType, typeof existing>();
+    const occurrences = new Map<string, typeof existing>();
     for (const row of existing) {
       const list = occurrences.get(row.type) ?? [];
       list.push(row);
@@ -409,7 +430,7 @@ export async function importSectionsMarkdown(
         merged.mediaIds = kept;
       }
 
-      const content = SECTION_SCHEMAS[item.type].parse(merged) as Record<string, unknown>;
+      const content = parseWith(registry, item.type, merged);
 
       if (current) {
         await db.update(section).set({ content }).where(eq(section.id, current.id));
@@ -455,6 +476,86 @@ export async function importSectionsMarkdown(
   } catch (error) {
     return fail(error);
   }
+}
+
+/* ── Template ──────────────────────────────────────────────── */
+
+type LoadedTemplate = {
+  preset: string;
+  design: DesignSpec | null;
+  sections: { type: string; variant: string; enabled: boolean; content?: unknown }[];
+};
+
+async function loadTemplate(id: string): Promise<LoadedTemplate | null> {
+  const [row] = await db
+    .select()
+    .from(letterTemplate)
+    .where(eq(letterTemplate.id, id))
+    .limit(1);
+
+  if (!row) return null;
+
+  return {
+    preset: row.preset,
+    design: row.design,
+    sections: (row.sections ?? []) as LoadedTemplate['sections'],
+  };
+}
+
+/**
+ * Section awal dari sebuah template. Isi yang tersimpan di template dipakai
+ * bila ada; kalau tidak, jatuh ke naskah awal block-nya. Tipe yang sudah
+ * tidak dikenal (block custom yang dihapus) dilewati, bukan bikin gagal.
+ */
+async function sectionsFromTemplate(
+  letterId: string,
+  template: LoadedTemplate,
+  recipient: string,
+) {
+  const registry = await loadRegistry();
+
+  const rows = [];
+  let order = 0;
+
+  for (const item of template.sections) {
+    const block = registry.get(item.type);
+    if (!block) continue;
+
+    const base = item.content ?? starterWith(registry, item.type);
+    const content = parseWith(registry, item.type, base);
+
+    if (item.type === 'intro' && recipient && !content.label) {
+      content.label = `Untuk ${recipient}`;
+    }
+
+    rows.push({
+      letterId,
+      type: item.type,
+      order,
+      enabled: item.enabled ?? true,
+      variant: item.variant ?? '',
+      content,
+    });
+    order += 1;
+  }
+
+  return rows;
+}
+
+/** Registry gabungan: block bawaan + block bikinan sendiri dari database. */
+async function loadRegistry() {
+  const customs = await db
+    .select({
+      slug: customBlock.slug,
+      label: customBlock.label,
+      note: customBlock.note,
+      layout: customBlock.layout,
+      spec: customBlock.spec,
+      starter: customBlock.starter,
+    })
+    .from(customBlock);
+
+  return createRegistry(customs);
 }
 
 /* ── Helper ────────────────────────────────────────────────── */

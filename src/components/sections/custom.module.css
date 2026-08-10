@@ -1,0 +1,288 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-xl);
+}
+
+.lead {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.6rem;
+  max-width: 42rem;
+  margin: 0 auto var(--space-lg);
+}
+
+.leadText {
+  font-size: var(--text-base);
+  color: var(--c-text);
+}
+
+.items {
+  display: grid;
+  gap: clamp(1rem, 2.4vw, 1.7rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.items + .items {
+  margin-top: var(--space-lg);
+}
+
+.item {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+}
+
+.itemTitle {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--c-text);
+}
+
+.text {
+  font-size: var(--text-sm);
+  line-height: 1.72;
+  color: var(--c-text-muted);
+}
+
+.datetime {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.day {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--c-text);
+}
+
+.time {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--c-accent);
+  letter-spacing: 0.04em;
+}
+
+.tag {
+  justify-self: start;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.badge {
+  justify-self: start;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--c-accent) 45%, transparent);
+  font-size: var(--text-xs);
+  color: var(--c-accent);
+}
+
+.glyph {
+  color: var(--c-accent);
+}
+
+.number {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.numberValue {
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xl);
+  line-height: 1;
+  color: var(--c-text);
+}
+
+.numberLabel {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-self: start;
+  margin-top: 0.25rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--c-accent) 50%, transparent);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  text-decoration: none;
+  transition: background var(--dur-normal) ease;
+}
+
+.link:hover {
+  background: color-mix(in srgb, var(--c-accent) 14%, transparent);
+}
+
+.photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-sm, 10px);
+  overflow: hidden;
+}
+
+.photoImg {
+  object-fit: cover;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.photoCell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm, 10px);
+  overflow: hidden;
+}
+
+/* ── cards: kartu berdampingan ── */
+
+.cards {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.cards .item {
+  padding: clamp(1.2rem, 2.8vw, 1.9rem);
+  border-radius: var(--radius);
+}
+
+/* ── list: satu kolom, bergaris pemisah ── */
+
+.list {
+  grid-template-columns: 1fr;
+  gap: 0;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.list .item {
+  padding-block: clamp(1rem, 2.2vw, 1.5rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text) 14%, transparent);
+}
+
+.list .item:last-child {
+  border-bottom: none;
+}
+
+/* ── timeline: satu kolom dengan garis penanda ── */
+
+.timeline {
+  grid-template-columns: 1fr;
+  gap: 0;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.timeline .item {
+  position: relative;
+  padding-left: clamp(1.2rem, 3vw, 2rem);
+  padding-bottom: clamp(1.3rem, 3vw, 2.1rem);
+  border-left: 1px solid color-mix(in srgb, var(--c-text) 16%, transparent);
+}
+
+.timeline .item::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 0.5rem;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+
+.timeline .item:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+
+/* ── spotlight: satu kolom sempit, rata tengah ── */
+
+.spotlight {
+  grid-template-columns: 1fr;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.spotlight .item {
+  justify-items: center;
+  text-align: center;
+}
+
+/* ── centered: seperti spotlight tapi lebih lebar ── */
+
+.centered {
+  grid-template-columns: 1fr;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.centered .item {
+  justify-items: center;
+  text-align: center;
+}
+
+/* ── large: judul item dibesarkan, jadi jeda visual ── */
+
+.large {
+  grid-template-columns: 1fr;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.large .item {
+  justify-items: center;
+  text-align: center;
+  gap: 0.7rem;
+}
+
+.large .itemTitle {
+  font-size: var(--text-2xl);
+  line-height: 1.2;
+}
+
+/* ── split: dua kolom tegas ── */
+
+.split {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 720px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── stacked: satu kolom bertumpuk ── */
+
+.stacked {
+  grid-template-columns: 1fr;
+  max-width: 40rem;
+  margin-inline: auto;
+}

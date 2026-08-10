@@ -6,12 +6,18 @@ import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { OCCASIONS, OCCASION_IDS, type OccasionId } from '@/design/occasions';
 import { createLetter } from '@/lib/actions/letter';
+import type { TemplateRow } from '@/lib/template-types';
 import { cn, slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PresetPicker } from '@/components/dashboard/preset-picker';
 
-export function NewLetterDialog() {
+/** Pilihan acara: occasion bawaan atau template bikinan sendiri. */
+type Choice =
+  | { kind: 'occasion'; id: OccasionId }
+  | { kind: 'template'; id: string };
+
+export function NewLetterDialog({ templates = [] }: { templates?: TemplateRow[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
@@ -19,12 +25,24 @@ export function NewLetterDialog() {
   const [title, setTitle] = useState('');
   const [recipient, setRecipient] = useState('');
   const [slug, setSlug] = useState('');
-  const [occasion, setOccasion] = useState<OccasionId>('love');
-  // Preset mengikuti occasion sampai user memilih sendiri.
+  const [choice, setChoice] = useState<Choice>({ kind: 'occasion', id: 'love' });
+  // Preset mengikuti pilihan acara sampai user memilih sendiri.
   const [preset, setPreset] = useState<string | null>(null);
 
+  const selectedTemplate =
+    choice.kind === 'template' ? templates.find((t) => t.id === choice.id) : undefined;
+
   const effectiveSlug = slug || slugify(recipient || title);
-  const effectivePreset = preset ?? OCCASIONS[occasion].preset;
+  const effectivePreset =
+    preset ??
+    (choice.kind === 'occasion'
+      ? OCCASIONS[choice.id].preset
+      : (selectedTemplate?.preset ?? 'dark-romantic'));
+
+  const note =
+    choice.kind === 'occasion'
+      ? OCCASIONS[choice.id].note
+      : (selectedTemplate?.note ?? 'Template buatanmu.');
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -35,7 +53,8 @@ export function NewLetterDialog() {
         recipientName: recipient,
         slug: effectiveSlug || undefined,
         preset: effectivePreset,
-        occasion,
+        occasion: choice.kind === 'occasion' ? choice.id : 'love',
+        templateId: choice.kind === 'template' ? choice.id : undefined,
       });
 
       if (!result.ok) {
@@ -81,27 +100,65 @@ export function NewLetterDialog() {
           </p>
         </div>
 
-        <Field label="Acara" hint={OCCASIONS[occasion].note}>
-          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
-            {OCCASION_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setOccasion(id)}
-                aria-pressed={occasion === id}
-                className={cn(
-                  'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
-                  occasion === id
-                    ? 'border-foreground bg-muted font-medium'
-                    : 'border-border text-muted-foreground hover:bg-muted',
-                )}
-              >
-                {OCCASIONS[id].label}
-                <span className="mt-0.5 block text-[10px] opacity-70">
-                  {OCCASIONS[id].sections.length} section
-                </span>
-              </button>
-            ))}
+        <Field label="Acara" hint={note}>
+          <div className="grid gap-2">
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+              {OCCASION_IDS.map((id) => {
+                const active = choice.kind === 'occasion' && choice.id === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setChoice({ kind: 'occasion', id })}
+                    aria-pressed={active}
+                    className={cn(
+                      'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
+                      active
+                        ? 'border-foreground bg-muted font-medium'
+                        : 'border-border text-muted-foreground hover:bg-muted',
+                    )}
+                  >
+                    {OCCASIONS[id].label}
+                    <span className="mt-0.5 block text-[10px] opacity-70">
+                      {OCCASIONS[id].sections.length} section
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {templates.length > 0 && (
+              <>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Template buatanmu
+                </p>
+                <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                  {templates.map((template) => {
+                    const active =
+                      choice.kind === 'template' && choice.id === template.id;
+                    return (
+                      <button
+                        key={template.id}
+                        type="button"
+                        onClick={() => setChoice({ kind: 'template', id: template.id })}
+                        aria-pressed={active}
+                        className={cn(
+                          'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
+                          active
+                            ? 'border-foreground bg-muted font-medium'
+                            : 'border-border text-muted-foreground hover:bg-muted',
+                        )}
+                      >
+                        {template.label}
+                        <span className="mt-0.5 block text-[10px] opacity-70">
+                          {template.sections.length} section
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         </Field>
 

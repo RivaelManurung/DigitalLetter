@@ -9,7 +9,7 @@ import {
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
-import type { DesignSpec, SectionType } from '@/design/types';
+import type { AnySectionType, DesignSpec } from '@/design/types';
 
 /**
  * Kunci arsitektur: `design` dan `section.content` bertipe JSONB.
@@ -54,7 +54,12 @@ export const section = pgTable(
     letterId: uuid('letter_id')
       .notNull()
       .references(() => letter.id, { onDelete: 'cascade' }),
-    type: text('type').$type<SectionType>().notNull(),
+    /**
+     * Tipe block: salah satu block bawaan, atau "c:<slug>" untuk block
+     * bikinan sendiri. Sengaja tidak dibatasi ke union tipe bawaan —
+     * daftarnya hidup di database, bukan di kode.
+     */
+    type: text('type').$type<AnySectionType>().notNull(),
     order: integer('order').notNull().default(0),
     enabled: boolean('enabled').notNull().default(true),
     /** varian layout khusus section ini; '' = ikut varian bawaan desain */
@@ -119,7 +124,63 @@ export const rsvp = pgTable(
   (t) => [index('rsvp_letter_idx').on(t.letterId, t.createdAt)],
 );
 
+/**
+ * Jenis section bikinan sendiri. `spec` menyimpan daftar field-nya; schema
+ * Zod-nya dibangkitkan dari spec itu saat dipakai, jadi menambah jenis
+ * section tidak butuh deploy ulang.
+ *
+ * `slug` dipakai sebagai tipe section — disimpan di section.type dengan
+ * awalan "c:" supaya tidak pernah bentrok dengan block bawaan.
+ */
+export const customBlock = pgTable(
+  'custom_block',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: text('slug').notNull(),
+    label: text('label').notNull(),
+    note: text('note').notNull().default(''),
+    /** pola tata letak yang dipakai — lihat design/blocks/custom-layouts */
+    layout: text('layout').notNull().default('cards'),
+    /** CustomBlockSpec: { fields: [...] } */
+    spec: jsonb('spec').$type<Record<string, unknown>>().notNull().default({}),
+    /** naskah awal saat section ini ditambahkan */
+    starter: jsonb('starter').$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('custom_block_slug_idx').on(t.slug)],
+);
+
+/**
+ * Template acara bikinan sendiri. Hanya cetakan awal: mengubah template
+ * TIDAK mengubah surat yang sudah dibuat darinya — supaya satu salah sunting
+ * tidak merusak surat client yang sudah terbit.
+ */
+export const letterTemplate = pgTable(
+  'letter_template',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    slug: text('slug').notNull(),
+    label: text('label').notNull(),
+    note: text('note').notNull().default(''),
+    /** id preset desain bawaan template ini */
+    preset: text('preset').notNull().default('dark-romantic'),
+    /**
+     * Susunan section: [{ type, variant, content? }]. `content` diisi bila
+     * template dibuat dari surat yang sudah ada — jadi teksnya ikut terbawa.
+     */
+    sections: jsonb('sections').$type<unknown[]>().notNull().default([]),
+    /** desain lengkap bila template dibuat dari surat; null = pakai preset */
+    design: jsonb('design').$type<DesignSpec | null>(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [uniqueIndex('letter_template_slug_idx').on(t.slug)],
+);
+
 export type Letter = typeof letter.$inferSelect;
 export type Section = typeof section.$inferSelect;
 export type Media = typeof media.$inferSelect;
+export type CustomBlock = typeof customBlock.$inferSelect;
+export type LetterTemplate = typeof letterTemplate.$inferSelect;
 export type Rsvp = typeof rsvp.$inferSelect;

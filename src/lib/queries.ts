@@ -1,7 +1,7 @@
 import 'server-only';
 import { asc, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { letter, media, section } from '@/db/schema';
+import { customBlock, letter, media, section } from '@/db/schema';
 import { getPreset } from '@/design/presets';
 import type { DesignSpec, LetterBundle, MediaRecord, SectionRecord } from '@/design/types';
 import { publicUrl } from './storage';
@@ -77,9 +77,21 @@ export async function getEditorData(id: string) {
 }
 
 async function buildBundle(row: typeof letter.$inferSelect): Promise<LetterBundle> {
-  const [sectionRows, mediaRows] = await Promise.all([
+  const [sectionRows, mediaRows, customRows] = await Promise.all([
     db.select().from(section).where(eq(section.letterId, row.id)).orderBy(asc(section.order)),
     db.select().from(media).where(eq(media.letterId, row.id)).orderBy(asc(media.order)),
+    // Definisi block bikinan sendiri ikut dibawa supaya halaman surat bisa
+    // merendernya tanpa query tambahan di sisi klien.
+    db
+      .select({
+        slug: customBlock.slug,
+        label: customBlock.label,
+        note: customBlock.note,
+        layout: customBlock.layout,
+        spec: customBlock.spec,
+        starter: customBlock.starter,
+      })
+      .from(customBlock),
   ]);
 
   return {
@@ -89,6 +101,7 @@ async function buildBundle(row: typeof letter.$inferSelect): Promise<LetterBundl
     design: safeDesign(row.design),
     sections: toSections(sectionRows),
     media: toMedia(mediaRows),
+    customBlocks: customRows,
   };
 }
 

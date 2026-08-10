@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Image as ImageIcon, Layers, Palette, Send } from 'lucide-react';
+import { createRegistry } from '@/design/blocks/resolve';
 import type { DesignSpec, LetterBundle, SectionRecord } from '@/design/types';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
@@ -48,6 +49,13 @@ export function EditorShell({
 }) {
   const [tab, setTab] = useState<Tab>('content');
   const [bundle, setBundle] = useState(initialBundle);
+
+  // Registry gabungan: block bawaan + block bikinan sendiri yang ikut
+  // dibawa di bundle. Dipakai form editor maupun preview.
+  const registry = useMemo(
+    () => createRegistry(initialBundle.customBlocks ?? []),
+    [initialBundle.customBlocks],
+  );
 
   const patchDesign = useCallback((design: DesignSpec) => {
     setBundle((prev) => ({ ...prev, design }));
@@ -103,6 +111,7 @@ export function EditorShell({
               slug={meta.slug}
               sections={bundle.sections}
               media={bundle.media}
+              registry={registry}
               onChange={patchSections}
             />
           )}

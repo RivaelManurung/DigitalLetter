@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { parseSectionContent, resolveVariant } from '@/design/blocks';
+import { createRegistry } from '@/design/blocks/resolve';
 import { designToCssVars } from '@/design/tokens';
 import type { LetterBundle } from '@/design/types';
 import { IntroGate } from '../engine/intro/intro-gate';
@@ -25,6 +26,13 @@ type Props = {
  */
 export function LetterView({ letter, preview = false }: Props) {
   const { design, sections, media } = letter;
+
+  // Block bikinan sendiri ikut dibawa di bundle, jadi halaman surat tidak
+  // perlu query tambahan — termasuk saat dirender di preview dashboard.
+  const registry = useMemo(
+    () => createRegistry(letter.customBlocks ?? []),
+    [letter.customBlocks],
+  );
 
   const introSection = sections.find((s) => s.type === 'intro' && s.enabled);
   const flowSections = sections
@@ -76,6 +84,7 @@ export function LetterView({ letter, preview = false }: Props) {
             design={design}
             media={media}
             letterId={letter.id}
+            registry={registry}
           />
         ))}
       </main>

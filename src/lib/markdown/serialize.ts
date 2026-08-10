@@ -1,6 +1,12 @@
-import { parseSectionContent } from '@/design/blocks';
+import { BUILTIN_REGISTRY, parseWith, type BlockRegistry } from '@/design/blocks/resolve';
 import type { SectionRecord, SectionType } from '@/design/types';
-import { SECTION_SPECS, isListField, type MarkdownField, type LeafField } from './fields';
+import {
+  SECTION_SPECS,
+  isListField,
+  specOfBlock,
+  type MarkdownField,
+  type LeafField,
+} from './fields';
 
 /**
  * Section → markdown. Format sengaja dibuat jelas dan berulang supaya mudah
@@ -33,34 +39,45 @@ const GUIDE = [
 type Options = {
   /** panduan penggunaan di bagian atas berkas */
   guide?: boolean;
+  /** registry gabungan; tanpa ini hanya block bawaan yang dikenali */
+  registry?: BlockRegistry;
 };
 
 export function sectionsToMarkdown(
   sections: SectionRecord[],
   options: Options = {},
 ): string {
+  const registry = options.registry ?? BUILTIN_REGISTRY;
   const ordered = [...sections].sort((a, b) => a.order - b.order);
 
   // Satu tipe boleh muncul berkali-kali (mis. dua "Surat"). Nomor urut
   // kemunculan dipakai supaya impor tahu blok mana yang mana.
   const seen = new Map<string, number>();
-  const blocks = ordered.map((section) => {
-    const nth = (seen.get(section.type) ?? 0) + 1;
-    seen.set(section.type, nth);
-    const total = ordered.filter((s) => s.type === section.type).length;
-    return sectionBlock(section, total > 1 ? nth : 0);
-  });
+  const blocks = ordered
+    .map((section) => {
+      const nth = (seen.get(section.type) ?? 0) + 1;
+      seen.set(section.type, nth);
+      const total = ordered.filter((s) => s.type === section.type).length;
+      return sectionBlock(section, total > 1 ? nth : 0, registry);
+    })
+    .filter(Boolean);
 
   const head = options.guide === false ? '' : `${GUIDE}\n`;
   return `${head}${blocks.join('\n')}`.trimEnd() + '\n';
 }
 
-function sectionBlock(section: SectionRecord, nth: number): string {
-  const spec = SECTION_SPECS[section.type];
-  const content = parseSectionContent(section.type, section.content) as Record<
-    string,
-    unknown
-  >;
+function sectionBlock(
+  section: SectionRecord,
+  nth: number,
+  registry: BlockRegistry,
+): string {
+  const block = registry.get(section.type);
+  // Block yang definisinya sudah tidak ada tidak bisa ditulis ulang dengan
+  // benar — dilewati, bukan ditulis setengah jadi.
+  if (!block) return '';
+
+  const spec = specOfBlock(block);
+  const content = parseWith(registry, section.type, section.content);
 
   const marker = nth ? `[${section.type}#${nth}]` : `[${section.type}]`;
   const lines: string[] = [`## ${marker} ${spec.label}`, `<!-- ${spec.note} -->`];

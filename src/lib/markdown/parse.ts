@@ -1,5 +1,5 @@
-import { isSectionType, type SectionType } from '@/design/blocks';
-import { SECTION_SPECS, isListField, listFieldOf, type LeafField } from './fields';
+import { BUILTIN_REGISTRY, type BlockRegistry } from '@/design/blocks/resolve';
+import { isListField, listFieldOfSpec, specOfBlock, type LeafField, type SectionSpec } from './fields';
 
 /**
  * Markdown → konten section. Parser sengaja pemaaf: berkas yang diedit
@@ -10,7 +10,7 @@ import { SECTION_SPECS, isListField, listFieldOf, type LeafField } from './field
  */
 
 export type ParsedSection = {
-  type: SectionType;
+  type: string;
   /** kemunculan ke-berapa untuk tipe ini (1-based) — block boleh berulang */
   nth: number;
   content: Record<string, unknown>;
@@ -21,7 +21,8 @@ export type ParseResult = {
   warnings: string[];
 };
 
-const HEADING = /^##\s*\[([a-zA-Z]+)(?:#(\d+))?\]/;
+/** Tipe custom ditulis "c:slug", jadi titik dua ikut diterima. */
+const HEADING = /^##\s*\[([a-zA-Z][a-zA-Z0-9:-]*)(?:#(\d+))?\]/;
 const ITEM_HEADING = /^###\s+/;
 const KEY_LINE = /^([A-Za-z][A-Za-z0-9_]*)\s*:[ \t]?(.*)$/;
 const COMMENT = /^<!--/;
@@ -29,7 +30,10 @@ const BLOCK_MARKER = /^[>|]$/;
 
 const MAX_LINES = 6000;
 
-export function parseLetterMarkdown(input: string): ParseResult {
+export function parseLetterMarkdown(
+  input: string,
+  registry: BlockRegistry = BUILTIN_REGISTRY,
+): ParseResult {
   const lines = input.replace(/\r\n?/g, '\n').split('\n');
   const warnings: string[] = [];
 
@@ -37,11 +41,25 @@ export function parseLetterMarkdown(input: string): ParseResult {
     return { sections: [], warnings: ['Berkas terlalu panjang untuk diproses.'] };
   }
 
+  /** Spec markdown per tipe, dihitung sekali lalu dipakai ulang. */
+  const specs = new Map<string, SectionSpec>();
+  const specOf = (kind: string): SectionSpec | null => {
+    const cached = specs.get(kind);
+    if (cached) return cached;
+
+    const block = registry.get(kind);
+    if (!block) return null;
+
+    const spec = specOfBlock(block);
+    specs.set(kind, spec);
+    return spec;
+  };
+
   // Block boleh berulang, jadi hasilnya daftar terurut — bukan peta per tipe.
   const found: ParsedSection[] = [];
-  const counts = new Map<SectionType, number>();
+  const counts = new Map<string, number>();
 
-  let type: SectionType | null = null;
+  let type: string | null = null;
   let current: ParsedSection | null = null;
   let target: Record<string, unknown> | null = null;
   let inItem = false;
@@ -61,7 +79,7 @@ export function parseLetterMarkdown(input: string): ParseResult {
       inItem = false;
       lastKey = null;
 
-      if (!isSectionType(candidate)) {
+      if (!specOf(candidate)) {
         warnings.push(`Tipe section "${candidate}" tidak dikenal — dilewati.`);
         type = null;
         current = null;
@@ -91,7 +109,8 @@ export function parseLetterMarkdown(input: string): ParseResult {
     if (!type || !target || !current) continue; // teks pengantar sebelum section pertama
 
     if (ITEM_HEADING.test(trimmed)) {
-      const list = listFieldOf(type);
+      const spec = specOf(type);
+      const list = spec ? listFieldOfSpec(spec) : null;
       lastKey = null;
 
       if (!list) {
@@ -110,13 +129,16 @@ export function parseLetterMarkdown(input: string): ParseResult {
     const keyed = KEY_LINE.exec(line);
     if (keyed) {
       const [, key, rawValue] = keyed;
-      let field = fieldFor(type, inItem, key);
+      const spec = specOf(type);
+      if (!spec) continue;
+
+      let field = fieldFor(spec, inItem, key);
 
       // Field milik section bisa ditulis setelah blok daftar (mis. `address`
       // sesudah daftar rekening). Begitu ketemu key yang bukan milik item,
       // kembali ke tingkat section — kalau tidak, isinya hilang diam-diam.
       if (!field && inItem) {
-        const own = fieldFor(type, false, key);
+        const own = fieldFor(spec, false, key);
         if (own) {
           field = own;
           inItem = false;
@@ -191,9 +213,7 @@ function readBlock(lines: string[], start: number): { value: string; next: numbe
  * "reasons" dan di tiap itemnya), jadi tingkat yang sedang aktif menentukan
  * field mana yang dipakai.
  */
-function fieldFor(type: SectionType, inItem: boolean, key: string): LeafField | null {
-  const spec = SECTION_SPECS[type];
-
+function fieldFor(spec: SectionSpec, inItem: boolean, key: string): LeafField | null {
   if (inItem) {
     const list = spec.fields.find(isListField);
     return list?.fields.find((field) => field.key === key) ?? null;

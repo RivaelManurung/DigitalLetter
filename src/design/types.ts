@@ -80,10 +80,17 @@ export type DesignSpec = {
   variants: Partial<Record<SectionTypeRef, string>>;
 };
 
+/**
+ * Tipe section: salah satu block bawaan, atau block bikinan sendiri dengan
+ * awalan "c:". Bentuk `string & {}` menjaga autocomplete block bawaan tetap
+ * muncul, tanpa menutup pintu bagi tipe custom.
+ */
+export type AnySectionType = SectionTypeRef | (string & {});
+
 /** Satu section di dalam surat. `content` divalidasi oleh schema per tipe. */
 export type SectionRecord = {
   id: string;
-  type: SectionTypeRef;
+  type: AnySectionType;
   order: number;
   enabled: boolean;
   /**
@@ -104,6 +111,16 @@ export type MediaRecord = {
   meta: Record<string, unknown>;
 };
 
+/** Block bikinan sendiri, dibawa apa adanya dari database. */
+export type CustomBlockRecord = {
+  slug: string;
+  label: string;
+  note: string;
+  layout: string;
+  spec: unknown;
+  starter: unknown;
+};
+
 export type LetterBundle = {
   id: string;
   slug: string;
@@ -111,4 +128,6 @@ export type LetterBundle = {
   design: DesignSpec;
   sections: SectionRecord[];
   media: MediaRecord[];
+  /** definisi block bikinan sendiri yang dipakai surat ini */
+  customBlocks?: CustomBlockRecord[];
 };

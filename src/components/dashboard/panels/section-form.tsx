@@ -3,14 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  fieldsOf,
-  isListSpec,
-  parseSectionContent,
-  type FieldSpec,
-  type LeafSpec,
-  type ListSpec,
-} from '@/design/blocks';
+import { isListSpec, type FieldSpec, type LeafSpec, type ListSpec } from '@/design/blocks';
+import { parseWith, type BlockRegistry } from '@/design/blocks/resolve';
 import type { MediaRecord, SectionRecord } from '@/design/types';
 import { updateSectionContent } from '@/lib/actions/letter';
 import { Button } from '@/components/ui/button';
@@ -20,6 +14,7 @@ import { cn } from '@/lib/utils';
 type Props = {
   section: SectionRecord;
   media: MediaRecord[];
+  registry: BlockRegistry;
   onLocalChange: (content: Record<string, unknown>) => void;
 };
 
@@ -32,7 +27,7 @@ const SAVE_DEBOUNCE_MS = 700;
  * Perubahan langsung tampil di preview (state lokal), lalu disimpan ke
  * database setelah user berhenti mengetik — bukan tiap ketukan tombol.
  */
-export function SectionForm({ section, media, onLocalChange }: Props) {
+export function SectionForm({ section, media, registry, onLocalChange }: Props) {
   const [content, setContent] = useState<Record<string, unknown>>(section.content);
   const [saving, setSaving] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,12 +63,12 @@ export function SectionForm({ section, media, onLocalChange }: Props) {
     onLocalChange(next);
   }
 
-  const fields = fieldsOf(section.type);
+  const fields = registry.get(section.type)?.fields ?? [];
   // Nilai lewat schema dulu supaya field yang baru ditambahkan ke sebuah
   // block tetap punya nilai awal, bukan undefined.
   const parsed = useMemo(
-    () => parseSectionContent(section.type, content) as Record<string, unknown>,
-    [section.type, content],
+    () => parseWith(registry, section.type, content),
+    [registry, section.type, content],
   );
 
   return (

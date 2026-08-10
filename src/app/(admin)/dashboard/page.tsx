@@ -1,25 +1,44 @@
 import Link from 'next/link';
-import { Eye, PenLine } from 'lucide-react';
+import { Blocks, Eye, LayoutTemplate, PenLine } from 'lucide-react';
 import { listLetters } from '@/lib/queries';
+import { listTemplates } from '@/lib/actions/templates';
 import { formatDate } from '@/lib/utils';
 import { Badge, Card, EmptyState } from '@/components/ui/surface';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NewLetterDialog } from './new-letter-dialog';
+import { LetterActions } from './letter-actions';
 
 export default async function DashboardPage() {
-  const letters = await listLetters();
+  const [letters, templates] = await Promise.all([listLetters(), listTemplates()]);
 
   return (
     <div className="grid gap-5">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1">
           <h1 className="text-xl font-semibold tracking-tight">Surat</h1>
           <p className="text-xs text-muted-foreground">
             {letters.length} surat · konten, desain, dan publikasi diatur per surat.
           </p>
         </div>
-        <NewLetterDialog />
+
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/dashboard/blocks"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <Blocks size={14} />
+            Jenis Section
+          </Link>
+          <Link
+            href="/dashboard/templates"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <LayoutTemplate size={14} />
+            Template
+          </Link>
+          <NewLetterDialog templates={templates} />
+        </div>
       </div>
 
       {letters.length === 0 ? (
@@ -86,6 +105,11 @@ export default async function DashboardPage() {
                           Lihat
                         </a>
                       )}
+                      <LetterActions
+                        letterId={row.id}
+                        title={row.title}
+                        recipientName={row.recipientName ?? ''}
+                      />
                     </div>
                   </div>
                 </Card>

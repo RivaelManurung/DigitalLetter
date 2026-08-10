@@ -100,11 +100,33 @@ export const SECTION_SPECS = Object.fromEntries(
   ]),
 ) as Record<SectionType, SectionSpec>;
 
+/**
+ * Spec markdown untuk sembarang block — bawaan maupun bikinan sendiri.
+ * Bentuknya diturunkan dari BlockDef, jadi block custom ikut bisa
+ * diekspor & diimpor lewat berkas .md tanpa perlakuan khusus.
+ */
+export function specOfBlock(block: {
+  label: string;
+  note: string;
+  fields: FieldSpec[];
+}): SectionSpec {
+  return {
+    label: block.label,
+    note: block.note,
+    fields: block.fields.map(toMarkdownField),
+  };
+}
+
 /** Satu section paling banyak punya satu field daftar — dipakai parser. */
 export function markdownListFieldOf(type: SectionType): ListField | null {
   const spec = listFieldOf(type);
   if (!spec) return null;
   return toMarkdownField(spec as ListSpec) as ListField;
+}
+
+/** Versi yang bekerja untuk block apa pun, termasuk bikinan sendiri. */
+export function listFieldOfSpec(spec: SectionSpec): ListField | null {
+  return (spec.fields.find(isListField) as ListField) ?? null;
 }
 
 export { markdownListFieldOf as listFieldOf };
