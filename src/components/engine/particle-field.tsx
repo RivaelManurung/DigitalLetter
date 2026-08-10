@@ -147,6 +147,11 @@ export function ParticleField({ kind, density, speed }: Props) {
     };
     window.addEventListener('resize', onResize, { passive: true });
 
+    // Di preview, canvas mengikuti panel — ukurannya bisa berubah tanpa
+    // window ikut resize (mis. saat beralih desktop/ponsel).
+    const sizeObserver = new ResizeObserver(onResize);
+    sizeObserver.observe(canvas);
+
     // Berhenti total saat tab tidak terlihat — jangan buang baterai
     const onVisibility = () => {
       if (document.hidden) {
@@ -169,6 +174,7 @@ export function ParticleField({ kind, density, speed }: Props) {
       running = false;
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
+      sizeObserver.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
       observer.disconnect();
     };

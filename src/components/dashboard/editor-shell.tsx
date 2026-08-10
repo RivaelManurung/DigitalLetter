@@ -99,6 +99,7 @@ export function EditorShell({
           {tab === 'content' && (
             <ContentPanel
               letterId={meta.id}
+              slug={meta.slug}
               sections={bundle.sections}
               media={bundle.media}
               onChange={patchSections}

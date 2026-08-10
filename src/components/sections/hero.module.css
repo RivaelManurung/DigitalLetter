@@ -1,5 +1,5 @@
 .hero {
-  min-height: 100dvh;
+  min-height: var(--stage-vh, 100dvh);
   display: grid;
   align-items: center;
 }

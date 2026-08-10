@@ -16,6 +16,10 @@
   font-family: var(--ff-body);
   overflow-x: clip;
 
+  /* Tinggi "panggung" — satu layar penuh di halaman asli, setinggi panel
+     saat dirender di dashboard. Semua section tinggi-penuh membacanya. */
+  --stage-vh: 100dvh;
+
   --text-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.8rem);
   --text-sm: clamp(0.84rem, 0.8rem + 0.18vw, 0.94rem);
   --text-base: clamp(1rem, 0.94rem + 0.3vw, 1.13rem);
@@ -38,7 +42,14 @@
   box-sizing: border-box;
 }
 
-/* ── Lapisan permukaan: satu background tetap di belakang segalanya ── */
+/* ── Lapisan permukaan: satu background tetap di belakang segalanya ──
+   Di halaman asli semuanya `fixed`, jadi `.stage-layers` cukup transparan
+   (display: contents). Di preview ia berubah jadi panggung sticky —
+   lihat blok "Mode preview" di bawah. */
+
+.stage-layers {
+  display: contents;
+}
 
 .surface-layer {
   position: fixed;
@@ -279,24 +290,34 @@
 }
 
 /* ── Mode preview ───────────────────────────────────────────
-   Di dashboard, surat dirender di dalam panel. Semua lapisan
-   `fixed` harus dikurung ke dalam panel itu, kalau tidak ia
-   akan menutupi seluruh layar dashboard.
+   Di dashboard, surat dirender di dalam panel yang bisa digulir.
+   Panel itulah "viewport"-nya: lapisan latar tidak boleh `fixed`
+   (menutupi layar dashboard) dan juga tidak boleh direntangkan
+   setinggi seluruh surat — vignette-nya akan menghitamkan hampir
+   semua isi. Solusinya: satu panggung sticky setinggi panel.
    ─────────────────────────────────────────────────────────── */
 
 .letter-root[data-preview='true'] {
   position: relative;
   isolation: isolate;
-  /* menjadikan elemen ini containing block untuk anak yang position:fixed */
-  transform: translateZ(0);
   min-height: 100%;
+  --stage-vh: var(--preview-vh, 74dvh);
 }
 
-.letter-root[data-preview='true'] .surface-layer,
-.letter-root[data-preview='true'] .surface-vignette,
-.letter-root[data-preview='true'] .surface-grain,
-.letter-root[data-preview='true'] .particle-canvas {
+/* Panggung setinggi 0 supaya tidak makan ruang aliran dokumen,
+   tapi tetap menempel di atas panel selama digulir. */
+.letter-root[data-preview='true'] .stage-layers {
+  display: block;
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 0;
+}
+
+.letter-root[data-preview='true'] .stage-layers > * {
   position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--stage-vh);
 }
 
 .letter-root[data-preview='true'] .section {

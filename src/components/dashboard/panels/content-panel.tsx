@@ -28,6 +28,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/surface';
+import { MarkdownTools } from './markdown-tools';
 import { SectionForm } from './section-form';
 
 const SECTION_LABEL: Record<SectionType, string> = {
@@ -42,13 +43,17 @@ const SECTION_LABEL: Record<SectionType, string> = {
 
 type Props = {
   letterId: string;
+  slug: string;
   sections: SectionRecord[];
   media: MediaRecord[];
   onChange: (sections: SectionRecord[]) => void;
 };
 
-export function ContentPanel({ letterId, sections, media, onChange }: Props) {
+export function ContentPanel({ letterId, slug, sections, media, onChange }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
+  // Form section menyimpan draft lokal; setelah impor form itu harus
+  // dipasang ulang agar isinya ikut berganti, bukan menahan nilai lama.
+  const [revision, setRevision] = useState(0);
   const [, start] = useTransition();
 
   const sorted = [...sections].sort((a, b) => a.order - b.order);
@@ -150,6 +155,7 @@ export function ContentPanel({ letterId, sections, media, onChange }: Props) {
                 onDelete={() => handleDelete(section)}
               >
                 <SectionForm
+                  key={`${section.id}-${revision}`}
                   section={section}
                   media={media}
                   onLocalChange={(content) =>
@@ -184,6 +190,16 @@ export function ContentPanel({ letterId, sections, media, onChange }: Props) {
           </div>
         </Card>
       )}
+
+      <MarkdownTools
+        letterId={letterId}
+        slug={slug}
+        sections={sections}
+        onImported={(next) => {
+          onChange(next);
+          setRevision((n) => n + 1);
+        }}
+      />
     </div>
   );
 }

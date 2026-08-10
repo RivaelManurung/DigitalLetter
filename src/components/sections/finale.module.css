@@ -1,6 +1,6 @@
 .finale {
   position: relative;
-  min-height: 92dvh;
+  min-height: calc(var(--stage-vh, 100dvh) * 0.92);
   display: grid;
   place-items: center;
   overflow: hidden;

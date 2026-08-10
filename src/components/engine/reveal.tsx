@@ -13,6 +13,23 @@ type Props = {
 };
 
 /**
+ * Mencari leluhur yang benar-benar bisa digulir. Di halaman surat hasilnya
+ * null (viewport), tapi di preview dashboard surat hidup di dalam panel —
+ * panel itulah yang harus jadi root observer, bukan viewport.
+ */
+function scrollRoot(el: HTMLElement): HTMLElement | null {
+  let node = el.parentElement;
+
+  while (node && node !== document.body) {
+    const { overflowY } = getComputedStyle(node);
+    if (overflowY === 'auto' || overflowY === 'scroll') return node;
+    node = node.parentElement;
+  }
+
+  return null;
+}
+
+/**
  * IntersectionObserver dengan satu jaring pengaman penting: elemen yang
  * sudah berada di viewport saat mount langsung ditampilkan. Tanpa ini,
  * konten bisa tersangkut tak terlihat — persis bug yang ada di situs asli.
@@ -37,8 +54,16 @@ export function Reveal({
       return;
     }
 
+    const root = scrollRoot(el);
     const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
+    const bounds = root
+      ? root.getBoundingClientRect()
+      : { top: 0, bottom: window.innerHeight };
+
+    // Tampil langsung kalau elemen sudah terlihat ATAU sudah terlewat di
+    // atas garis lipat — misalnya setelah refresh dengan posisi gulir
+    // dipulihkan browser. Tanpa ini, menggulir ke atas menemui area kosong.
+    if (rect.top < bounds.bottom) {
       show();
       return;
     }
@@ -52,7 +77,7 @@ export function Reveal({
           }
         }
       },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+      { root, rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
     );
 
     observer.observe(el);

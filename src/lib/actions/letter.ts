@@ -4,11 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { and, asc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { letter, section } from '@/db/schema';
+import { letter, media, section } from '@/db/schema';
 import { designSchema, slugSchema, SECTION_SCHEMAS } from '@/design/schemas';
 import { getPreset } from '@/design/presets';
-import { SECTION_TYPES, type SectionType } from '@/design/types';
+import { SECTION_TYPES, type SectionRecord, type SectionType } from '@/design/types';
 import { hashPassword, requireAdmin } from '@/lib/auth';
+import { parseLetterMarkdown } from '@/lib/markdown/parse';
 import { defaultSectionsFor } from '@/lib/defaults';
 import { slugify } from '@/lib/utils';
 
@@ -290,6 +291,112 @@ export async function deleteSection(sectionId: string): Promise<ActionResult> {
     await db.delete(section).where(eq(section.id, sectionId));
     if (letterId) await touchLetter(letterId);
     return { ok: true };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/* ── Impor markdown ────────────────────────────────────────── */
+
+const importSchema = z.object({
+  letterId: z.string().uuid(),
+  markdown: z.string().max(200_000, 'Berkas terlalu besar (maksimal 200 KB).'),
+});
+
+export type ImportSummary = {
+  updated: number;
+  created: number;
+  warnings: string[];
+  sections: SectionRecord[];
+};
+
+/**
+ * Terapkan berkas markdown ke sebuah surat. Section yang tidak disebut di
+ * berkas dibiarkan apa adanya — impor tidak pernah menghapus. Isi tetap
+ * melewati schema Zod, jadi berkas rusak paling jauh hanya jatuh ke default
+ * field yang bersangkutan.
+ */
+export async function importSectionsMarkdown(
+  input: unknown,
+): Promise<ActionResult<ImportSummary>> {
+  try {
+    await requireAdmin();
+    const { letterId, markdown } = importSchema.parse(input);
+
+    const parsed = parseLetterMarkdown(markdown);
+    if (!parsed.sections.length) {
+      return { ok: false, error: parsed.warnings[0] ?? 'Berkas tidak berisi section.' };
+    }
+
+    const [existing, mediaRows] = await Promise.all([
+      db.select().from(section).where(eq(section.letterId, letterId)).orderBy(asc(section.order)),
+      db.select({ id: media.id }).from(media).where(eq(media.letterId, letterId)),
+    ]);
+
+    const ownedMedia = new Set(mediaRows.map((row) => row.id));
+    const byType = new Map(existing.map((row) => [row.type, row]));
+    const warnings = [...parsed.warnings];
+
+    let updated = 0;
+    let created = 0;
+    let nextOrder = existing.length
+      ? Math.max(...existing.map((row) => row.order)) + 1
+      : 0;
+
+    for (const item of parsed.sections) {
+      const current = byType.get(item.type);
+      const merged = { ...(current?.content ?? {}), ...item.content };
+
+      if (item.type === 'gallery' && Array.isArray(merged.mediaIds)) {
+        const ids = (merged.mediaIds as unknown[]).map(String);
+        const kept = ids.filter((id) => ownedMedia.has(id));
+        if (kept.length !== ids.length) {
+          warnings.push('Sebagian id foto di berkas tidak ada di surat ini — diabaikan.');
+        }
+        merged.mediaIds = kept;
+      }
+
+      const content = SECTION_SCHEMAS[item.type].parse(merged) as Record<string, unknown>;
+
+      if (current) {
+        await db.update(section).set({ content }).where(eq(section.id, current.id));
+        updated += 1;
+      } else {
+        await db.insert(section).values({
+          letterId,
+          type: item.type,
+          order: nextOrder,
+          enabled: true,
+          content,
+        });
+        nextOrder += 1;
+        created += 1;
+      }
+    }
+
+    await touchLetter(letterId);
+
+    const fresh = await db
+      .select()
+      .from(section)
+      .where(eq(section.letterId, letterId))
+      .orderBy(asc(section.order));
+
+    return {
+      ok: true,
+      data: {
+        updated,
+        created,
+        warnings,
+        sections: fresh.map((row) => ({
+          id: row.id,
+          type: row.type,
+          order: row.order,
+          enabled: row.enabled,
+          content: row.content,
+        })),
+      },
+    };
   } catch (error) {
     return fail(error);
   }

@@ -14,11 +14,18 @@ import '@/styles/letter.css';
  * yang membawa seluruh tokennya sendiri — CSS dashboard tidak bocor
  * ke dalam, dan sebaliknya.
  */
+/** Tinggi panel preview — dipakai bersama sebagai `--preview-vh` supaya
+ *  section setinggi-layar ikut menyesuaikan panel, bukan viewport browser. */
+const PREVIEW_HEIGHT = '74dvh';
+
 export function LivePreview({ bundle }: { bundle: LetterBundle }) {
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   return (
-    <div className="grid min-w-0 gap-2">
+    <div
+      className="grid min-w-0 gap-2 self-start lg:sticky lg:top-4"
+      style={{ '--preview-vh': PREVIEW_HEIGHT } as React.CSSProperties}
+    >
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium text-muted-foreground">Pratinjau langsung</p>
 
@@ -51,10 +58,15 @@ export function LivePreview({ bundle }: { bundle: LetterBundle }) {
       {/* Font pasangan aktif dimuat di dokumen dashboard agar preview akurat */}
       <link rel="stylesheet" href={fontPairHref(bundle.design.fontPair)} />
 
-      <div className="overflow-hidden rounded-xl border border-border bg-black">
+      {/* Tinggi dipatok ke panel, bukan diregangkan mengikuti tinggi kolom
+          editor — kalau diregangkan, sisa ruang muncul sebagai blok kosong. */}
+      <div
+        className="overflow-hidden rounded-xl border border-border bg-muted"
+        style={{ height: PREVIEW_HEIGHT }}
+      >
         <div
           className={cn(
-            'mx-auto h-[74dvh] overflow-y-auto overflow-x-hidden transition-[width] duration-300',
+            'mx-auto h-full overflow-y-auto overflow-x-hidden transition-[width] duration-300',
             device === 'mobile' ? 'w-[390px] max-w-full' : 'w-full',
           )}
         >

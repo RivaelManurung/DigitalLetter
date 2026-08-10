@@ -46,13 +46,18 @@ export function LetterView({ letter, preview = false }: Props) {
       data-preview={preview ? 'true' : undefined}
       style={designToCssVars(design)}
     >
-      <SurfaceLayer design={design} />
+      {/* Satu pembungkus untuk semua lapisan latar. Di halaman asli ia
+          `display: contents` (anak-anaknya tetap fixed); di preview ia jadi
+          panggung sticky setinggi panel. */}
+      <div className="stage-layers" aria-hidden="true">
+        <SurfaceLayer design={design} />
 
-      <ParticleField
-        kind={design.particles.kind}
-        density={design.particles.density}
-        speed={1 / design.motion.speed}
-      />
+        <ParticleField
+          kind={design.particles.kind}
+          density={design.particles.density}
+          speed={1 / design.motion.speed}
+        />
+      </div>
 
       {introSection && introContent && !preview && (
         <IntroGate
