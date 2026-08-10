@@ -8,7 +8,36 @@ import {
 } from '@/design/blocks/custom';
 import { cn, slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Field, Input, Select, Textarea } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
+/** Bungkus label + input yang seragam di seluruh penyusun field. */
+function Row({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label className="text-xs">{label}</Label>
+      {children}
+      {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
 
 /** Bentuk longgar saat disunting — divalidasi ketat di Server Action. */
 export type DraftLeaf = {
@@ -172,46 +201,49 @@ function LeafEditor({
   }
 
   return (
-    <div className="grid gap-2">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <Field label="Nama field">
+    <div className="grid gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Row label="Nama field">
           <Input
             value={field.label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Nama sponsor"
           />
-        </Field>
+        </Row>
 
-        <Field label="Jenis isian">
+        <Row label="Jenis isian">
           <Select
             value={field.kind}
-            onChange={(e) =>
-              onChange({ ...field, kind: e.target.value as CustomFieldKind })
-            }
+            onValueChange={(v) => onChange({ ...field, kind: v as CustomFieldKind })}
           >
-            {CUSTOM_FIELD_KINDS.map((kind) => (
-              <option key={kind} value={kind}>
-                {CUSTOM_FIELD_LABEL[kind]}
-              </option>
-            ))}
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CUSTOM_FIELD_KINDS.map((kind) => (
+                <SelectItem key={kind} value={kind}>
+                  {CUSTOM_FIELD_LABEL[kind]}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
-        </Field>
+        </Row>
       </div>
 
       {field.kind === 'select' && (
         <>
-          <label className="flex cursor-pointer items-center gap-2 text-xs">
-            <input
-              type="checkbox"
+          <div className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2">
+            <Label className="cursor-pointer text-xs font-normal">
+              Pakai daftar ikon bawaan (mawar, hati, bintang, …)
+            </Label>
+            <Switch
               checked={field.useGlyphs ?? false}
-              onChange={(e) => onChange({ ...field, useGlyphs: e.target.checked })}
-              className="h-3.5 w-3.5 accent-foreground"
+              onCheckedChange={(v) => onChange({ ...field, useGlyphs: v })}
             />
-            Pakai daftar ikon bawaan (mawar, hati, bintang, …)
-          </label>
+          </div>
 
           {!field.useGlyphs && (
-            <Field label="Pilihan" hint="Satu pilihan per baris">
+            <Row label="Pilihan" hint="Satu pilihan per baris">
               <Textarea
                 rows={3}
                 value={(field.options ?? []).join('\n')}
@@ -220,64 +252,70 @@ function LeafEditor({
                 }
                 placeholder={'Emas\nPerak\nPerunggu'}
               />
-            </Field>
+            </Row>
           )}
         </>
       )}
 
       {field.kind === 'number' && (
-        <div className="grid grid-cols-2 gap-2">
-          <Field label="Minimal">
+        <div className="grid grid-cols-2 gap-3">
+          <Row label="Minimal">
             <Input
               type="number"
               value={field.min ?? 0}
               onChange={(e) => onChange({ ...field, min: Number(e.target.value) || 0 })}
             />
-          </Field>
-          <Field label="Maksimal">
+          </Row>
+          <Row label="Maksimal">
             <Input
               type="number"
               value={field.max ?? 9999}
               onChange={(e) => onChange({ ...field, max: Number(e.target.value) || 0 })}
             />
-          </Field>
+          </Row>
         </div>
       )}
 
       {!compact && (
-        <div className="grid gap-2 sm:grid-cols-2">
-          <Field label="Nilai awal" hint="Terisi otomatis saat section ditambahkan">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Row label="Nilai awal" hint="Terisi otomatis saat section ditambahkan">
             <Input
               value={field.starter ?? ''}
               onChange={(e) => onChange({ ...field, starter: e.target.value })}
               placeholder={starterPlaceholder(field.kind)}
             />
-          </Field>
+          </Row>
 
-          <Field label="Lebar">
+          <Row label="Lebar">
             <Select
               value={field.span ?? 'full'}
-              onChange={(e) =>
-                onChange({ ...field, span: e.target.value as DraftLeaf['span'] })
+              onValueChange={(v) =>
+                onChange({ ...field, span: v as DraftLeaf['span'] })
               }
             >
-              <option value="full">Satu baris penuh</option>
-              <option value="half">Setengah</option>
-              <option value="third">Sepertiga</option>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full">Satu baris penuh</SelectItem>
+                <SelectItem value="half">Setengah</SelectItem>
+                <SelectItem value="third">Sepertiga</SelectItem>
+              </SelectContent>
             </Select>
-          </Field>
+          </Row>
         </div>
       )}
 
-      <Field label="Petunjuk" hint="Teks kecil di bawah isian — boleh kosong">
+      <Row label="Petunjuk" hint="Teks kecil di bawah isian — boleh kosong">
         <Input
           value={field.hint ?? ''}
           onChange={(e) => onChange({ ...field, hint: e.target.value })}
         />
-      </Field>
+      </Row>
 
       <p className="text-[10px] text-muted-foreground">
-        Kunci: <code>{field.key || '—'}</code>
+        Kunci:{' '}
+        <code className="rounded bg-muted px-1 py-0.5">{field.key || '—'}</code>
       </p>
     </div>
   );
@@ -303,15 +341,15 @@ function ListEditor({
 
   return (
     <div className="grid gap-2">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <Field label="Nama daftar">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Row label="Nama daftar">
           <Input
             value={field.label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Sponsor"
           />
-        </Field>
-        <Field label="Maksimal item">
+        </Row>
+        <Row label="Maksimal item">
           <Input
             type="number"
             min={1}
@@ -319,7 +357,7 @@ function ListEditor({
             value={field.max ?? 20}
             onChange={(e) => onChange({ ...field, max: Number(e.target.value) || 20 })}
           />
-        </Field>
+        </Row>
       </div>
 
       <div className="grid gap-1.5 rounded-lg bg-muted/50 p-2">

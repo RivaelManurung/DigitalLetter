@@ -1,123 +1,252 @@
 import Link from 'next/link';
-import { Blocks, Eye, LayoutTemplate, PenLine } from 'lucide-react';
-import { listLetters } from '@/lib/queries';
+import { ArrowRight, Blocks, Eye, FileText, LayoutTemplate, Mail, Users } from 'lucide-react';
+import {
+  getDashboardStats,
+  listLetterCards,
+  listRecentRsvp,
+} from '@/lib/queries';
 import { listTemplates } from '@/lib/actions/templates';
-import { formatDate } from '@/lib/utils';
-import { Badge, Card, EmptyState } from '@/components/ui/surface';
+import { formatRelative } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { NewLetterDialog } from './new-letter-dialog';
-import { LetterActions } from './letter-actions';
+import { PageHeader } from '@/components/dashboard/page-header';
+import { StatCard } from '@/components/dashboard/stat-card';
+import { LetterCardItem } from '@/components/dashboard/letters/letter-card';
+
+export const metadata = { title: 'Ikhtisar · Digital Letter' };
 
 export default async function DashboardPage() {
-  const [letters, templates] = await Promise.all([listLetters(), listTemplates()]);
+  const [stats, cards, recent, templates] = await Promise.all([
+    getDashboardStats(),
+    listLetterCards(),
+    listRecentRsvp(5),
+    listTemplates(),
+  ]);
+
+  const latest = cards.slice(0, 4);
 
   return (
-    <div className="grid gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="grid gap-1">
-          <h1 className="text-xl font-semibold tracking-tight">Surat</h1>
-          <p className="text-xs text-muted-foreground">
-            {letters.length} surat · konten, desain, dan publikasi diatur per surat.
-          </p>
-        </div>
+    <div className="grid gap-6">
+      <PageHeader
+        title="Ikhtisar"
+        description="Ringkasan seluruh surat, kunjungan, dan konfirmasi kehadiran."
+        action={<NewLetterDialog templates={templates} />}
+      />
 
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/dashboard/blocks"
-            className={buttonVariants({ variant: 'outline', size: 'sm' })}
-          >
-            <Blocks size={14} />
-            Jenis Section
-          </Link>
-          <Link
-            href="/dashboard/templates"
-            className={buttonVariants({ variant: 'outline', size: 'sm' })}
-          >
-            <LayoutTemplate size={14} />
-            Template
-          </Link>
-          <NewLetterDialog templates={templates} />
-        </div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          icon={Mail}
+          label="Total surat"
+          value={stats.total}
+          note={`${stats.published} terbit · ${stats.draft} draf`}
+        />
+        <StatCard
+          icon={Eye}
+          label="Total dibuka"
+          value={stats.views}
+          note="Akumulasi semua surat"
+        />
+        <StatCard
+          icon={Users}
+          label="Konfirmasi kehadiran"
+          value={stats.rsvpTotal}
+          note={
+            stats.rsvpTotal > 0
+              ? `${stats.rsvpYes} menyatakan hadir`
+              : 'Belum ada yang mengisi'
+          }
+        />
+        <StatCard
+          icon={Blocks}
+          label="Kustomisasi"
+          value={stats.customBlocks + stats.templates}
+          note={`${stats.customBlocks} jenis section · ${stats.templates} template`}
+        />
       </div>
 
-      {letters.length === 0 ? (
-        <EmptyState
-          title="Belum ada surat"
-          description="Buat surat pertama. Kamu akan langsung mendapat isi awal yang tinggal disunting, plus desain preset sebagai titik mulai."
-          action={<NewLetterDialog />}
-        />
-      ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {letters.map((row) => {
-            const swatch = row.design?.palette;
-            return (
-              <li key={row.id}>
-                <Card className="overflow-hidden transition-colors hover:border-ring">
-                  <div
-                    className="h-20 w-full"
-                    style={{
-                      background: swatch
-                        ? `linear-gradient(135deg, ${swatch.bgDeep}, ${swatch.bgSoft} 60%, ${swatch.accent})`
-                        : 'var(--muted)',
-                    }}
-                  />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <Card>
+          <CardHeader>
+            <CardTitle>Surat terbaru</CardTitle>
+            <CardDescription>Empat surat yang paling akhir disunting.</CardDescription>
+            <Link
+              href="/dashboard/letters"
+              className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+            >
+              Lihat semua
+              <ArrowRight size={13} />
+            </Link>
+          </CardHeader>
 
-                  <div className="grid gap-3 p-4">
-                    <div className="flex items-start justify-between gap-3">
+          <CardContent>
+            {latest.length === 0 ? (
+              <EmptyBlock
+                icon={FileText}
+                title="Belum ada surat"
+                note="Buat surat pertama — kamu langsung dapat isi awal yang tinggal disunting."
+              />
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {latest.map((row) => (
+                  <LetterCardItem key={row.id} letter={row} compact />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Konfirmasi terbaru</CardTitle>
+            <CardDescription>Dari semua surat yang punya section RSVP.</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {recent.length === 0 ? (
+              <EmptyBlock
+                icon={Users}
+                title="Belum ada konfirmasi"
+                note="Tambahkan section RSVP ke undangan, lalu terbitkan suratnya."
+              />
+            ) : (
+              <ul className="grid gap-3">
+                {recent.map((row, i) => (
+                  <li key={row.id} className="grid gap-1.5">
+                    {i > 0 && <Separator className="mb-1.5" />}
+
+                    <div className="flex items-start justify-between gap-2">
                       <div className="grid min-w-0 gap-0.5">
-                        <p className="truncate text-sm font-medium">{row.title}</p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          /l/{row.slug}
-                        </p>
+                        <span className="truncate text-sm font-medium">{row.name}</span>
+                        <Link
+                          href={`/dashboard/${row.letterId}`}
+                          className="truncate text-[11px] text-muted-foreground hover:underline"
+                        >
+                          {row.letterTitle}
+                        </Link>
                       </div>
-                      <Badge tone={row.status === 'published' ? 'success' : 'muted'}>
-                        {row.status === 'published' ? 'Terbit' : 'Draf'}
+
+                      <Badge
+                        variant={row.attendance === 'yes' ? 'default' : 'secondary'}
+                        className="shrink-0"
+                      >
+                        {row.attendance === 'yes'
+                          ? 'Hadir'
+                          : row.attendance === 'no'
+                            ? 'Tidak'
+                            : 'Ragu'}
                       </Badge>
                     </div>
 
-                    <dl className="flex items-center gap-4 text-[11px] text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Eye size={12} />
-                        <span>{row.viewCount} dibuka</span>
-                      </div>
-                      <span>Diubah {formatDate(row.updatedAt)}</span>
-                    </dl>
+                    {row.message && (
+                      <p className="line-clamp-2 text-xs text-muted-foreground">
+                        {row.message}
+                      </p>
+                    )}
 
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/dashboard/${row.id}`}
-                        className={cn(
-                          buttonVariants({ variant: 'subtle', size: 'sm' }),
-                          'flex-1',
-                        )}
-                      >
-                        <PenLine size={13} />
-                        Sunting
-                      </Link>
-                      {row.status === 'published' && (
-                        <a
-                          href={`/l/${row.slug}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={buttonVariants({ variant: 'outline', size: 'sm' })}
-                        >
-                          Lihat
-                        </a>
-                      )}
-                      <LetterActions
-                        letterId={row.id}
-                        title={row.title}
-                        recipientName={row.recipientName ?? ''}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatRelative(row.createdAt)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Kustomisasi</CardTitle>
+          <CardDescription>
+            Bikin jenis section sendiri, atau simpan surat jadi cetakan untuk
+            client berikutnya.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          <ShortcutCard
+            href="/dashboard/blocks"
+            icon={Blocks}
+            title="Jenis Section"
+            note={
+              stats.customBlocks > 0
+                ? `${stats.customBlocks} jenis section buatanmu`
+                : 'Belum ada — bikin yang pertama'
+            }
+          />
+          <ShortcutCard
+            href="/dashboard/templates"
+            icon={LayoutTemplate}
+            title="Template"
+            note={
+              stats.templates > 0
+                ? `${stats.templates} template + 6 bawaan`
+                : '6 template bawaan siap pakai'
+            }
+          />
+        </CardContent>
+      </Card>
     </div>
+  );
+}
+
+function EmptyBlock({
+  icon: Icon,
+  title,
+  note,
+}: {
+  icon: typeof FileText;
+  title: string;
+  note: string;
+}) {
+  return (
+    <div className="grid place-items-center gap-2 rounded-lg border border-dashed px-4 py-10 text-center">
+      <Icon size={20} className="text-muted-foreground" />
+      <p className="text-sm font-medium">{title}</p>
+      <p className="max-w-xs text-xs text-muted-foreground">{note}</p>
+    </div>
+  );
+}
+
+function ShortcutCard({
+  href,
+  icon: Icon,
+  title,
+  note,
+}: {
+  href: string;
+  icon: typeof Blocks;
+  title: string;
+  note: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/60"
+    >
+      <div className="flex items-center gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-muted">
+          <Icon size={16} />
+        </span>
+        <div className="grid gap-0.5">
+          <span className="text-sm font-medium">{title}</span>
+          <span className="text-[11px] text-muted-foreground">{note}</span>
+        </div>
+      </div>
+
+      <ArrowRight
+        size={15}
+        className="shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+      />
+    </Link>
   );
 }

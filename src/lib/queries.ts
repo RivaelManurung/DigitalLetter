@@ -1,7 +1,14 @@
 import 'server-only';
-import { asc, desc, eq } from 'drizzle-orm';
+import { asc, count, desc, eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { customBlock, letter, media, section } from '@/db/schema';
+import {
+  customBlock,
+  letter,
+  letterTemplate,
+  media,
+  rsvp,
+  section,
+} from '@/db/schema';
 import { getPreset } from '@/design/presets';
 import type { DesignSpec, LetterBundle, MediaRecord, SectionRecord } from '@/design/types';
 import { publicUrl } from './storage';
@@ -139,4 +146,116 @@ export async function listLetters() {
     })
     .from(letter)
     .orderBy(desc(letter.updatedAt));
+}
+
+export type LetterCard = Awaited<ReturnType<typeof listLetters>>[number] & {
+  sectionCount: number;
+  rsvpCount: number;
+};
+
+/**
+ * Daftar surat lengkap dengan ringkasannya. Jumlah section & RSVP diambil
+ * lewat dua query agregat, bukan satu query per surat — jadi bebannya tetap
+ * konstan berapa pun banyaknya surat.
+ */
+export async function listLetterCards(): Promise<LetterCard[]> {
+  const [rows, sectionCounts, rsvpCounts] = await Promise.all([
+    listLetters(),
+    db
+      .select({ letterId: section.letterId, n: count() })
+      .from(section)
+      .groupBy(section.letterId),
+    db
+      .select({ letterId: rsvp.letterId, n: count() })
+      .from(rsvp)
+      .groupBy(rsvp.letterId),
+  ]);
+
+  const sections = new Map(sectionCounts.map((r) => [r.letterId, Number(r.n)]));
+  const rsvps = new Map(rsvpCounts.map((r) => [r.letterId, Number(r.n)]));
+
+  return rows.map((row) => ({
+    ...row,
+    sectionCount: sections.get(row.id) ?? 0,
+    rsvpCount: rsvps.get(row.id) ?? 0,
+  }));
+}
+
+export type DashboardStats = {
+  total: number;
+  published: number;
+  draft: number;
+  views: number;
+  rsvpTotal: number;
+  rsvpYes: number;
+  customBlocks: number;
+  templates: number;
+};
+
+/**
+ * Semua angka dihitung DI DATABASE, bukan dengan menarik seluruh baris lalu
+ * menjumlahkannya di JavaScript. Bedanya nyata: satu baris hasil per query
+ * alih-alih ribuan baris melintasi jaringan — dan tanpa ini Supabase
+ * memutus koneksi dengan `statement timeout` begitu datanya bertambah.
+ */
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const [letters, rsvpRow, blocks, templates] = await Promise.all([
+    db
+      .select({
+        total: count(),
+        published: sql<number>`count(*) filter (where ${letter.status} = 'published')`,
+        views: sql<number>`coalesce(sum(${letter.viewCount}), 0)`,
+      })
+      .from(letter),
+    db
+      .select({
+        total: count(),
+        yes: sql<number>`count(*) filter (where ${rsvp.attendance} = 'yes')`,
+      })
+      .from(rsvp),
+    db.select({ n: count() }).from(customBlock),
+    db.select({ n: count() }).from(letterTemplate),
+  ]);
+
+  const total = Number(letters[0]?.total ?? 0);
+  const published = Number(letters[0]?.published ?? 0);
+
+  return {
+    total,
+    published,
+    draft: total - published,
+    views: Number(letters[0]?.views ?? 0),
+    rsvpTotal: Number(rsvpRow[0]?.total ?? 0),
+    rsvpYes: Number(rsvpRow[0]?.yes ?? 0),
+    customBlocks: Number(blocks[0]?.n ?? 0),
+    templates: Number(templates[0]?.n ?? 0),
+  };
+}
+
+export type RecentRsvp = {
+  id: string;
+  name: string;
+  attendance: 'yes' | 'no' | 'maybe';
+  message: string | null;
+  createdAt: Date;
+  letterTitle: string;
+  letterId: string;
+};
+
+/** Konfirmasi terbaru dari semua surat — untuk kartu aktivitas di ikhtisar. */
+export async function listRecentRsvp(limit = 6): Promise<RecentRsvp[]> {
+  return db
+    .select({
+      id: rsvp.id,
+      name: rsvp.name,
+      attendance: rsvp.attendance,
+      message: rsvp.message,
+      createdAt: rsvp.createdAt,
+      letterTitle: letter.title,
+      letterId: letter.id,
+    })
+    .from(rsvp)
+    .innerJoin(letter, eq(rsvp.letterId, letter.id))
+    .orderBy(desc(rsvp.createdAt))
+    .limit(limit);
 }

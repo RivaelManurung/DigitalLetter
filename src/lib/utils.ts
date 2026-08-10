@@ -63,13 +63,7 @@ export function parseLocalDateTime(input: string): Date | null {
   }
 
   const [, y, m, d, hh = '0', mm = '0'] = match;
-  const date = new Date(
-    Number(y),
-    Number(m) - 1,
-    Number(d),
-    Number(hh),
-    Number(mm),
-  );
+  const date = new Date(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm));
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
@@ -105,4 +99,26 @@ export function formatEventRange(start: string, end: string): string {
   if (!to) return `${fromText} WIB`;
 
   return `${fromText} – ${TIME_FMT.format(to).replace('.', ':')} WIB`;
+}
+
+/** "3 menit lalu", "2 hari lalu" — untuk daftar aktivitas di dashboard. */
+export function formatRelative(date: Date | string | null): string {
+  if (!date) return '—';
+
+  const then = new Date(date).getTime();
+  const diff = Date.now() - then;
+
+  if (!Number.isFinite(diff)) return '—';
+  if (diff < 60_000) return 'baru saja';
+
+  const minutes = Math.floor(diff / 60_000);
+  if (minutes < 60) return `${minutes} menit lalu`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} jam lalu`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} hari lalu`;
+
+  return formatDate(date);
 }

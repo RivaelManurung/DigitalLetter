@@ -2,11 +2,19 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Image as ImageIcon, Layers, Palette, Send } from 'lucide-react';
+import {
+  ArrowLeft,
+  ExternalLink,
+  Image as ImageIcon,
+  Layers,
+  Palette,
+  Send,
+} from 'lucide-react';
 import { createRegistry } from '@/design/blocks/resolve';
 import type { DesignSpec, LetterBundle, SectionRecord } from '@/design/types';
-import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ContentPanel } from './panels/content-panel';
 import { DesignPanel } from './panels/design-panel';
 import { MediaPanel } from './panels/media-panel';
@@ -68,39 +76,55 @@ export function EditorShell({
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <Link
-            href="/dashboard"
-            className={buttonVariants({ variant: 'ghost', size: 'icon' })}
+            href="/dashboard/letters"
+            className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
             aria-label="Kembali ke daftar surat"
           >
             <ArrowLeft size={15} />
           </Link>
-          <div className="grid gap-0.5">
-            <h1 className="text-sm font-semibold">{meta.title}</h1>
-            <p className="text-xs text-muted-foreground">/l/{meta.slug}</p>
+
+          <div className="grid min-w-0 gap-0.5">
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-sm font-semibold">{meta.title}</h1>
+              <Badge
+                variant={meta.status === 'published' ? 'default' : 'secondary'}
+                className="shrink-0"
+              >
+                {meta.status === 'published' ? 'Terbit' : 'Draf'}
+              </Badge>
+            </div>
+            <p className="truncate font-mono text-[11px] text-muted-foreground">
+              /l/{meta.slug}
+            </p>
           </div>
         </div>
 
-        <nav className="flex gap-1 rounded-lg border border-border p-1">
-          {TABS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setTab(id)}
-              aria-current={tab === id}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
-                tab === id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted',
-              )}
+        <div className="flex items-center gap-2">
+          {meta.status === 'published' && (
+            <a
+              href={`/l/${meta.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className={buttonVariants({ variant: 'outline', size: 'sm' })}
             >
-              <Icon size={13} />
-              {label}
-            </button>
-          ))}
-        </nav>
+              <ExternalLink size={13} />
+              Lihat
+            </a>
+          )}
+
+          <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
+            <TabsList>
+              {TABS.map(({ id, label, icon: Icon }) => (
+                <TabsTrigger key={id} value={id}>
+                  <Icon size={13} />
+                  <span className="hidden sm:inline">{label}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,470px)_minmax(0,1fr)]">

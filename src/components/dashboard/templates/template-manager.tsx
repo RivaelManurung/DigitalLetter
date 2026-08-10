@@ -7,7 +7,15 @@ import { toast } from 'sonner';
 import { deleteTemplate } from '@/lib/actions/templates';
 import type { OccasionRow } from '@/lib/occasion-list';
 import type { TemplateRow } from '@/lib/template-types';
-import { Card, CardHeader, EmptyState } from '@/components/ui/surface';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 type Props = {
   templates: TemplateRow[];
@@ -41,75 +49,94 @@ export function TemplateManager({ templates, occasions }: Props) {
   return (
     <div className="grid gap-3">
       <Card>
-        <CardHeader
-          title="Template buatanmu"
-          description='Dibuat lewat menu "…" pada kartu surat → Simpan jadi template.'
-        />
+        <CardHeader>
+          <CardTitle>Template buatanmu</CardTitle>
+          <CardDescription>
+            Dibuat lewat menu “…” pada kartu surat → Simpan jadi template.
+          </CardDescription>
+        </CardHeader>
 
-        <div className="p-3">
+        <CardContent>
           {templates.length === 0 ? (
-            <EmptyState
-              title="Belum ada template buatanmu"
-              description='Buka salah satu surat yang sudah jadi, klik menu "…" di kartunya, lalu pilih "Simpan jadi template".'
-            />
+            <div className="grid place-items-center gap-2 rounded-lg border border-dashed px-6 py-12 text-center">
+              <p className="text-sm font-medium">Belum ada template buatanmu</p>
+              <p className="max-w-sm text-xs text-muted-foreground">
+                Buka salah satu surat yang sudah jadi, klik menu “…” di kartunya,
+                lalu pilih “Simpan jadi template”.
+              </p>
+            </div>
           ) : (
-            <ul className="grid gap-2">
+            <ul className="grid gap-2 sm:grid-cols-2">
               {templates.map((row) => (
                 <li
                   key={row.id}
-                  className="flex items-start justify-between gap-3 rounded-lg border border-border p-3"
+                  className="flex items-start justify-between gap-3 rounded-lg border p-3"
                 >
-                  <div className="grid gap-0.5">
-                    <span className="text-sm font-medium">{row.label}</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {row.sections.length} section
-                      {row.design && ' · desain ikut tersimpan'}
-                    </span>
+                  <div className="grid min-w-0 gap-1">
+                    <span className="truncate text-sm font-medium">{row.label}</span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge variant="secondary">{row.sections.length} section</Badge>
+                      {row.design && (
+                        <span className="text-[11px] text-muted-foreground">
+                          desain ikut tersimpan
+                        </span>
+                      )}
+                    </div>
                     {row.note && (
-                      <span className="text-[11px] text-muted-foreground">{row.note}</span>
+                      <span className="line-clamp-2 text-[11px] text-muted-foreground">
+                        {row.note}
+                      </span>
                     )}
                   </div>
 
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
                     onClick={() => remove(row)}
                     disabled={pending}
                     aria-label={`Hapus ${row.label}`}
-                    className="shrink-0 rounded p-1.5 text-muted-foreground hover:bg-muted hover:text-danger disabled:opacity-40"
+                    className="shrink-0 hover:text-destructive"
                   >
                     <Trash2 size={13} />
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
           )}
-        </div>
+        </CardContent>
       </Card>
 
       <Card>
-        <CardHeader
-          title="Template bawaan"
-          description="Selalu tersedia dan tidak bisa dihapus."
-        />
+        <CardHeader>
+          <CardTitle>Template bawaan</CardTitle>
+          <CardDescription>Selalu tersedia dan tidak bisa dihapus.</CardDescription>
+        </CardHeader>
 
-        <ul className="grid gap-2 p-3">
-          {occasions.map((row) => (
-            <li
-              key={row.id}
-              className="flex items-start justify-between gap-3 rounded-lg border border-border p-3"
-            >
-              <div className="grid gap-0.5">
-                <span className="text-sm font-medium">{row.label}</span>
-                <span className="text-[11px] text-muted-foreground">
-                  {row.sectionCount} section · preset {row.preset}
-                </span>
-                <span className="text-[11px] text-muted-foreground">{row.note}</span>
-              </div>
+        <CardContent>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {occasions.map((row) => (
+              <li
+                key={row.id}
+                className="flex items-start justify-between gap-3 rounded-lg border p-3"
+              >
+                <div className="grid min-w-0 gap-1">
+                  <span className="truncate text-sm font-medium">{row.label}</span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <Badge variant="secondary">{row.sectionCount} section</Badge>
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {row.preset}
+                    </span>
+                  </div>
+                  <span className="line-clamp-2 text-[11px] text-muted-foreground">
+                    {row.note}
+                  </span>
+                </div>
 
-              <Lock size={13} className="mt-1 shrink-0 text-muted-foreground" />
-            </li>
-          ))}
-        </ul>
+                <Lock size={13} className="mt-1 shrink-0 text-muted-foreground" />
+              </li>
+            ))}
+          </ul>
+        </CardContent>
       </Card>
     </div>
   );

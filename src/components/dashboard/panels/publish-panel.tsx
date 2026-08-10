@@ -218,7 +218,7 @@ export function PublishPanel({ meta }: { meta: LetterMeta }) {
       <Card>
         <CardHeader title="Zona bahaya" />
         <div className="p-3">
-          <Button variant="danger" onClick={removeLetter} disabled={pending}>
+          <Button variant="destructive" onClick={removeLetter} disabled={pending}>
             <Trash2 size={13} />
             Hapus surat ini
           </Button>

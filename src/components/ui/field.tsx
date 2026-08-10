@@ -1,22 +1,45 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { Input as ShadInput } from './input';
+import { Textarea as ShadTextarea } from './textarea';
+import { Label } from './label';
 
-const base =
-  'w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:opacity-50';
+/**
+ * Lapisan tipis di atas komponen shadcn.
+ *
+ * Panel editor surat memakai API lama (`<Field label>`, `<Select>` dengan
+ * `<option>`) di banyak tempat. Berkas ini menjaga API itu tetap jalan
+ * sambil memakai tampilan shadcn di baliknya — jadi tidak ada panel yang
+ * perlu ditulis ulang, dan tampilannya tetap seragam.
+ */
 
-export function Input({ className, ...props }: ComponentProps<'input'>) {
-  return <input className={cn(base, 'h-9', className)} {...props} />;
+export function Input(props: ComponentProps<'input'>) {
+  return <ShadInput {...props} />;
 }
 
-export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
-  return (
-    <textarea className={cn(base, 'min-h-24 resize-y leading-relaxed', className)} {...props} />
-  );
+export function Textarea(props: ComponentProps<'textarea'>) {
+  return <ShadTextarea {...props} />;
 }
 
+/**
+ * Select native. Sengaja BUKAN Select shadcn: yang ini menerima `<option>`
+ * sebagai children dan `onChange` ala DOM, persis seperti pemakaian di panel
+ * editor. Gaya visualnya disamakan dengan Input.
+ */
 export function Select({ className, children, ...props }: ComponentProps<'select'>) {
   return (
-    <select className={cn(base, 'h-9 cursor-pointer', className)} {...props}>
+    <select
+      data-slot="select-native"
+      className={cn(
+        'flex h-8 w-full min-w-0 cursor-pointer appearance-none rounded-lg border border-input bg-background bg-clip-padding px-2.5 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none',
+        'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
+        'disabled:cursor-not-allowed disabled:opacity-50',
+        'aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20',
+        'dark:bg-input/30',
+        className,
+      )}
+      {...props}
+    >
       {children}
     </select>
   );
@@ -34,24 +57,28 @@ type FieldProps = {
 export function Field({ label, hint, error, htmlFor, children, className }: FieldProps) {
   return (
     <div className={cn('grid gap-1.5', className)}>
-      <label htmlFor={htmlFor} className="text-xs font-medium text-muted-foreground">
+      <Label htmlFor={htmlFor} className="text-xs text-muted-foreground">
         {label}
-      </label>
+      </Label>
       {children}
       {hint && !error && <p className="text-[11px] text-muted-foreground">{hint}</p>}
-      {error && <p className="text-[11px] text-danger">{error}</p>}
+      {error && <p className="text-[11px] text-destructive">{error}</p>}
     </div>
   );
 }
 
-type SliderProps = ComponentProps<'input'> & { label: string; value: number; suffix?: string };
+type SliderProps = ComponentProps<'input'> & {
+  label: string;
+  value: number;
+  suffix?: string;
+};
 
 export function Slider({ label, value, suffix = '', className, ...props }: SliderProps) {
   return (
     <div className={cn('grid gap-1.5', className)}>
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-muted-foreground">{label}</label>
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <Label className="text-xs text-muted-foreground">{label}</Label>
+        <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
           {value}
           {suffix}
         </span>
@@ -59,7 +86,7 @@ export function Slider({ label, value, suffix = '', className, ...props }: Slide
       <input
         type="range"
         value={value}
-        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-foreground"
+        className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-border accent-primary"
         {...props}
       />
     </div>

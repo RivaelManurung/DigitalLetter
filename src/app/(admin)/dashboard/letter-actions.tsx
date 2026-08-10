@@ -7,7 +7,22 @@ import { toast } from 'sonner';
 import { duplicateLetter, saveLetterAsTemplate } from '@/lib/actions/templates';
 import { slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Field, Input } from '@/components/ui/field';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 type Props = {
   letterId: string;
@@ -27,19 +42,17 @@ type Mode = 'duplicate' | 'template' | null;
 export function LetterActions({ letterId, title, recipientName }: Props) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>(null);
-  const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
 
   const [name, setName] = useState('');
   const [recipient, setRecipient] = useState('');
   const [slug, setSlug] = useState('');
 
-  function begin(next: Mode) {
-    setOpen(false);
-    setMode(next);
+  function begin(next: Exclude<Mode, null>) {
     setName(next === 'duplicate' ? `${title} (salinan)` : title);
     setRecipient(recipientName);
     setSlug('');
+    setMode(next);
   }
 
   function submit(event: React.FormEvent) {
@@ -84,131 +97,95 @@ export function LetterActions({ letterId, title, recipientName }: Props) {
   }
 
   const effectiveSlug = slug || slugify(recipient || name);
+  const isDuplicate = mode === 'duplicate';
 
   return (
     <>
-      <div className="relative">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Aksi lain"
-          aria-expanded={open}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={<Button variant="outline" size="icon-sm" aria-label="Aksi lain" />}
         >
           <MoreHorizontal size={14} />
-        </Button>
+        </DropdownMenuTrigger>
 
-        {open && (
-          <>
-            {/* Klik di luar menutup menu. */}
-            <button
-              type="button"
-              aria-hidden="true"
-              tabIndex={-1}
-              className="fixed inset-0 z-10 cursor-default"
-              onClick={() => setOpen(false)}
-            />
-            <div className="absolute right-0 z-20 mt-1 grid w-52 gap-0.5 rounded-lg border border-border bg-background p-1 shadow-lg">
-              <MenuItem onClick={() => begin('duplicate')}>
-                <Copy size={13} />
-                Duplikat surat
-              </MenuItem>
-              <MenuItem onClick={() => begin('template')}>
-                <LayoutTemplate size={13} />
-                Simpan jadi template
-              </MenuItem>
-            </div>
-          </>
-        )}
-      </div>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuItem onClick={() => begin('duplicate')}>
+            <Copy size={13} />
+            Duplikat surat
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => begin('template')}>
+            <LayoutTemplate size={13} />
+            Simpan jadi template
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {mode && (
-        <div
-          className="fixed inset-0 z-50 grid place-items-center bg-black/45 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={mode === 'duplicate' ? 'Duplikat surat' : 'Simpan jadi template'}
-          onClick={(e) => e.target === e.currentTarget && setMode(null)}
-        >
-          <form
-            onSubmit={submit}
-            className="grid w-full max-w-md gap-4 rounded-xl border border-border bg-background p-5"
-          >
-            <div className="grid gap-1">
-              <h2 className="text-sm font-semibold">
-                {mode === 'duplicate' ? 'Duplikat surat' : 'Simpan jadi template'}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {mode === 'duplicate'
+      <Dialog open={mode !== null} onOpenChange={(open) => !open && setMode(null)}>
+        <DialogContent className="sm:max-w-md">
+          <form onSubmit={submit} className="grid gap-4">
+            <DialogHeader>
+              <DialogTitle>
+                {isDuplicate ? 'Duplikat surat' : 'Simpan jadi template'}
+              </DialogTitle>
+              <DialogDescription>
+                {isDuplicate
                   ? 'Salinan berisi semua section & desainnya, dimulai sebagai draf. Foto tidak ikut tersalin.'
                   : 'Template muncul di dialog "Surat baru". Mengubah template nanti tidak mengubah surat yang sudah ada.'}
-              </p>
-            </div>
+              </DialogDescription>
+            </DialogHeader>
 
-            <Field label={mode === 'duplicate' ? 'Judul surat baru' : 'Nama template'}>
+            <div className="grid gap-1.5">
+              <Label htmlFor="la-name">
+                {isDuplicate ? 'Judul surat baru' : 'Nama template'}
+              </Label>
               <Input
+                id="la-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
                 autoFocus
               />
-            </Field>
+            </div>
 
-            {mode === 'duplicate' && (
+            {isDuplicate && (
               <>
-                <Field label="Nama penerima">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="la-recipient">Nama penerima</Label>
                   <Input
+                    id="la-recipient"
                     value={recipient}
                     onChange={(e) => setRecipient(e.target.value)}
                   />
-                </Field>
+                </div>
 
-                <Field
-                  label="Slug"
-                  hint={
-                    effectiveSlug
-                      ? `Tautan: /l/${effectiveSlug}`
-                      : 'Dibuat otomatis dari nama penerima'
-                  }
-                >
+                <div className="grid gap-1.5">
+                  <Label htmlFor="la-slug">Slug</Label>
                   <Input
+                    id="la-slug"
                     value={slug}
                     onChange={(e) => setSlug(slugify(e.target.value))}
                     placeholder={slugify(recipient || name)}
                   />
-                </Field>
+                  <p className="text-[11px] text-muted-foreground">
+                    {effectiveSlug
+                      ? `Tautan: /l/${effectiveSlug}`
+                      : 'Dibuat otomatis dari nama penerima'}
+                  </p>
+                </div>
               </>
             )}
 
-            <div className="mt-1 flex justify-end gap-2">
+            <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setMode(null)}>
                 Batal
               </Button>
               <Button type="submit" disabled={pending || !name.trim()}>
-                {pending ? 'Memproses…' : mode === 'duplicate' ? 'Duplikat' : 'Simpan'}
+                {pending ? 'Memproses…' : isDuplicate ? 'Duplikat' : 'Simpan'}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </>
-  );
-}
-
-function MenuItem({
-  onClick,
-  children,
-}: {
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-muted"
-    >
-      {children}
-    </button>
   );
 }

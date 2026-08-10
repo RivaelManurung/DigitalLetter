@@ -9,7 +9,18 @@ import { createLetter } from '@/lib/actions/letter';
 import type { TemplateRow } from '@/lib/template-types';
 import { cn, slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Field, Input } from '@/components/ui/field';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { PresetPicker } from '@/components/dashboard/preset-picker';
 
 /** Pilihan acara: occasion bawaan atau template bikinan sendiri. */
@@ -72,145 +83,154 @@ export function NewLetterDialog({ templates = [] }: { templates?: TemplateRow[] 
     });
   }
 
-  if (!open) {
-    return (
-      <Button onClick={() => setOpen(true)}>
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button />}>
         <Plus size={15} />
         Surat baru
-      </Button>
-    );
-  }
+      </DialogTrigger>
 
-  return (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center bg-black/45 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Buat surat baru"
-      onClick={(e) => e.target === e.currentTarget && setOpen(false)}
-    >
-      <form
-        onSubmit={submit}
-        className="grid w-full max-w-lg gap-4 rounded-xl border border-border bg-background p-5"
-      >
-        <div className="grid gap-1">
-          <h2 className="text-sm font-semibold">Surat baru</h2>
-          <p className="text-xs text-muted-foreground">
-            Pilih acaranya — section awal beserta teksnya dibuatkan, tinggal disunting.
-          </p>
-        </div>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
+        <form onSubmit={submit} className="grid gap-4">
+          <DialogHeader>
+            <DialogTitle>Surat baru</DialogTitle>
+            <DialogDescription>
+              Pilih acaranya — section awal beserta teksnya dibuatkan, tinggal
+              disunting.
+            </DialogDescription>
+          </DialogHeader>
 
-        <Field label="Acara" hint={note}>
           <div className="grid gap-2">
+            <Label>Acara</Label>
+
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
-              {OCCASION_IDS.map((id) => {
-                const active = choice.kind === 'occasion' && choice.id === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setChoice({ kind: 'occasion', id })}
-                    aria-pressed={active}
-                    className={cn(
-                      'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
-                      active
-                        ? 'border-foreground bg-muted font-medium'
-                        : 'border-border text-muted-foreground hover:bg-muted',
-                    )}
-                  >
-                    {OCCASIONS[id].label}
-                    <span className="mt-0.5 block text-[10px] opacity-70">
-                      {OCCASIONS[id].sections.length} section
-                    </span>
-                  </button>
-                );
-              })}
+              {OCCASION_IDS.map((id) => (
+                <ChoiceButton
+                  key={id}
+                  active={choice.kind === 'occasion' && choice.id === id}
+                  label={OCCASIONS[id].label}
+                  meta={`${OCCASIONS[id].sections.length} section`}
+                  onClick={() => setChoice({ kind: 'occasion', id })}
+                />
+              ))}
             </div>
 
             {templates.length > 0 && (
               <>
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                  Template buatanmu
-                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <Separator className="flex-1" />
+                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Template buatanmu
+                  </span>
+                  <Separator className="flex-1" />
+                </div>
+
                 <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
-                  {templates.map((template) => {
-                    const active =
-                      choice.kind === 'template' && choice.id === template.id;
-                    return (
-                      <button
-                        key={template.id}
-                        type="button"
-                        onClick={() => setChoice({ kind: 'template', id: template.id })}
-                        aria-pressed={active}
-                        className={cn(
-                          'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
-                          active
-                            ? 'border-foreground bg-muted font-medium'
-                            : 'border-border text-muted-foreground hover:bg-muted',
-                        )}
-                      >
-                        {template.label}
-                        <span className="mt-0.5 block text-[10px] opacity-70">
-                          {template.sections.length} section
-                        </span>
-                      </button>
-                    );
-                  })}
+                  {templates.map((template) => (
+                    <ChoiceButton
+                      key={template.id}
+                      active={choice.kind === 'template' && choice.id === template.id}
+                      label={template.label}
+                      meta={`${template.sections.length} section`}
+                      onClick={() => setChoice({ kind: 'template', id: template.id })}
+                    />
+                  ))}
                 </div>
               </>
             )}
+
+            <p className="text-[11px] text-muted-foreground">{note}</p>
           </div>
-        </Field>
 
-        <Field label="Judul" htmlFor="title">
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Surat untuk Bila"
-            required
-            autoFocus
-          />
-        </Field>
+          <Separator />
 
-        <Field label="Nama penerima" htmlFor="recipient">
-          <Input
-            id="recipient"
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
-            placeholder="Bila"
-          />
-        </Field>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
+              <Label htmlFor="nl-title">Judul</Label>
+              <Input
+                id="nl-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Surat untuk Bila"
+                required
+              />
+            </div>
 
-        <Field
-          label="Slug"
-          htmlFor="slug"
-          hint={effectiveSlug ? `Tautan: /l/${effectiveSlug}` : 'Dibuat otomatis dari nama penerima'}
-        >
-          <Input
-            id="slug"
-            value={slug}
-            onChange={(e) => setSlug(slugify(e.target.value))}
-            placeholder={slugify(recipient || title) || 'untuk-bila'}
-          />
-        </Field>
+            <div className="grid gap-1.5">
+              <Label htmlFor="nl-recipient">Nama penerima</Label>
+              <Input
+                id="nl-recipient"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                placeholder="Bila"
+              />
+            </div>
+          </div>
 
-        <Field
-          label="Desain awal"
-          hint={preset ? undefined : 'Mengikuti pilihan acara di atas'}
-        >
-          <PresetPicker value={effectivePreset} onChange={setPreset} />
-        </Field>
+          <div className="grid gap-1.5">
+            <Label htmlFor="nl-slug">Slug</Label>
+            <Input
+              id="nl-slug"
+              value={slug}
+              onChange={(e) => setSlug(slugify(e.target.value))}
+              placeholder={slugify(recipient || title) || 'untuk-bila'}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              {effectiveSlug
+                ? `Tautan: /l/${effectiveSlug}`
+                : 'Dibuat otomatis dari nama penerima'}
+            </p>
+          </div>
 
-        <div className="mt-1 flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-            Batal
-          </Button>
-          <Button type="submit" disabled={pending || !title.trim()}>
-            {pending ? 'Membuat…' : 'Buat surat'}
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div className="grid gap-1.5">
+            <Label>Desain awal</Label>
+            <PresetPicker value={effectivePreset} onChange={setPreset} />
+            {!preset && (
+              <p className="text-[11px] text-muted-foreground">
+                Mengikuti pilihan acara di atas
+              </p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+              Batal
+            </Button>
+            <Button type="submit" disabled={pending || !title.trim()}>
+              {pending ? 'Membuat…' : 'Buat surat'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChoiceButton({
+  active,
+  label,
+  meta,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  meta: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
+        active
+          ? 'border-primary bg-muted font-medium'
+          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+      )}
+    >
+      <span className="line-clamp-1">{label}</span>
+      <span className="mt-0.5 block text-[10px] opacity-70">{meta}</span>
+    </button>
   );
 }

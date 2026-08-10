@@ -164,8 +164,15 @@ Tidak perlu migration database — konten disimpan sebagai JSONB.
 | `npm run build` | Build produksi |
 | `npm run typecheck` | Cek tipe tanpa emit |
 | `npm run lint` | ESLint |
-| `npm run db:push` | Terapkan schema ke database |
-| `npm run db:generate` | Buat file migration SQL |
+| `npm run db:generate` | Buat file migration SQL dari perubahan schema |
+| `npm run db:migrate` | **Terapkan migration ke database** — pakai ini |
+| `npm run db:push` | Sinkron langsung tanpa migration (lihat catatan) |
 | `npm run db:seed` | Buat/perbarui akun admin |
 | `npm run db:studio` | Buka Drizzle Studio |
+
+> **Catatan soal `db:push`.** Pada drizzle-kit 0.31.10 perintah ini gagal saat
+> menarik schema dari Postgres (`TypeError: Cannot read properties of undefined
+> (reading 'replace')` di pemeriksaan CHECK constraint) dan tidak jadi mengubah
+> apa pun. Alurnya: `db:generate` → `db:migrate`. Berkas migration yang
+> tergenerate di `drizzle/` adalah sumber kebenarannya.
 # DigitalLetter
