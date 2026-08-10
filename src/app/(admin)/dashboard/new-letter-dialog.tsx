@@ -41,6 +41,10 @@ export function NewLetterDialog() {
 
       toast.success('Surat dibuat');
       setOpen(false);
+      // refresh() sebelum push: tanpa ini, daftar surat yang sudah tersimpan
+      // di router cache klien tetap menampilkan keadaan lama saat user
+      // menekan tombol Back.
+      router.refresh();
       router.push(`/dashboard/${result.data!.id}`);
     });
   }

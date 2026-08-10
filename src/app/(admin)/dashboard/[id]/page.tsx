@@ -1,8 +1,5 @@
 import { notFound } from 'next/navigation';
-import { eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { letter } from '@/db/schema';
-import { getLetterBundleById } from '@/lib/queries';
+import { getEditorData } from '@/lib/queries';
 import { EditorShell } from '@/components/dashboard/editor-shell';
 
 type Params = { params: Promise<{ id: string }> };
@@ -10,26 +7,10 @@ type Params = { params: Promise<{ id: string }> };
 export default async function EditorPage({ params }: Params) {
   const { id } = await params;
 
-  const [row] = await db
-    .select({
-      id: letter.id,
-      slug: letter.slug,
-      title: letter.title,
-      recipientName: letter.recipientName,
-      status: letter.status,
-      viewCount: letter.viewCount,
-      publishedAt: letter.publishedAt,
-      opensAt: letter.opensAt,
-      hasPassword: letter.passwordHash,
-    })
-    .from(letter)
-    .where(eq(letter.id, id))
-    .limit(1);
+  const data = await getEditorData(id);
+  if (!data) notFound();
 
-  if (!row) notFound();
-
-  const bundle = await getLetterBundleById(id);
-  if (!bundle) notFound();
+  const { row, bundle } = data;
 
   return (
     <EditorShell
@@ -42,7 +23,7 @@ export default async function EditorPage({ params }: Params) {
         viewCount: row.viewCount,
         publishedAt: row.publishedAt?.toISOString() ?? null,
         opensAt: row.opensAt?.toISOString() ?? null,
-        hasPassword: Boolean(row.hasPassword),
+        hasPassword: Boolean(row.passwordHash),
       }}
       bundle={bundle}
     />

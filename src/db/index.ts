@@ -21,8 +21,12 @@ function connect(): PostgresJsDatabase<typeof schema> {
 
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
+    // Pesan dibedakan: saat deploy, menyuruh orang membuat .env.local
+    // justru menyesatkan — file itu tidak pernah ikut ter-deploy.
     throw new Error(
-      'DATABASE_URL belum diset. Salin .env.example menjadi .env.local lalu isi dari Supabase → Project Settings → Database.',
+      process.env.VERCEL
+        ? 'DATABASE_URL belum diset di Vercel. Buka Project → Settings → Environment Variables, tambahkan untuk environment Production/Preview/Development, lalu Redeploy (perubahan env tidak berlaku pada deployment lama).'
+        : 'DATABASE_URL belum diset. Salin .env.example menjadi .env.local lalu isi dari Supabase → Project Settings → Database.',
     );
   }
 
