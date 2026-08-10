@@ -6,12 +6,14 @@ import { toast } from 'sonner';
 import { FONT_PAIRS } from '@/design/fonts';
 import { getPreset } from '@/design/presets';
 import {
+  DEFAULT_VARIANTS,
+  SECTION_LABEL,
   SECTION_TYPES,
   SECTION_VARIANTS,
   type DesignSpec,
   type Palette,
-  type SectionType,
 } from '@/design/types';
+import { variantLabel } from '@/design/variant-labels';
 import { updateDesign } from '@/lib/actions/letter';
 import { extractPalette } from '@/lib/palette';
 import { Button } from '@/components/ui/button';
@@ -34,21 +36,6 @@ const PALETTE_SLOTS: { key: keyof Palette; label: string }[] = [
   { key: 'text', label: 'Teks' },
   { key: 'textMuted', label: 'Teks redup' },
 ];
-
-const VARIANT_LABEL: Record<string, string> = {
-  gift: 'Kotak kado', envelope: 'Amplop', curtain: 'Tirai',
-  centered: 'Terpusat', split: 'Terbelah', editorial: 'Editorial',
-  glass: 'Kaca', paper: 'Kertas', minimal: 'Minimal',
-  grid: 'Grid', bento: 'Bento', numbered: 'Bernomor',
-  row: 'Sebaris', arc: 'Melengkung', scatter: 'Tersebar',
-  masonry: 'Masonry', polaroid: 'Polaroid',
-  heart: 'Hati', starlit: 'Berbintang',
-};
-
-const SECTION_LABEL: Record<SectionType, string> = {
-  intro: 'Pembuka', hero: 'Hero', letter: 'Surat', reasons: 'Alasan',
-  garden: 'Taman', gallery: 'Galeri', finale: 'Penutup',
-};
 
 const AUTOSAVE_MS = 900;
 
@@ -288,21 +275,21 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
 
       <Card>
         <CardHeader
-          title="Varian layout"
-          description="Mengubah susunan tiap section tanpa menyentuh isinya."
+          title="Varian layout bawaan"
+          description="Berlaku untuk semua section bertipe sama. Satu section bisa menimpanya sendiri lewat tab Konten."
         />
         <div className="grid gap-2 p-3">
           {SECTION_TYPES.map((type) => (
             <Field key={type} label={SECTION_LABEL[type]}>
               <Select
-                value={design.variants[type]}
+                value={design.variants[type] ?? DEFAULT_VARIANTS[type]}
                 onChange={(e) =>
                   patch({ variants: { ...design.variants, [type]: e.target.value } })
                 }
               >
                 {SECTION_VARIANTS[type].map((variant) => (
                   <option key={variant} value={variant}>
-                    {VARIANT_LABEL[variant] ?? variant}
+                    {variantLabel(variant)}
                   </option>
                 ))}
               </Select>

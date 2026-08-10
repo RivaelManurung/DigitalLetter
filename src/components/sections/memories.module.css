@@ -1,0 +1,136 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-xl);
+}
+
+.note {
+  max-width: 38rem;
+  font-size: var(--text-sm);
+}
+
+.items {
+  display: grid;
+  gap: clamp(1.4rem, 3vw, 2.4rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm, 10px);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.caption {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.date {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.itemTitle {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--c-text);
+}
+
+.text {
+  font-size: var(--text-sm);
+  line-height: 1.72;
+  color: var(--c-text-muted);
+}
+
+/* ── polaroid: bingkai putih miring, seperti foto cetak ── */
+
+.polaroid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.polaroid .item {
+  padding: 0.8rem 0.8rem 1.4rem;
+  background: color-mix(in srgb, var(--c-text) 92%, transparent);
+  border-radius: 4px;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--c-bg-deep) 45%, transparent);
+  transition: transform var(--dur-normal) ease;
+}
+
+.polaroid .item:nth-child(odd) {
+  transform: rotate(-1.4deg);
+}
+
+.polaroid .item:nth-child(even) {
+  transform: rotate(1.1deg);
+}
+
+.polaroid .item:hover {
+  transform: rotate(0) translateY(-4px);
+}
+
+.polaroid .frame {
+  border-radius: 2px;
+}
+
+.polaroid .caption {
+  text-align: center;
+  justify-items: center;
+}
+
+.polaroid .itemTitle,
+.polaroid .text {
+  color: var(--c-bg-deep);
+}
+
+.polaroid .text {
+  font-size: var(--text-xs);
+}
+
+/* ── alternating: foto kiri-kanan berselang ── */
+
+.alternating {
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 760px) {
+  .alternating .item {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.2rem, 3vw, 2.4rem);
+    align-items: center;
+  }
+
+  .alternating .item:nth-child(even) .frame {
+    order: 2;
+  }
+}
+
+/* ── stack: satu kolom sempit, bertumpuk ke bawah ── */
+
+.stack {
+  max-width: 36rem;
+  margin-inline: auto;
+}

@@ -18,28 +18,29 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { SECTION_TYPES, type MediaRecord, type SectionRecord, type SectionType } from '@/design/types';
+import {
+  BLOCKS,
+  GROUP_LABEL,
+  SECTION_LABEL,
+  SECTION_TYPES,
+  SECTION_VARIANTS,
+  type BlockGroup,
+} from '@/design/blocks';
+import type { MediaRecord, SectionRecord, SectionType } from '@/design/types';
+import { variantLabel } from '@/design/variant-labels';
 import {
   addSection,
   deleteSection,
   reorderSections,
+  setSectionVariant,
   toggleSection,
 } from '@/lib/actions/letter';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Field, Select } from '@/components/ui/field';
 import { Card } from '@/components/ui/surface';
 import { MarkdownTools } from './markdown-tools';
 import { SectionForm } from './section-form';
-
-const SECTION_LABEL: Record<SectionType, string> = {
-  intro: 'Pembuka',
-  hero: 'Hero',
-  letter: 'Surat',
-  reasons: 'Alasan',
-  garden: 'Taman',
-  gallery: 'Galeri',
-  finale: 'Penutup',
-};
 
 type Props = {
   letterId: string;
@@ -133,9 +134,30 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
     });
   }
 
-  const missing = SECTION_TYPES.filter(
-    (type) => !sections.some((s) => s.type === type),
+  function handleVariantChange(section: SectionRecord, variant: string) {
+    const next = sections.map((s) => (s.id === section.id ? { ...s, variant } : s));
+    onChange(next);
+
+    start(async () => {
+      const result = await setSectionVariant({ sectionId: section.id, variant });
+      if (!result.ok) {
+        onChange(sections);
+        toast.error(result.error);
+      }
+    });
+  }
+
+  // Block boleh berulang — yang disembunyikan hanya block bertanda unique
+  // yang sudah dipakai (mis. Pembuka, yang melapisi seluruh halaman).
+  const available = SECTION_TYPES.filter(
+    (type) => !BLOCKS[type].unique || !sections.some((s) => s.type === type),
   );
+
+  const grouped = available.reduce<Record<string, SectionType[]>>((acc, type) => {
+    const group = BLOCKS[type].group;
+    (acc[group] ??= []).push(type);
+    return acc;
+  }, {});
 
   return (
     <div className="grid gap-3">
@@ -154,6 +176,26 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
                 onToggleEnabled={() => handleToggle(section)}
                 onDelete={() => handleDelete(section)}
               >
+                {SECTION_VARIANTS[section.type].length > 1 && (
+                  <Field
+                    label="Varian layout"
+                    hint="Khusus section ini. Kosong = ikut varian bawaan desain."
+                    className="mb-3"
+                  >
+                    <Select
+                      value={section.variant}
+                      onChange={(e) => handleVariantChange(section, e.target.value)}
+                    >
+                      <option value="">Ikut desain</option>
+                      {SECTION_VARIANTS[section.type].map((variant) => (
+                        <option key={variant} value={variant}>
+                          {variantLabel(variant)}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                )}
+
                 <SectionForm
                   key={`${section.id}-${revision}`}
                   section={section}
@@ -172,22 +214,31 @@ export function ContentPanel({ letterId, slug, sections, media, onChange }: Prop
         </SortableContext>
       </DndContext>
 
-      {missing.length > 0 && (
-        <Card className="grid gap-2 p-3">
+      {available.length > 0 && (
+        <Card className="grid gap-3 p-3">
           <p className="text-xs font-medium text-muted-foreground">Tambah section</p>
-          <div className="flex flex-wrap gap-1.5">
-            {missing.map((type) => (
-              <Button
-                key={type}
-                variant="outline"
-                size="sm"
-                onClick={() => handleAdd(type)}
-              >
-                <Plus size={12} />
-                {SECTION_LABEL[type]}
-              </Button>
-            ))}
-          </div>
+
+          {(Object.keys(grouped) as BlockGroup[]).map((group) => (
+            <div key={group} className="grid gap-1.5">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {GROUP_LABEL[group]}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {grouped[group].map((type) => (
+                  <Button
+                    key={type}
+                    variant="outline"
+                    size="sm"
+                    title={BLOCKS[type].note}
+                    onClick={() => handleAdd(type)}
+                  >
+                    <Plus size={12} />
+                    {SECTION_LABEL[type]}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ))}
         </Card>
       )}
 

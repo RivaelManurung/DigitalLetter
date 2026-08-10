@@ -1,0 +1,93 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.title {
+  font-size: var(--text-xl);
+}
+
+.stage {
+  display: grid;
+  justify-items: center;
+  min-height: 6.5rem;
+  align-content: center;
+}
+
+.placeholder {
+  min-height: 6.5rem;
+}
+
+.units {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(0.6rem, 2vw, 1.4rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.unit {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  min-width: 4.5rem;
+}
+
+.value {
+  font-family: var(--ff-display);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--c-text);
+}
+
+.label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.passed {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  text-align: center;
+  color: var(--c-accent);
+}
+
+/* ── boxes: tiap satuan dalam kotak kaca ── */
+
+.boxes .unit {
+  padding: clamp(0.9rem, 2vw, 1.5rem) clamp(0.8rem, 2vw, 1.6rem);
+  background: var(--c-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid color-mix(in srgb, var(--c-text) 12%, transparent);
+  border-radius: var(--radius);
+}
+
+/* ── minimal: hanya angka dan label, dipisah garis tipis ── */
+
+.minimal .unit + .unit {
+  border-left: 1px solid color-mix(in srgb, var(--c-text) 16%, transparent);
+  padding-left: clamp(0.6rem, 2vw, 1.4rem);
+}
+
+/* ── ring: lingkaran beraksen ── */
+
+.ring .unit {
+  width: clamp(4.6rem, 12vw, 6.4rem);
+  aspect-ratio: 1;
+  place-content: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--c-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--c-accent) 8%, transparent);
+}
+
+.ring .value {
+  font-size: var(--text-xl);
+}

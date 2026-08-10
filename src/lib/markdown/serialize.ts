@@ -1,6 +1,6 @@
-import { parseSectionContent } from '@/design/schemas';
+import { parseSectionContent } from '@/design/blocks';
 import type { SectionRecord, SectionType } from '@/design/types';
-import { SECTION_SPECS, isListField, type FieldSpec, type LeafField } from './fields';
+import { SECTION_SPECS, isListField, type MarkdownField, type LeafField } from './fields';
 
 /**
  * Section → markdown. Format sengaja dibuat jelas dan berulang supaya mudah
@@ -40,22 +40,30 @@ export function sectionsToMarkdown(
   options: Options = {},
 ): string {
   const ordered = [...sections].sort((a, b) => a.order - b.order);
-  const blocks = ordered.map((section) => sectionBlock(section));
+
+  // Satu tipe boleh muncul berkali-kali (mis. dua "Surat"). Nomor urut
+  // kemunculan dipakai supaya impor tahu blok mana yang mana.
+  const seen = new Map<string, number>();
+  const blocks = ordered.map((section) => {
+    const nth = (seen.get(section.type) ?? 0) + 1;
+    seen.set(section.type, nth);
+    const total = ordered.filter((s) => s.type === section.type).length;
+    return sectionBlock(section, total > 1 ? nth : 0);
+  });
+
   const head = options.guide === false ? '' : `${GUIDE}\n`;
   return `${head}${blocks.join('\n')}`.trimEnd() + '\n';
 }
 
-function sectionBlock(section: SectionRecord): string {
+function sectionBlock(section: SectionRecord, nth: number): string {
   const spec = SECTION_SPECS[section.type];
   const content = parseSectionContent(section.type, section.content) as Record<
     string,
     unknown
   >;
 
-  const lines: string[] = [
-    `## [${section.type}] ${spec.label}`,
-    `<!-- ${spec.note} -->`,
-  ];
+  const marker = nth ? `[${section.type}#${nth}]` : `[${section.type}]`;
+  const lines: string[] = [`## ${marker} ${spec.label}`, `<!-- ${spec.note} -->`];
 
   if (!section.enabled) {
     lines.push('<!-- section ini sedang disembunyikan di editor -->');
@@ -120,4 +128,4 @@ export function markdownFileName(slug: string): string {
 /** Daftar tipe yang dikenali — dipakai pesan galat parser. */
 export const KNOWN_TYPES: SectionType[] = Object.keys(SECTION_SPECS) as SectionType[];
 
-export type { FieldSpec };
+export type { MarkdownField };

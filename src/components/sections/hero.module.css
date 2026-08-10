@@ -21,6 +21,16 @@
 
 /* ── centered ── */
 
+/* Penanda varian. Tata letak sebenarnya diatur .splitGrid/.editorialGrid di
+   dalamnya; kelas ini tetap perlu ada supaya kelasnya tidak jadi
+   "undefined" dan tersedia sebagai kait styling per varian. */
+
+.split,
+.editorial {
+  display: grid;
+  align-items: center;
+}
+
 .centered .scrollCue {
   margin-top: var(--space-lg);
 }

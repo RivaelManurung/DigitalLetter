@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { parseSectionContent } from '@/design/schemas';
+import { parseSectionContent, resolveVariant } from '@/design/blocks';
 import { designToCssVars } from '@/design/tokens';
 import type { LetterBundle } from '@/design/types';
 import { IntroGate } from '../engine/intro/intro-gate';
@@ -61,7 +61,7 @@ export function LetterView({ letter, preview = false }: Props) {
 
       {introSection && introContent && !preview && (
         <IntroGate
-          variant={design.variants.intro}
+          variant={resolveVariant('intro', introSection.variant, design.variants.intro)}
           hint={introContent.hint}
           label={introContent.label}
           onOpen={() => setOpened(true)}
@@ -75,6 +75,7 @@ export function LetterView({ letter, preview = false }: Props) {
             section={section}
             design={design}
             media={media}
+            letterId={letter.id}
           />
         ))}
       </main>

@@ -4,9 +4,9 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { PRESET_LIST } from '@/design/presets';
+import { OCCASIONS, OCCASION_IDS, type OccasionId } from '@/design/occasions';
 import { createLetter } from '@/lib/actions/letter';
-import { slugify } from '@/lib/utils';
+import { cn, slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { PresetPicker } from '@/components/dashboard/preset-picker';
@@ -19,9 +19,12 @@ export function NewLetterDialog() {
   const [title, setTitle] = useState('');
   const [recipient, setRecipient] = useState('');
   const [slug, setSlug] = useState('');
-  const [preset, setPreset] = useState(PRESET_LIST[0].id);
+  const [occasion, setOccasion] = useState<OccasionId>('love');
+  // Preset mengikuti occasion sampai user memilih sendiri.
+  const [preset, setPreset] = useState<string | null>(null);
 
   const effectiveSlug = slug || slugify(recipient || title);
+  const effectivePreset = preset ?? OCCASIONS[occasion].preset;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -31,7 +34,8 @@ export function NewLetterDialog() {
         title,
         recipientName: recipient,
         slug: effectiveSlug || undefined,
-        preset,
+        preset: effectivePreset,
+        occasion,
       });
 
       if (!result.ok) {
@@ -73,9 +77,33 @@ export function NewLetterDialog() {
         <div className="grid gap-1">
           <h2 className="text-sm font-semibold">Surat baru</h2>
           <p className="text-xs text-muted-foreground">
-            Kamu akan mendapat 7 section berisi teks awal yang tinggal disunting.
+            Pilih acaranya — section awal beserta teksnya dibuatkan, tinggal disunting.
           </p>
         </div>
+
+        <Field label="Acara" hint={OCCASIONS[occasion].note}>
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+            {OCCASION_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setOccasion(id)}
+                aria-pressed={occasion === id}
+                className={cn(
+                  'rounded-lg border px-2.5 py-2 text-left text-xs transition-colors',
+                  occasion === id
+                    ? 'border-foreground bg-muted font-medium'
+                    : 'border-border text-muted-foreground hover:bg-muted',
+                )}
+              >
+                {OCCASIONS[id].label}
+                <span className="mt-0.5 block text-[10px] opacity-70">
+                  {OCCASIONS[id].sections.length} section
+                </span>
+              </button>
+            ))}
+          </div>
+        </Field>
 
         <Field label="Judul" htmlFor="title">
           <Input
@@ -110,8 +138,11 @@ export function NewLetterDialog() {
           />
         </Field>
 
-        <Field label="Desain awal">
-          <PresetPicker value={preset} onChange={setPreset} />
+        <Field
+          label="Desain awal"
+          hint={preset ? undefined : 'Mengikuti pilihan acara di atas'}
+        >
+          <PresetPicker value={effectivePreset} onChange={setPreset} />
         </Field>
 
         <div className="mt-1 flex justify-end gap-2">

@@ -1,0 +1,138 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-xl);
+}
+
+.note {
+  max-width: 40rem;
+  font-size: var(--text-sm);
+}
+
+.list {
+  display: grid;
+  gap: clamp(1rem, 2.4vw, 1.8rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.name {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--c-text);
+  margin-bottom: 0.3rem;
+}
+
+.day {
+  font-size: var(--text-sm);
+  color: var(--c-text);
+}
+
+.time {
+  font-size: var(--text-sm);
+  color: var(--c-accent);
+  letter-spacing: 0.04em;
+}
+
+.venue {
+  font-size: var(--text-base);
+  color: var(--c-text);
+  margin-top: 0.5rem;
+}
+
+.address,
+.note {
+  font-size: var(--text-xs);
+  line-height: 1.7;
+  color: var(--c-text-muted);
+  max-width: 24rem;
+}
+
+.mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--space-sm);
+  padding: 0.5rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--c-accent) 55%, transparent);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  text-decoration: none;
+  transition: background var(--dur-normal) ease, color var(--dur-normal) ease;
+}
+
+.mapLink:hover {
+  background: color-mix(in srgb, var(--c-accent) 14%, transparent);
+}
+
+/* ── cards: berdampingan, tiap acara satu kartu ── */
+
+.cards {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* ── split: dua kolom tegas, tanpa auto-fit ── */
+
+.split {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 720px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── timeline: satu kolom dengan garis penghubung ── */
+
+.timeline {
+  grid-template-columns: 1fr;
+  max-width: 40rem;
+  margin-inline: auto;
+  position: relative;
+}
+
+.timeline .card {
+  position: relative;
+  text-align: left;
+  justify-items: start;
+}
+
+.timeline .card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--c-accent),
+    color-mix(in srgb, var(--c-accent) 20%, transparent)
+  );
+  border-radius: 2px;
+}
+
+.timeline .address,
+.timeline .note {
+  max-width: none;
+}

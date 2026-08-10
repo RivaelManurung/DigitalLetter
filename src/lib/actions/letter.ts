@@ -7,7 +7,9 @@ import { db } from '@/db';
 import { letter, media, section } from '@/db/schema';
 import { designSchema, slugSchema, SECTION_SCHEMAS } from '@/design/schemas';
 import { getPreset } from '@/design/presets';
-import { SECTION_TYPES, type SectionRecord, type SectionType } from '@/design/types';
+import { BLOCKS, SECTION_TYPES, starterContent, type SectionType } from '@/design/blocks';
+import { OCCASIONS, isOccasionId, type OccasionId } from '@/design/occasions';
+import type { SectionRecord } from '@/design/types';
 import { hashPassword, requireAdmin } from '@/lib/auth';
 import { parseLetterMarkdown } from '@/lib/markdown/parse';
 import { defaultSectionsFor } from '@/lib/defaults';
@@ -39,7 +41,8 @@ const createSchema = z.object({
   title: z.string().trim().min(1, 'Judul wajib diisi').max(120),
   recipientName: z.string().trim().max(80).default(''),
   slug: slugSchema.optional(),
-  preset: z.string().min(1).default('dark-romantic'),
+  preset: z.string().min(1).optional(),
+  occasion: z.string().default('love'),
 });
 
 export async function createLetter(input: unknown): Promise<ActionResult<{ id: string }>> {
@@ -53,7 +56,10 @@ export async function createLetter(input: unknown): Promise<ActionResult<{ id: s
     const [existing] = await db.select({ id: letter.id }).from(letter).where(eq(letter.slug, slug)).limit(1);
     if (existing) return { ok: false, error: `Slug "${slug}" sudah dipakai.` };
 
-    const design = getPreset(data.preset);
+    // Occasion menentukan susunan section awal sekaligus preset bawaannya;
+    // preset yang dipilih user tetap menang bila disebut.
+    const occasion: OccasionId = isOccasionId(data.occasion) ? data.occasion : 'love';
+    const design = getPreset(data.preset ?? OCCASIONS[occasion].preset);
 
     const [created] = await db
       .insert(letter)
@@ -67,7 +73,7 @@ export async function createLetter(input: unknown): Promise<ActionResult<{ id: s
 
     // Section awal supaya editor tidak menyambut user dengan halaman kosong
     await db.insert(section).values(
-      defaultSectionsFor(created.id, data.recipientName || data.title),
+      defaultSectionsFor(created.id, data.recipientName || data.title, occasion),
     );
 
     refresh();
@@ -195,7 +201,7 @@ export async function updateSectionContent(input: unknown): Promise<ActionResult
     const { sectionId, type, content } = z
       .object({
         sectionId: z.string().uuid(),
-        type: z.enum(SECTION_TYPES),
+        type: z.enum(SECTION_TYPES as [SectionType, ...SectionType[]]),
         content: z.unknown(),
       })
       .parse(input);
@@ -257,14 +263,23 @@ export async function addSection(input: unknown): Promise<ActionResult> {
   try {
     await requireAdmin();
     const { letterId, type } = z
-      .object({ letterId: z.string().uuid(), type: z.enum(SECTION_TYPES) })
+      .object({
+        letterId: z.string().uuid(),
+        type: z.enum(SECTION_TYPES as [SectionType, ...SectionType[]]),
+      })
       .parse(input);
 
     const rows = await db
-      .select({ order: section.order })
+      .select({ type: section.type, order: section.order })
       .from(section)
       .where(eq(section.letterId, letterId))
       .orderBy(asc(section.order));
+
+    // Block bertanda unique hanya boleh sekali — dijaga di server, bukan
+    // hanya disembunyikan di UI.
+    if (BLOCKS[type].unique && rows.some((row) => row.type === type)) {
+      return { ok: false, error: `Section "${BLOCKS[type].label}" hanya boleh satu.` };
+    }
 
     const nextOrder = rows.length ? Math.max(...rows.map((r) => r.order)) + 1 : 0;
 
@@ -273,10 +288,40 @@ export async function addSection(input: unknown): Promise<ActionResult> {
       type,
       order: nextOrder,
       enabled: true,
-      content: SECTION_SCHEMAS[type as SectionType].parse({}) as Record<string, unknown>,
+      variant: '',
+      // Section baru berisi naskah, bukan form kosong.
+      content: starterContent(type),
     });
 
     await touchLetter(letterId);
+    return { ok: true };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function setSectionVariant(input: unknown): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { sectionId, variant } = z
+      .object({ sectionId: z.string().uuid(), variant: z.string().trim().max(40) })
+      .parse(input);
+
+    const [row] = await db
+      .select({ type: section.type })
+      .from(section)
+      .where(eq(section.id, sectionId))
+      .limit(1);
+
+    if (!row) return { ok: false, error: 'Section tidak ditemukan.' };
+
+    const allowed = BLOCKS[row.type].variants as readonly string[];
+    if (variant !== '' && !allowed.includes(variant)) {
+      return { ok: false, error: `Varian "${variant}" tidak dikenal.` };
+    }
+
+    await db.update(section).set({ variant }).where(eq(section.id, sectionId));
+    await touchLetterBySection(sectionId);
     return { ok: true };
   } catch (error) {
     return fail(error);
@@ -334,8 +379,16 @@ export async function importSectionsMarkdown(
     ]);
 
     const ownedMedia = new Set(mediaRows.map((row) => row.id));
-    const byType = new Map(existing.map((row) => [row.type, row]));
     const warnings = [...parsed.warnings];
+
+    // Satu tipe boleh punya beberapa section, jadi pencocokan memakai
+    // kemunculan ke-n dalam urutan yang ada — bukan tipe saja.
+    const occurrences = new Map<SectionType, typeof existing>();
+    for (const row of existing) {
+      const list = occurrences.get(row.type) ?? [];
+      list.push(row);
+      occurrences.set(row.type, list);
+    }
 
     let updated = 0;
     let created = 0;
@@ -344,7 +397,7 @@ export async function importSectionsMarkdown(
       : 0;
 
     for (const item of parsed.sections) {
-      const current = byType.get(item.type);
+      const current = occurrences.get(item.type)?.[item.nth - 1];
       const merged = { ...(current?.content ?? {}), ...item.content };
 
       if (item.type === 'gallery' && Array.isArray(merged.mediaIds)) {
@@ -367,6 +420,7 @@ export async function importSectionsMarkdown(
           type: item.type,
           order: nextOrder,
           enabled: true,
+          variant: '',
           content,
         });
         nextOrder += 1;
@@ -393,6 +447,7 @@ export async function importSectionsMarkdown(
           type: row.type,
           order: row.order,
           enabled: row.enabled,
+          variant: row.variant,
           content: row.content,
         })),
       },

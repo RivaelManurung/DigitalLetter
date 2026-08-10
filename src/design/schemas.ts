@@ -1,103 +1,24 @@
 import { z } from 'zod';
-import { SECTION_TYPES, SECTION_VARIANTS } from './types';
-import type { SectionType } from './types';
+import { BLOCKS, SECTION_TYPES, type SectionType } from './blocks';
 
 /**
- * Satu schema per tipe section. Dipakai tiga kali:
- *   1. validasi form di client   2. validasi di Server Action
- *   3. metadata untuk membangun form editor secara otomatis
+ * Schema section berasal dari registry block (design/blocks). Berkas ini
+ * menyediakan bentuk gabungannya plus schema desain — yang bukan milik satu
+ * block tertentu.
  *
- * Menambah tipe section baru = tambah schema di sini + komponen di registry.
- * Tidak ada migration database, karena content disimpan sebagai JSONB.
+ * Menambah tipe section = tambah berkas di design/blocks + daftarkan di
+ * index.ts-nya. Tidak ada yang perlu disunting di sini.
  */
 
-const text = (max = 280) => z.string().trim().max(max);
-const richText = (max = 1200) => z.string().trim().max(max);
-
-export const introSchema = z.object({
-  hint: text(60).default('tap to open'),
-  label: text(80).default(''),
-});
-
-export const heroSchema = z.object({
-  eyebrow: text(80).default('a love letter in bloom'),
-  titleTop: text(80).default('For You,'),
-  titleBottom: text(80).default('My Everything'),
-  subtitle: richText(240).default(''),
-  scrollLabel: text(40).default('scroll to discover'),
-});
-
-export const letterSchema = z.object({
-  label: text(80).default('from my heart'),
-  title: text(160).default(''),
-  /** markdown ringan: **tebal**, *miring*, baris baru */
-  body: richText(2000).default(''),
-  signature: text(120).default(''),
-});
-
-export const reasonItemSchema = z.object({
-  icon: text(32).default('rose'),
-  title: text(80).default(''),
-  body: richText(400).default(''),
-});
-
-export const reasonsSchema = z.object({
-  eyebrow: text(80).default('a thousand reasons why'),
-  title: text(120).default('Why I Love You'),
-  items: z.array(reasonItemSchema).max(24).default([]),
-});
-
-export const flowerItemSchema = z.object({
-  flower: text(32).default('rose'),
-  name: text(60).default(''),
-  meaning: text(80).default(''),
-});
-
-export const gardenSchema = z.object({
-  eyebrow: text(80).default('our secret garden'),
-  title: text(120).default('A Garden Grown Just For You'),
-  note: text(120).default('hover each flower to discover its meaning'),
-  flowers: z.array(flowerItemSchema).max(12).default([]),
-});
-
-export const gallerySchema = z.object({
-  eyebrow: text(80).default('captured in time'),
-  title: text(120).default('Your Beautiful Pictures'),
-  /** id media (kind = photo) yang dipakai section ini, terurut */
-  mediaIds: z.array(z.string()).max(24).default([]),
-});
-
-export const finaleSchema = z.object({
-  eyebrow: text(80).default('always & forever'),
-  title: text(160).default('You Are Loved Beyond Words'),
-  body: richText(1200).default(''),
-  signature: text(120).default(''),
-});
-
-export const SECTION_SCHEMAS = {
-  intro: introSchema,
-  hero: heroSchema,
-  letter: letterSchema,
-  reasons: reasonsSchema,
-  garden: gardenSchema,
-  gallery: gallerySchema,
-  finale: finaleSchema,
-} satisfies Record<SectionType, z.ZodTypeAny>;
+export const SECTION_SCHEMAS = Object.fromEntries(
+  SECTION_TYPES.map((type) => [type, BLOCKS[type].schema]),
+) as { [T in SectionType]: (typeof BLOCKS)[T]['schema'] };
 
 export type SectionContent<T extends SectionType> = z.infer<
-  (typeof SECTION_SCHEMAS)[T]
+  (typeof BLOCKS)[T]['schema']
 >;
 
-/** Parse aman: konten rusak/lama tidak menjatuhkan halaman, jatuh ke default. */
-export function parseSectionContent<T extends SectionType>(
-  type: T,
-  raw: unknown,
-): SectionContent<T> {
-  const schema = SECTION_SCHEMAS[type];
-  const result = schema.safeParse(raw ?? {});
-  if (result.success) return result.data as SectionContent<T>;
-  return schema.parse({}) as SectionContent<T>;
-}
+export { parseSectionContent } from './blocks';
 
 /* ── Design spec ─────────────────────────────────────────────── */
 
@@ -123,20 +44,35 @@ export const paletteSchema = z.object({
 
 /**
  * Varian divalidasi terhadap daftar yang benar-benar ada di registry.
- * Nilai tak dikenal (misal sisa versi lama) ditolak, bukan diam-diam
- * dirender sebagai varian default yang salah.
+ * Semua kunci opsional: preset lama tidak menyebut block yang baru
+ * ditambahkan, dan itu sah — block memakai varian bawaannya sendiri.
+ * Nilai yang disebut tapi tidak dikenal tetap ditolak.
  */
 const variantsShape = Object.fromEntries(
   SECTION_TYPES.map((type) => [
     type,
-    z.string().refine(
-      (value) => (SECTION_VARIANTS[type] as readonly string[]).includes(value),
-      { message: `Varian tidak dikenal untuk section "${type}"` },
-    ),
+    z
+      .string()
+      .refine(
+        (value) => (BLOCKS[type].variants as readonly string[]).includes(value),
+        { message: `Varian tidak dikenal untuk section "${type}"` },
+      )
+      .optional(),
   ]),
-) as Record<SectionType, z.ZodString | z.ZodType<string>>;
+) as unknown as Record<SectionType, z.ZodOptional<z.ZodString>>;
 
 const variantsSchema = z.object(variantsShape);
+
+/** Varian per-section: boleh kosong, artinya ikut varian bawaan desain. */
+export const sectionVariantSchema = (type: SectionType) =>
+  z
+    .string()
+    .trim()
+    .refine(
+      (value) =>
+        value === '' || (BLOCKS[type].variants as readonly string[]).includes(value),
+      { message: `Varian tidak dikenal untuk section "${type}"` },
+    );
 
 export const designSchema = z.object({
   preset: z.string().min(1).max(60),

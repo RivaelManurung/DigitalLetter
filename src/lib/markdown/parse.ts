@@ -1,4 +1,4 @@
-import { SECTION_TYPES, type SectionType } from '@/design/types';
+import { isSectionType, type SectionType } from '@/design/blocks';
 import { SECTION_SPECS, isListField, listFieldOf, type LeafField } from './fields';
 
 /**
@@ -11,6 +11,8 @@ import { SECTION_SPECS, isListField, listFieldOf, type LeafField } from './field
 
 export type ParsedSection = {
   type: SectionType;
+  /** kemunculan ke-berapa untuk tipe ini (1-based) — block boleh berulang */
+  nth: number;
   content: Record<string, unknown>;
 };
 
@@ -19,7 +21,7 @@ export type ParseResult = {
   warnings: string[];
 };
 
-const HEADING = /^##\s*\[([a-zA-Z]+)\]/;
+const HEADING = /^##\s*\[([a-zA-Z]+)(?:#(\d+))?\]/;
 const ITEM_HEADING = /^###\s+/;
 const KEY_LINE = /^([A-Za-z][A-Za-z0-9_]*)\s*:[ \t]?(.*)$/;
 const COMMENT = /^<!--/;
@@ -35,9 +37,12 @@ export function parseLetterMarkdown(input: string): ParseResult {
     return { sections: [], warnings: ['Berkas terlalu panjang untuk diproses.'] };
   }
 
-  const found = new Map<SectionType, Record<string, unknown>>();
+  // Block boleh berulang, jadi hasilnya daftar terurut — bukan peta per tipe.
+  const found: ParsedSection[] = [];
+  const counts = new Map<SectionType, number>();
 
   let type: SectionType | null = null;
+  let current: ParsedSection | null = null;
   let target: Record<string, unknown> | null = null;
   let inItem = false;
   let lastKey: string | null = null;
@@ -59,23 +64,31 @@ export function parseLetterMarkdown(input: string): ParseResult {
       if (!isSectionType(candidate)) {
         warnings.push(`Tipe section "${candidate}" tidak dikenal — dilewati.`);
         type = null;
+        current = null;
         target = null;
         continue;
       }
 
-      if (found.has(candidate)) {
+      // Nomor eksplisit "[letter#2]" dihormati; tanpa nomor, urutan
+      // kemunculan yang menentukan.
+      const explicit = heading[2] ? Number(heading[2]) : 0;
+      const nth = explicit || (counts.get(candidate) ?? 0) + 1;
+      counts.set(candidate, Math.max(nth, counts.get(candidate) ?? 0));
+
+      if (found.some((s) => s.type === candidate && s.nth === nth)) {
         warnings.push(
-          `Section "${candidate}" muncul lebih dari sekali — isian terakhir yang dipakai.`,
+          `Section "${candidate}#${nth}" muncul lebih dari sekali — isian terakhir yang dipakai.`,
         );
       }
 
       type = candidate;
       target = {};
-      found.set(candidate, target);
+      current = { type: candidate, nth, content: target };
+      found.push(current);
       continue;
     }
 
-    if (!type || !target) continue; // teks pengantar sebelum section pertama
+    if (!type || !target || !current) continue; // teks pengantar sebelum section pertama
 
     if (ITEM_HEADING.test(trimmed)) {
       const list = listFieldOf(type);
@@ -86,8 +99,7 @@ export function parseLetterMarkdown(input: string): ParseResult {
         continue;
       }
 
-      const section = found.get(type)!;
-      const bucket = (section[list.key] ??= []) as Record<string, unknown>[];
+      const bucket = (current.content[list.key] ??= []) as Record<string, unknown>[];
       const item: Record<string, unknown> = {};
       bucket.push(item);
       target = item;
@@ -98,7 +110,19 @@ export function parseLetterMarkdown(input: string): ParseResult {
     const keyed = KEY_LINE.exec(line);
     if (keyed) {
       const [, key, rawValue] = keyed;
-      const field = fieldFor(type, inItem, key);
+      let field = fieldFor(type, inItem, key);
+
+      // Field milik section bisa ditulis setelah blok daftar (mis. `address`
+      // sesudah daftar rekening). Begitu ketemu key yang bukan milik item,
+      // kembali ke tingkat section — kalau tidak, isinya hilang diam-diam.
+      if (!field && inItem) {
+        const own = fieldFor(type, false, key);
+        if (own) {
+          field = own;
+          inItem = false;
+          target = current.content;
+        }
+      }
 
       if (!field) {
         warnings.push(`Field "${key}" tidak dikenal di section "${type}" — diabaikan.`);
@@ -126,10 +150,7 @@ export function parseLetterMarkdown(input: string): ParseResult {
     }
   }
 
-  const sections = [...found.entries()].map(([sectionType, content]) => ({
-    type: sectionType,
-    content,
-  }));
+  const sections = found;
 
   if (!sections.length) {
     warnings.push(
@@ -190,8 +211,4 @@ function coerce(field: LeafField, value: string): unknown {
       .filter(Boolean);
   }
   return value;
-}
-
-function isSectionType(value: string): value is SectionType {
-  return (SECTION_TYPES as readonly string[]).includes(value);
 }

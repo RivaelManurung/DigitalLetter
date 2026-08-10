@@ -8,31 +8,21 @@
  * Menambah desain baru = membuat objek DesignSpec. Tidak menyentuh kode.
  */
 
-export const SECTION_TYPES = [
-  'intro',
-  'hero',
-  'letter',
-  'reasons',
-  'garden',
-  'gallery',
-  'finale',
-] as const;
+/**
+ * Daftar section berasal dari registry block (design/blocks). Berkas ini
+ * hanya meneruskannya supaya kode lama yang mengimpor dari '@/design/types'
+ * tetap jalan — sumber kebenarannya tetap satu.
+ */
+export {
+  SECTION_TYPES,
+  SECTION_VARIANTS,
+  DEFAULT_VARIANTS,
+  SECTION_LABEL,
+  isSectionType,
+} from './blocks';
+export type { SectionType } from './blocks';
 
-export type SectionType = (typeof SECTION_TYPES)[number];
-
-/** Varian layout per section. Tiap varian = satu komponen di registry. */
-export const SECTION_VARIANTS = {
-  intro: ['gift', 'envelope', 'curtain'],
-  hero: ['centered', 'split', 'editorial'],
-  letter: ['glass', 'paper', 'minimal'],
-  reasons: ['grid', 'bento', 'numbered'],
-  garden: ['row', 'arc', 'scatter'],
-  gallery: ['grid', 'masonry', 'polaroid'],
-  finale: ['centered', 'heart', 'starlit'],
-} as const satisfies Record<SectionType, readonly string[]>;
-
-export type SectionVariant<T extends SectionType> =
-  (typeof SECTION_VARIANTS)[T][number];
+import type { SectionType as SectionTypeRef } from './blocks';
 
 /** Slot warna. Semua CSS membaca ini — nol warna hardcoded di komponen. */
 export type Palette = {
@@ -82,16 +72,25 @@ export type DesignSpec = {
     /** px */
     glassBlur: number;
   };
-  /** varian layout yang dipilih untuk tiap section */
-  variants: Record<SectionType, string>;
+  /**
+   * Varian layout bawaan per tipe section. Parsial: block yang tidak
+   * disebut memakai varian pertama yang dideklarasikan block itu sendiri,
+   * jadi menambah block baru tidak membuat preset lama tidak valid.
+   */
+  variants: Partial<Record<SectionTypeRef, string>>;
 };
 
 /** Satu section di dalam surat. `content` divalidasi oleh schema per tipe. */
 export type SectionRecord = {
   id: string;
-  type: SectionType;
+  type: SectionTypeRef;
   order: number;
   enabled: boolean;
+  /**
+   * Varian khusus section ini; menimpa design.variants[type].
+   * String kosong berarti "ikut varian bawaan desain".
+   */
+  variant: string;
   content: Record<string, unknown>;
 };
 

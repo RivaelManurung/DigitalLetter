@@ -10,6 +10,7 @@ import { ContentPanel } from './panels/content-panel';
 import { DesignPanel } from './panels/design-panel';
 import { MediaPanel } from './panels/media-panel';
 import { PublishPanel } from './panels/publish-panel';
+import { RsvpPanel } from './panels/rsvp-panel';
 import { LivePreview } from './live-preview';
 
 export type LetterMeta = {
@@ -115,7 +116,15 @@ export function EditorShell({
               onChange={(media) => setBundle((prev) => ({ ...prev, media }))}
             />
           )}
-          {tab === 'publish' && <PublishPanel meta={meta} />}
+          {tab === 'publish' && (
+            <div className="grid gap-3">
+              <PublishPanel meta={meta} />
+              {/* Daftar jawaban hanya relevan kalau suratnya memang meminta. */}
+              {bundle.sections.some((s) => s.type === 'rsvp') && (
+                <RsvpPanel letterId={meta.id} />
+              )}
+            </div>
+          )}
         </div>
 
         <LivePreview bundle={bundle} />

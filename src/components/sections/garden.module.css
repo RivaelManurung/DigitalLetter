@@ -22,6 +22,18 @@
   min-height: 240px;
 }
 
+/* ── row: sebaris rapat di dasar yang sama (perilaku bawaan .garden) ── */
+
+.row {
+  align-items: flex-end;
+}
+
+/* ── arc: tinggi tiap tangkai diatur inline; di sini hanya perataannya ── */
+
+.arc {
+  align-items: flex-end;
+}
+
 .scatter {
   align-items: center;
 }

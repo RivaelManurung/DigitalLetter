@@ -1,0 +1,133 @@
+.shell {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  max-width: 38rem;
+  margin-inline: auto;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  line-height: 1.25;
+}
+
+.body {
+  max-width: 32rem;
+  font-size: var(--text-sm);
+}
+
+.buttons {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.8rem, 3vw, 1.6rem);
+  margin-top: var(--space-md);
+  min-height: 4.5rem;
+}
+
+.yes,
+.no {
+  padding: 0.85rem 2.2rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background var(--dur-normal) ease;
+}
+
+.yes {
+  border: 1px solid var(--c-accent);
+  background: var(--c-accent);
+  color: var(--c-bg-deep);
+}
+
+.yes:hover {
+  background: color-mix(in srgb, var(--c-accent) 82%, white);
+}
+
+.no {
+  border: 1px solid color-mix(in srgb, var(--c-text) 28%, transparent);
+  background: transparent;
+  color: var(--c-text-muted);
+}
+
+.no:hover {
+  color: var(--c-text);
+}
+
+.answer {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.answerText {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+.again {
+  margin-top: var(--space-xs);
+  padding: 0.5rem 1.2rem;
+  border: 1px solid color-mix(in srgb, var(--c-text) 24%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--c-text-muted);
+  font: inherit;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ── centered: polos, hanya teks dan tombol ── */
+
+.centered {
+  padding-block: var(--space-md);
+}
+
+/* ── card: dibungkus kartu kaca ── */
+
+.card {
+  padding: clamp(1.8rem, 4vw, 3rem);
+  background: var(--c-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid color-mix(in srgb, var(--c-text) 12%, transparent);
+  border-radius: var(--radius);
+}
+
+/* ── playful: judul lebih besar, aksen bulat di belakang ── */
+
+.playful {
+  position: relative;
+  padding: clamp(2rem, 5vw, 3.4rem);
+}
+
+.playful::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--c-accent) 16%, transparent),
+    transparent 70%
+  );
+  z-index: -1;
+}
+
+.playful .title {
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.4rem);
+}

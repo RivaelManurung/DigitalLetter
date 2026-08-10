@@ -1,0 +1,73 @@
+.wrap {
+  display: grid;
+  justify-items: center;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.quote {
+  display: grid;
+  gap: var(--space-sm);
+  margin: 0;
+  text-align: center;
+}
+
+.text {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--c-text);
+}
+
+.translation {
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  color: var(--c-text-muted);
+  font-style: italic;
+}
+
+.source {
+  font-size: var(--text-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  font-style: normal;
+}
+
+/* ── centered: paling tenang, hanya teks ── */
+
+.centered .quote::before {
+  content: '';
+  width: 2.5rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--c-accent) 60%, transparent);
+  justify-self: center;
+  margin-bottom: var(--space-xs);
+}
+
+/* ── bordered: bingkai tipis, terasa seperti kartu ── */
+
+.bordered {
+  width: 100%;
+}
+
+.bordered .quote {
+  padding: clamp(1.6rem, 4vw, 3rem);
+  border: 1px solid color-mix(in srgb, var(--c-text) 16%, transparent);
+  border-radius: var(--radius);
+}
+
+/* ── large: kutipan besar, jadi jeda visual ── */
+
+.large .text {
+  font-size: var(--text-2xl);
+  line-height: 1.35;
+}
+
+.large .quote::before {
+  content: '"';
+  font-family: var(--ff-display);
+  font-size: 4rem;
+  line-height: 0.6;
+  color: color-mix(in srgb, var(--c-accent) 45%, transparent);
+}

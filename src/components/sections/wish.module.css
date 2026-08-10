@@ -1,0 +1,110 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.big {
+  font-family: var(--ff-display);
+  font-size: var(--text-hero);
+  line-height: 0.95;
+  color: var(--c-accent);
+  text-shadow: 0 0 60px var(--c-glow);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.body {
+  max-width: 40rem;
+  font-size: var(--text-base);
+}
+
+.wishes {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.wishesTitle {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  text-align: center;
+  color: var(--c-text);
+}
+
+.items {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  align-items: start;
+}
+
+.mark {
+  color: var(--c-accent);
+  padding-top: 0.15em;
+}
+
+.itemText {
+  font-size: var(--text-sm);
+  line-height: 1.72;
+  color: var(--c-text-muted);
+}
+
+.signature {
+  margin-top: var(--space-md);
+  text-align: center;
+  font-family: var(--ff-script, var(--ff-display));
+  font-size: var(--text-lg);
+  color: var(--c-accent);
+}
+
+/* ── spotlight: daftar rapat di tengah ── */
+
+.spotlight {
+  justify-items: start;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+/* ── cards: tiap harapan satu kartu kaca ── */
+
+.cards {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.cards .item {
+  padding: clamp(0.9rem, 2.2vw, 1.4rem);
+  background: var(--c-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid color-mix(in srgb, var(--c-text) 12%, transparent);
+  border-radius: var(--radius);
+}
+
+/* ── list: bergaris pemisah ── */
+
+.list {
+  gap: 0;
+}
+
+.list .item {
+  padding-block: 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--c-text) 12%, transparent);
+}
+
+.list .item:last-child {
+  border-bottom: none;
+}

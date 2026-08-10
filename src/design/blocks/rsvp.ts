@@ -1,0 +1,76 @@
+import { z } from 'zod';
+import { count, defineBlock, flag, richText, text } from './kit';
+
+/**
+ * Konfirmasi kehadiran. Ini satu-satunya block yang menulis ke database dari
+ * sisi publik — jawaban masuk ke tabel `rsvp`, bukan ke content section.
+ */
+export const rsvpBlock = defineBlock({
+  label: 'RSVP',
+  note: 'Formulir konfirmasi kehadiran. Jawaban tampil di tab Publikasi.',
+  group: 'interaksi',
+  // Dua formulir dalam satu surat membingungkan tamu — jawabannya masuk ke tabel yang sama.
+  unique: true,
+  variants: ['card', 'inline', 'minimal'],
+  schema: z.object({
+    eyebrow: text(80).default(''),
+    title: text(120).default('Konfirmasi Kehadiran'),
+    note: richText(400).default(''),
+    nameLabel: text(60).default('Nama'),
+    attendanceLabel: text(60).default('Kehadiran'),
+    yesLabel: text(60).default('Hadir'),
+    noLabel: text(60).default('Tidak hadir'),
+    maybeLabel: text(60).default('Masih ragu'),
+    showGuestCount: flag(true),
+    guestLabel: text(60).default('Jumlah tamu'),
+    maxGuests: count(1, 20, 5),
+    showMessage: flag(true),
+    messageLabel: text(60).default('Ucapan & doa'),
+    submitLabel: text(60).default('Kirim'),
+    thanksTitle: text(120).default('Terima kasih!'),
+    thanksBody: richText(400).default('Konfirmasimu sudah kami terima.'),
+    /** tampilkan ucapan dari tamu lain di bawah formulir */
+    showWishes: flag(true),
+    wishesTitle: text(120).default('Ucapan & Doa'),
+  }),
+  starter: {
+    eyebrow: 'rsvp',
+    title: 'Konfirmasi Kehadiran',
+    note: 'Mohon konfirmasi kehadiran Bapak/Ibu/Saudara/i sebelum tanggal acara.',
+    nameLabel: 'Nama',
+    attendanceLabel: 'Kehadiran',
+    yesLabel: 'Hadir',
+    noLabel: 'Tidak hadir',
+    maybeLabel: 'Masih ragu',
+    showGuestCount: true,
+    guestLabel: 'Jumlah tamu',
+    maxGuests: 5,
+    showMessage: true,
+    messageLabel: 'Ucapan & doa',
+    submitLabel: 'Kirim Konfirmasi',
+    thanksTitle: 'Terima kasih!',
+    thanksBody: 'Konfirmasimu sudah kami terima. Sampai jumpa di hari bahagia kami.',
+    showWishes: true,
+    wishesTitle: 'Ucapan & Doa',
+  },
+  fields: [
+    { key: 'eyebrow', label: 'Eyebrow', kind: 'text' },
+    { key: 'title', label: 'Judul', kind: 'text' },
+    { key: 'note', label: 'Catatan', kind: 'longtext', rows: 2 },
+    { key: 'nameLabel', label: 'Label nama', kind: 'text', span: 'half' },
+    { key: 'attendanceLabel', label: 'Label kehadiran', kind: 'text', span: 'half' },
+    { key: 'yesLabel', label: 'Pilihan hadir', kind: 'text', span: 'third' },
+    { key: 'noLabel', label: 'Pilihan tidak hadir', kind: 'text', span: 'third' },
+    { key: 'maybeLabel', label: 'Pilihan ragu', kind: 'text', span: 'third' },
+    { key: 'showGuestCount', label: 'Tanya jumlah tamu', kind: 'switch' },
+    { key: 'guestLabel', label: 'Label jumlah tamu', kind: 'text', span: 'half' },
+    { key: 'maxGuests', label: 'Maksimal tamu', kind: 'number', min: 1, max: 20, span: 'half' },
+    { key: 'showMessage', label: 'Tanya ucapan & doa', kind: 'switch' },
+    { key: 'messageLabel', label: 'Label ucapan', kind: 'text' },
+    { key: 'submitLabel', label: 'Teks tombol kirim', kind: 'text' },
+    { key: 'thanksTitle', label: 'Judul setelah kirim', kind: 'text' },
+    { key: 'thanksBody', label: 'Pesan setelah kirim', kind: 'longtext', rows: 2 },
+    { key: 'showWishes', label: 'Tampilkan ucapan tamu lain', kind: 'switch' },
+    { key: 'wishesTitle', label: 'Judul daftar ucapan', kind: 'text' },
+  ],
+});

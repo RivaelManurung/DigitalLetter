@@ -1,14 +1,21 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { parseSectionContent } from '@/design/schemas';
-import { GLYPH_NAMES, GLYPH_LABEL } from '@/components/graphics/icon-glyph';
+import {
+  fieldsOf,
+  isListSpec,
+  parseSectionContent,
+  type FieldSpec,
+  type LeafSpec,
+  type ListSpec,
+} from '@/design/blocks';
 import type { MediaRecord, SectionRecord } from '@/design/types';
 import { updateSectionContent } from '@/lib/actions/letter';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Select, Textarea } from '@/components/ui/field';
+import { cn } from '@/lib/utils';
 
 type Props = {
   section: SectionRecord;
@@ -19,9 +26,11 @@ type Props = {
 const SAVE_DEBOUNCE_MS = 700;
 
 /**
- * Form dibangun dari bentuk konten tiap tipe. Perubahan langsung tampil di
- * preview (state lokal), lalu disimpan ke database setelah user berhenti
- * mengetik — bukan tiap ketukan tombol.
+ * Form dibangkitkan dari spec block — tidak ada cabang per tipe di sini.
+ * Menambah field di sebuah block otomatis memunculkan input yang sesuai.
+ *
+ * Perubahan langsung tampil di preview (state lokal), lalu disimpan ke
+ * database setelah user berhenti mengetik — bukan tiap ketukan tombol.
  */
 export function SectionForm({ section, media, onLocalChange }: Props) {
   const [content, setContent] = useState<Record<string, unknown>>(section.content);
@@ -59,9 +68,29 @@ export function SectionForm({ section, media, onLocalChange }: Props) {
     onLocalChange(next);
   }
 
+  const fields = fieldsOf(section.type);
+  // Nilai lewat schema dulu supaya field yang baru ditambahkan ke sebuah
+  // block tetap punya nilai awal, bukan undefined.
+  const parsed = useMemo(
+    () => parseSectionContent(section.type, content) as Record<string, unknown>,
+    [section.type, content],
+  );
+
   return (
     <div className="grid gap-3">
-      {renderFields(section, content, set, media)}
+      {groupRows(fields).map((row, index) => (
+        <div key={index} className={rowClass(row)}>
+          {row.map((field) => (
+            <FieldRenderer
+              key={field.key}
+              field={field}
+              value={parsed[field.key]}
+              media={media}
+              onChange={(value) => set(field.key, value)}
+            />
+          ))}
+        </div>
+      ))}
 
       <p className="text-[11px] text-muted-foreground">
         {saving ? 'Menyimpan…' : 'Tersimpan otomatis'}
@@ -74,287 +103,329 @@ export function SectionForm({ section, media, onLocalChange }: Props) {
   );
 }
 
-function renderFields(
-  section: SectionRecord,
-  content: Record<string, unknown>,
-  set: (key: string, value: unknown) => void,
-  media: MediaRecord[],
-) {
-  const str = (key: string) => String(content[key] ?? '');
+/* ── Tata letak ────────────────────────────────────────────────
+ * Field bertanda span 'half'/'third' yang berurutan digabung jadi satu
+ * baris grid. Field 'full' dan daftar selalu berdiri sendiri.
+ */
 
-  switch (section.type) {
-    case 'intro':
+function groupRows(fields: FieldSpec[]): FieldSpec[][] {
+  const rows: FieldSpec[][] = [];
+  let current: FieldSpec[] = [];
+
+  const limit = (field: FieldSpec) =>
+    !isListSpec(field) && field.span === 'third' ? 3 : 2;
+
+  for (const field of fields) {
+    const span = isListSpec(field) ? undefined : field.span;
+
+    if (!span || span === 'full') {
+      if (current.length) rows.push(current);
+      current = [];
+      rows.push([field]);
+      continue;
+    }
+
+    const head = current[0];
+    const sameSpan = head && !isListSpec(head) && head.span === span;
+
+    if (sameSpan && current.length < limit(field)) {
+      current.push(field);
+      if (current.length === limit(field)) {
+        rows.push(current);
+        current = [];
+      }
+    } else {
+      if (current.length) rows.push(current);
+      current = [field];
+    }
+  }
+
+  if (current.length) rows.push(current);
+  return rows;
+}
+
+function rowClass(row: FieldSpec[]): string {
+  if (row.length < 2) return 'grid gap-3';
+  return row.length === 3 ? 'grid grid-cols-3 gap-2' : 'grid grid-cols-2 gap-2';
+}
+
+/* ── Satu field ────────────────────────────────────────────── */
+
+function FieldRenderer({
+  field,
+  value,
+  media,
+  onChange,
+}: {
+  field: FieldSpec;
+  value: unknown;
+  media: MediaRecord[];
+  onChange: (value: unknown) => void;
+}) {
+  if (isListSpec(field)) {
+    return (
+      <ListEditor
+        spec={field}
+        items={Array.isArray(value) ? (value as Record<string, unknown>[]) : []}
+        media={media}
+        onChange={onChange}
+      />
+    );
+  }
+
+  return <LeafField field={field} value={value} media={media} onChange={onChange} />;
+}
+
+function LeafField({
+  field,
+  value,
+  media,
+  onChange,
+}: {
+  field: LeafSpec;
+  value: unknown;
+  media: MediaRecord[];
+  onChange: (value: unknown) => void;
+}) {
+  const photos = media.filter((m) => m.kind === 'photo');
+
+  switch (field.kind) {
+    case 'longtext':
       return (
-        <>
-          <Field label="Teks ajakan">
-            <Input value={str('hint')} onChange={(e) => set('hint', e.target.value)} />
-          </Field>
-          <Field label="Label di atas kado" hint="Kosongkan kalau tidak perlu">
-            <Input value={str('label')} onChange={(e) => set('label', e.target.value)} />
-          </Field>
-        </>
+        <Field label={field.label} hint={field.hint}>
+          <Textarea
+            rows={field.rows ?? 4}
+            value={String(value ?? '')}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </Field>
       );
 
-    case 'hero':
+    case 'select':
       return (
-        <>
-          <Field label="Eyebrow">
-            <Input value={str('eyebrow')} onChange={(e) => set('eyebrow', e.target.value)} />
-          </Field>
-          <div className="grid grid-cols-2 gap-2">
-            <Field label="Judul baris 1">
-              <Input value={str('titleTop')} onChange={(e) => set('titleTop', e.target.value)} />
-            </Field>
-            <Field label="Judul baris 2" hint="Ditampilkan miring & beraksen">
-              <Input
-                value={str('titleBottom')}
-                onChange={(e) => set('titleBottom', e.target.value)}
+        <Field label={field.label} hint={field.hint}>
+          <Select value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}>
+            {field.options?.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      );
+
+    case 'number':
+      return (
+        <Field label={field.label} hint={field.hint}>
+          <Input
+            type="number"
+            min={field.min}
+            max={field.max}
+            step={field.step ?? 1}
+            value={Number.isFinite(Number(value)) ? Number(value) : ''}
+            onChange={(e) => {
+              const next = e.target.value === '' ? '' : Number(e.target.value);
+              onChange(next === '' ? field.min ?? 0 : next);
+            }}
+          />
+        </Field>
+      );
+
+    case 'switch':
+      return (
+        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
+          <span className="grid gap-0.5">
+            <span className="text-xs font-medium">{field.label}</span>
+            {field.hint && (
+              <span className="text-[11px] text-muted-foreground">{field.hint}</span>
+            )}
+          </span>
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(e) => onChange(e.target.checked)}
+            className="h-4 w-4 shrink-0 cursor-pointer accent-foreground"
+          />
+        </label>
+      );
+
+    case 'datetime':
+      return (
+        <Field label={field.label} hint={field.hint}>
+          <Input
+            type="datetime-local"
+            value={toDatetimeLocal(value)}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </Field>
+      );
+
+    case 'photo':
+      return (
+        <Field
+          label={field.label}
+          hint={photos.length ? field.hint : 'Unggah foto dulu di tab Media.'}
+        >
+          <div className="flex flex-wrap gap-2">
+            <PhotoChip
+              active={!value}
+              onClick={() => onChange('')}
+              label="Tanpa foto"
+            />
+            {photos.map((photo) => (
+              <PhotoThumb
+                key={photo.id}
+                photo={photo}
+                active={value === photo.id}
+                onClick={() => onChange(value === photo.id ? '' : photo.id)}
               />
-            </Field>
+            ))}
           </div>
-          <Field label="Subjudul">
-            <Textarea value={str('subtitle')} onChange={(e) => set('subtitle', e.target.value)} />
-          </Field>
-          <Field label="Teks scroll">
-            <Input
-              value={str('scrollLabel')}
-              onChange={(e) => set('scrollLabel', e.target.value)}
-            />
-          </Field>
-        </>
+        </Field>
       );
 
-    case 'letter':
+    case 'photos': {
+      const selected = Array.isArray(value) ? (value as string[]) : [];
       return (
-        <>
-          <Field label="Label">
-            <Input value={str('label')} onChange={(e) => set('label', e.target.value)} />
-          </Field>
-          <Field label="Judul">
-            <Input value={str('title')} onChange={(e) => set('title', e.target.value)} />
-          </Field>
-          <Field label="Isi surat">
-            <Textarea
-              rows={9}
-              value={str('body')}
-              onChange={(e) => set('body', e.target.value)}
-            />
-          </Field>
-          <Field label="Tanda tangan">
-            <Input value={str('signature')} onChange={(e) => set('signature', e.target.value)} />
-          </Field>
-        </>
-      );
-
-    case 'reasons': {
-      const parsed = parseSectionContent('reasons', content);
-      return (
-        <>
-          <Field label="Eyebrow">
-            <Input value={str('eyebrow')} onChange={(e) => set('eyebrow', e.target.value)} />
-          </Field>
-          <Field label="Judul">
-            <Input value={str('title')} onChange={(e) => set('title', e.target.value)} />
-          </Field>
-
-          <ArrayEditor
-            label="Alasan"
-            items={parsed.items}
-            onChange={(items) => set('items', items)}
-            create={() => ({ icon: 'rose', title: '', body: '' })}
-            render={(item, update) => (
-              <>
-                <div className="grid grid-cols-[110px_1fr] gap-2">
-                  <Field label="Ikon">
-                    <Select
-                      value={item.icon}
-                      onChange={(e) => update({ ...item, icon: e.target.value })}
-                    >
-                      {GLYPH_NAMES.map((name) => (
-                        <option key={name} value={name}>
-                          {GLYPH_LABEL[name]}
-                        </option>
-                      ))}
-                    </Select>
-                  </Field>
-                  <Field label="Judul">
-                    <Input
-                      value={item.title}
-                      onChange={(e) => update({ ...item, title: e.target.value })}
-                    />
-                  </Field>
-                </div>
-                <Field label="Teks">
-                  <Textarea
-                    rows={2}
-                    value={item.body}
-                    onChange={(e) => update({ ...item, body: e.target.value })}
-                  />
-                </Field>
-              </>
-            )}
-          />
-        </>
+        <Field
+          label={field.label}
+          hint={
+            photos.length
+              ? 'Kosongkan semua untuk memakai seluruh foto yang diunggah.'
+              : 'Unggah foto dulu di tab Media.'
+          }
+        >
+          <div className="grid grid-cols-4 gap-2">
+            {photos.map((photo) => (
+              <PhotoThumb
+                key={photo.id}
+                photo={photo}
+                active={selected.includes(photo.id)}
+                square
+                onClick={() =>
+                  onChange(
+                    selected.includes(photo.id)
+                      ? selected.filter((id) => id !== photo.id)
+                      : [...selected, photo.id],
+                  )
+                }
+              />
+            ))}
+          </div>
+        </Field>
       );
     }
 
-    case 'garden': {
-      const parsed = parseSectionContent('garden', content);
-      return (
-        <>
-          <Field label="Eyebrow">
-            <Input value={str('eyebrow')} onChange={(e) => set('eyebrow', e.target.value)} />
-          </Field>
-          <Field label="Judul">
-            <Input value={str('title')} onChange={(e) => set('title', e.target.value)} />
-          </Field>
-          <Field label="Catatan bawah">
-            <Input value={str('note')} onChange={(e) => set('note', e.target.value)} />
-          </Field>
-
-          <ArrayEditor
-            label="Bunga"
-            items={parsed.flowers}
-            onChange={(flowers) => set('flowers', flowers)}
-            create={() => ({ flower: 'rose', name: '', meaning: '' })}
-            render={(item, update) => (
-              <div className="grid grid-cols-3 gap-2">
-                <Field label="Bentuk">
-                  <Select
-                    value={item.flower}
-                    onChange={(e) => update({ ...item, flower: e.target.value })}
-                  >
-                    {GLYPH_NAMES.map((name) => (
-                      <option key={name} value={name}>
-                        {GLYPH_LABEL[name]}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-                <Field label="Nama">
-                  <Input
-                    value={item.name}
-                    onChange={(e) => update({ ...item, name: e.target.value })}
-                  />
-                </Field>
-                <Field label="Makna">
-                  <Input
-                    value={item.meaning}
-                    onChange={(e) => update({ ...item, meaning: e.target.value })}
-                  />
-                </Field>
-              </div>
-            )}
-          />
-        </>
-      );
-    }
-
-    case 'gallery': {
-      const parsed = parseSectionContent('gallery', content);
-      const photos = media.filter((m) => m.kind === 'photo');
-      const selected = parsed.mediaIds;
-
-      return (
-        <>
-          <Field label="Eyebrow">
-            <Input value={str('eyebrow')} onChange={(e) => set('eyebrow', e.target.value)} />
-          </Field>
-          <Field label="Judul">
-            <Input value={str('title')} onChange={(e) => set('title', e.target.value)} />
-          </Field>
-
-          <Field
-            label="Foto yang dipakai"
-            hint={
-              photos.length
-                ? 'Kosongkan semua untuk memakai seluruh foto yang diunggah.'
-                : 'Unggah foto dulu di tab Media.'
-            }
-          >
-            <div className="grid grid-cols-4 gap-2">
-              {photos.map((photo) => {
-                const active = selected.includes(photo.id);
-                return (
-                  <button
-                    key={photo.id}
-                    type="button"
-                    onClick={() =>
-                      set(
-                        'mediaIds',
-                        active
-                          ? selected.filter((id) => id !== photo.id)
-                          : [...selected, photo.id],
-                      )
-                    }
-                    aria-pressed={active}
-                    className={`aspect-square overflow-hidden rounded-md border-2 transition-colors ${
-                      active ? 'border-foreground' : 'border-transparent opacity-60'
-                    }`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={photo.url}
-                      alt={photo.caption ?? ''}
-                      className="h-full w-full object-cover"
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          </Field>
-        </>
-      );
-    }
-
-    case 'finale':
-      return (
-        <>
-          <Field label="Eyebrow">
-            <Input value={str('eyebrow')} onChange={(e) => set('eyebrow', e.target.value)} />
-          </Field>
-          <Field label="Judul">
-            <Input value={str('title')} onChange={(e) => set('title', e.target.value)} />
-          </Field>
-          <Field label="Isi">
-            <Textarea rows={5} value={str('body')} onChange={(e) => set('body', e.target.value)} />
-          </Field>
-          <Field label="Tanda tangan">
-            <Input value={str('signature')} onChange={(e) => set('signature', e.target.value)} />
-          </Field>
-        </>
-      );
-
+    case 'text':
     default:
-      return null;
+      return (
+        <Field label={field.label} hint={field.hint}>
+          <Input value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} />
+        </Field>
+      );
   }
 }
 
-/** Editor daftar generik — dipakai untuk "alasan" dan "bunga". */
-function ArrayEditor<T>({
-  label,
-  items,
-  onChange,
-  create,
-  render,
+/**
+ * <input type="datetime-local"> menolak nilai yang berdetik atau berzona.
+ * Konten bisa berisi keduanya (mis. hasil impor markdown), jadi dipangkas
+ * ke bentuk yang diterima: YYYY-MM-DDTHH:mm.
+ */
+function toDatetimeLocal(value: unknown): string {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+
+  const match = /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/.exec(raw);
+  if (match) return `${match[1]}T${match[2]}`;
+
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours(),
+  )}:${pad(date.getMinutes())}`;
+}
+
+function PhotoThumb({
+  photo,
+  active,
+  square,
+  onClick,
 }: {
+  photo: MediaRecord;
+  active: boolean;
+  square?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'overflow-hidden rounded-md border-2 transition-colors',
+        square ? 'aspect-square' : 'h-14 w-14',
+        active ? 'border-foreground' : 'border-transparent opacity-60',
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={photo.url}
+        alt={photo.caption ?? ''}
+        className="h-full w-full object-cover"
+      />
+    </button>
+  );
+}
+
+function PhotoChip({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
   label: string;
-  items: T[];
-  onChange: (items: T[]) => void;
-  create: () => T;
-  render: (item: T, update: (next: T) => void) => React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'h-14 rounded-md border-2 px-3 text-[11px] text-muted-foreground transition-colors',
+        active ? 'border-foreground text-foreground' : 'border-border',
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
+/** Editor daftar generik — dibangkitkan dari spec item. */
+function ListEditor({
+  spec,
+  items,
+  media,
+  onChange,
+}: {
+  spec: ListSpec;
+  items: Record<string, unknown>[];
+  media: MediaRecord[];
+  onChange: (items: Record<string, unknown>[]) => void;
 }) {
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
-          {label} ({items.length})
+          {spec.label} ({items.length})
         </span>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => onChange([...items, create()])}
+          onClick={() => onChange([...items, spec.create()])}
         >
           <Plus size={12} />
           Tambah
@@ -364,20 +435,39 @@ function ArrayEditor<T>({
       <ul className="grid gap-2">
         {items.map((item, index) => (
           <li key={index} className="grid gap-2 rounded-lg border border-border p-2.5">
-            {render(item, (next) =>
-              onChange(items.map((it, i) => (i === index ? next : it))),
-            )}
+            {groupRows(spec.fields).map((row, rowIndex) => (
+              <div key={rowIndex} className={rowClass(row)}>
+                {row.map((field) => (
+                  <FieldRenderer
+                    key={field.key}
+                    field={field}
+                    value={item[field.key]}
+                    media={media}
+                    onChange={(value) =>
+                      onChange(
+                        items.map((it, i) =>
+                          i === index ? { ...it, [field.key]: value } : it,
+                        ),
+                      )
+                    }
+                  />
+                ))}
+              </div>
+            ))}
+
             <button
               type="button"
               onClick={() => onChange(items.filter((_, i) => i !== index))}
               className="justify-self-end rounded p-1 text-muted-foreground hover:text-danger"
-              aria-label={`Hapus ${label} ${index + 1}`}
+              aria-label={`Hapus ${spec.label} ${index + 1}`}
             >
               <Trash2 size={13} />
             </button>
           </li>
         ))}
       </ul>
+
+      {spec.hint && <p className="text-[11px] text-muted-foreground">{spec.hint}</p>}
     </div>
   );
 }

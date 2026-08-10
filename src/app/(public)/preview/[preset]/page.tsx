@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { DESIGN_PRESETS } from '@/design/presets';
 import { fontPairHref } from '@/design/fonts';
-import { SECTION_TYPES, type LetterBundle } from '@/design/types';
+import { OCCASIONS } from '@/design/occasions';
+import type { LetterBundle } from '@/design/types';
 import { starterContent } from '@/lib/defaults';
 import { LetterView } from '@/components/letter/letter-view';
 import '@/styles/letter.css';
@@ -28,12 +29,15 @@ export default async function PresetPreviewPage({ params }: Params) {
     slug: preset,
     recipientName: '',
     design,
-    sections: SECTION_TYPES.map((type, index) => ({
+    // Contoh memakai susunan "Surat Cinta" — merender seluruh block sekaligus
+    // akan jadi halaman yang tidak mewakili surat mana pun.
+    sections: OCCASIONS.love.sections.map((type, index) => ({
       id: `${preset}-${type}`,
       type,
       order: index,
       // galeri butuh media; contoh ini tidak punya, jadi dimatikan
       enabled: type !== 'gallery',
+      variant: '',
       content: starterContent(type),
     })),
     media: [],

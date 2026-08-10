@@ -57,6 +57,8 @@ export const section = pgTable(
     type: text('type').$type<SectionType>().notNull(),
     order: integer('order').notNull().default(0),
     enabled: boolean('enabled').notNull().default(true),
+    /** varian layout khusus section ini; '' = ikut varian bawaan desain */
+    variant: text('variant').notNull().default(''),
     content: jsonb('content').$type<Record<string, unknown>>().notNull().default({}),
   },
   (t) => [index('section_letter_order_idx').on(t.letterId, t.order)],
@@ -96,6 +98,28 @@ export const letterView = pgTable(
   (t) => [index('letter_view_letter_idx').on(t.letterId, t.viewedAt)],
 );
 
+/**
+ * Konfirmasi kehadiran dari tamu. Satu-satunya tabel yang ditulis dari sisi
+ * publik, jadi kolomnya sengaja sedikit dan tidak menyimpan data pribadi
+ * selain nama yang diisi sendiri oleh tamu.
+ */
+export const rsvp = pgTable(
+  'rsvp',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    letterId: uuid('letter_id')
+      .notNull()
+      .references(() => letter.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    attendance: text('attendance', { enum: ['yes', 'no', 'maybe'] }).notNull(),
+    guests: integer('guests').notNull().default(1),
+    message: text('message'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index('rsvp_letter_idx').on(t.letterId, t.createdAt)],
+);
+
 export type Letter = typeof letter.$inferSelect;
 export type Section = typeof section.$inferSelect;
 export type Media = typeof media.$inferSelect;
+export type Rsvp = typeof rsvp.$inferSelect;

@@ -29,6 +29,7 @@ function toSections(rows: (typeof section.$inferSelect)[]): SectionRecord[] {
     type: row.type,
     order: row.order,
     enabled: row.enabled,
+    variant: row.variant,
     content: row.content,
   }));
 }
