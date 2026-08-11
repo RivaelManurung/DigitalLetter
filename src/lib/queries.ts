@@ -38,6 +38,7 @@ function toSections(rows: (typeof section.$inferSelect)[]): SectionRecord[] {
     enabled: row.enabled,
     variant: row.variant,
     content: row.content,
+    style: row.style ?? undefined,
   }));
 }
 

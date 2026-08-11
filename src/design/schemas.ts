@@ -30,6 +30,37 @@ const hexOrRgba = z
     'Warna harus hex (#rrggbb) atau rgba()',
   );
 
+/**
+ * Latar section: warna biasa, atau gradien linear/radial.
+ *
+ * Nilainya masuk ke properti CSS `background`, jadi bentuknya dibatasi ketat
+ * lewat daftar-putih — bukan sekadar "string bebas". Tanpa pagar ini sebuah
+ * nilai seperti `url(...)` atau `image-set(...)` bisa menarik sumber luar
+ * dari halaman surat yang dilihat publik.
+ */
+const bgValue = z
+  .string()
+  .trim()
+  .max(400)
+  .refine(
+    (value) =>
+      /^(#[0-9a-fA-F]{3,8}|rgba?\([\d.,\s%]+\))$/.test(value) ||
+      /^(linear|radial)-gradient\([#0-9a-zA-Z.,()%\s-]+\)$/.test(value),
+    { message: 'Latar harus warna hex/rgba atau linear-gradient()/radial-gradient()' },
+  );
+
+/**
+ * Gambar latar section. Hanya menerima path relatif atau https — nilainya
+ * dibungkus url() saat dirender, jadi bentuk bebas tidak boleh lolos.
+ */
+const imageUrl = z
+  .string()
+  .trim()
+  .max(600)
+  .refine((value) => /^(\/[^\s"')]*|https:\/\/[^\s"')]+)$/.test(value), {
+    message: 'Gambar harus path relatif (/...) atau URL https',
+  });
+
 export const paletteSchema = z.object({
   bgDeep: hexOrRgba,
   bgMid: hexOrRgba,
@@ -98,6 +129,36 @@ export const designSchema = z.object({
     glassBlur: z.number().min(0).max(40),
   }),
   variants: variantsSchema,
+});
+
+/**
+ * Penyesuaian tampilan per section.
+ *
+ * Semua opsional — tidak diisi berarti "ikut desain surat". Batas nilainya
+ * sengaja ketat: panel ini dipakai untuk menyetel rasa, bukan untuk membuat
+ * section yang tidak terbaca.
+ */
+export const sectionStyleSchema = z.object({
+  bg: bgValue.optional(),
+  bgImage: imageUrl.optional(),
+  bgOverlay: z.number().min(0).max(1).optional(),
+  text: hexOrRgba.optional(),
+  textMuted: hexOrRgba.optional(),
+  accent: hexOrRgba.optional(),
+
+  fontPair: z.string().trim().max(60).optional(),
+  titleScale: z.number().min(0.5).max(2.5).optional(),
+  bodyScale: z.number().min(0.5).max(2).optional(),
+  titleTracking: z.number().min(-0.1).max(0.5).optional(),
+
+  padTop: z.number().min(0).max(24).optional(),
+  padBottom: z.number().min(0).max(24).optional(),
+  maxWidth: z.number().min(320).max(1600).optional(),
+  align: z.enum(['left', 'center', 'right']).optional(),
+
+  reveal: z.enum(['fade-up', 'fade', 'blur-in']).optional(),
+  speed: z.number().min(0.4).max(2).optional(),
+  particleDensity: z.number().min(0).max(1).optional(),
 });
 
 export const slugSchema = z

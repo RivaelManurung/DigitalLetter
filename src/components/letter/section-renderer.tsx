@@ -3,6 +3,7 @@ import { isCustomType, parseWith, resolveVariantWith } from '@/design/blocks/res
 import type { DesignSpec, MediaRecord, SectionRecord } from '@/design/types';
 import { CustomSection } from '../sections/custom';
 import { BLOCK_RENDERERS } from './block-renderers';
+import { SectionShell } from './section-shell';
 
 type Props = {
   section: SectionRecord;
@@ -33,28 +34,53 @@ export function SectionRenderer({ section, design, media, letterId, registry }: 
 
   const content = parseWith(registry, section.type, section.content);
 
-  if (isCustomType(section.type)) {
+  // Section boleh memilih gaya reveal sendiri. Komponen membacanya dari
+  // `design.motion.reveal`, jadi penyesuaiannya dititipkan lewat salinan
+  // design — bukan dengan menambah prop ke 20 komponen section.
+  const scoped = scopeDesign(design, section.style);
+
+  const body = isCustomType(section.type) ? (
+    <CustomSection
+      content={content}
+      design={scoped}
+      variant={variant}
+      media={media}
+      fields={block.fields}
+    />
+  ) : (
+    renderBlock()
+  );
+
+  function renderBlock() {
+    const Renderer = BLOCK_RENDERERS[section.type as keyof typeof BLOCK_RENDERERS];
+    if (!Renderer) return null;
+
     return (
-      <CustomSection
+      <Renderer
         content={content}
-        design={design}
+        design={scoped}
         variant={variant}
         media={media}
-        fields={block.fields}
+        letterId={letterId}
       />
     );
   }
 
-  const Renderer = BLOCK_RENDERERS[section.type as keyof typeof BLOCK_RENDERERS];
-  if (!Renderer) return null;
+  if (!body) return null;
 
-  return (
-    <Renderer
-      content={content}
-      design={design}
-      variant={variant}
-      media={media}
-      letterId={letterId}
-    />
-  );
+  return <SectionShell style={section.style}>{body}</SectionShell>;
+}
+
+/** Salinan design dengan penyesuaian milik section — tanpa mengubah aslinya. */
+function scopeDesign(design: DesignSpec, style: SectionRecord['style']): DesignSpec {
+  if (!style?.reveal && typeof style?.particleDensity !== 'number') return design;
+
+  return {
+    ...design,
+    motion: { ...design.motion, reveal: style.reveal ?? design.motion.reveal },
+    particles: {
+      ...design.particles,
+      density: style.particleDensity ?? design.particles.density,
+    },
+  };
 }

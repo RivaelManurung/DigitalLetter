@@ -87,6 +87,52 @@ export type DesignSpec = {
  */
 export type AnySectionType = SectionTypeRef | (string & {});
 
+/**
+ * Penyesuaian tampilan milik SATU section.
+ *
+ * Semua field opsional dan semuanya berarti "timpa desain surat". Field yang
+ * tidak diisi tidak menghasilkan CSS apa pun, jadi section tanpa style sama
+ * sekali berperilaku persis seperti sebelum fitur ini ada — inilah yang
+ * membuat surat lama tetap tampil sama.
+ */
+export type SectionStyle = {
+  /* — warna — */
+  /** latar khusus section; kosong = ikut latar surat */
+  bg?: string;
+  /** gambar latar (url); ditumpuk di atas `bg` */
+  bgImage?: string;
+  /** 0–1, gelap-kan gambar latar supaya teks tetap terbaca */
+  bgOverlay?: number;
+  text?: string;
+  textMuted?: string;
+  accent?: string;
+
+  /* — tipografi — */
+  /** id dari FONT_PAIRS; kosong = ikut font surat */
+  fontPair?: string;
+  /** pengali ukuran judul, 1 = normal */
+  titleScale?: number;
+  /** pengali ukuran teks isi, 1 = normal */
+  bodyScale?: number;
+  /** em, jarak antar huruf pada judul */
+  titleTracking?: number;
+
+  /* — jarak & tata letak — */
+  /** rem, padding atas & bawah; kosong = ikut --space-section */
+  padTop?: number;
+  padBottom?: number;
+  /** px, lebar maksimum isi section */
+  maxWidth?: number;
+  align?: 'left' | 'center' | 'right';
+
+  /* — animasi & efek — */
+  reveal?: RevealKind;
+  /** pengali kecepatan animasi khusus section ini */
+  speed?: number;
+  /** 0–1; menimpa kerapatan partikel surat pada section ini */
+  particleDensity?: number;
+};
+
 /** Satu section di dalam surat. `content` divalidasi oleh schema per tipe. */
 export type SectionRecord = {
   id: string;
@@ -99,6 +145,8 @@ export type SectionRecord = {
    */
   variant: string;
   content: Record<string, unknown>;
+  /** Penyesuaian tampilan khusus section ini. Kosong = ikut desain surat. */
+  style?: SectionStyle;
 };
 
 export type MediaRecord = {

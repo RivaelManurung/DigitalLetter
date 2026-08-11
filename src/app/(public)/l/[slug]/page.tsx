@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { fontPairHref } from '@/design/fonts';
+import { fontPairHref, usedFontPairIds } from '@/design/fonts';
 import { LetterView } from '@/components/letter/letter-view';
 import { ViewTracker } from '@/components/letter/view-tracker';
 import { getLetterBundleBySlug, getLetterMeta } from '@/lib/queries';
@@ -50,10 +50,13 @@ export default async function LetterPage({ params }: Params) {
 
   return (
     <>
-      {/* Font dimuat per-surat karena tiap desain memakai pasangan berbeda */}
+      {/* Font dimuat per-surat karena tiap desain memakai pasangan berbeda.
+          Section yang memilih fontnya sendiri ikut dimuat di sini. */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="stylesheet" href={fontPairHref(bundle.design.fontPair)} />
+      {usedFontPairIds(bundle.design.fontPair, bundle.sections).map((id) => (
+        <link key={id} rel="stylesheet" href={fontPairHref(id)} />
+      ))}
 
       <ViewTracker slug={slug} />
       <LetterView letter={bundle} />

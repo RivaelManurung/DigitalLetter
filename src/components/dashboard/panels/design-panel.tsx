@@ -22,7 +22,12 @@ import { Card, CardHeader } from '@/components/ui/surface';
 import { PresetPicker } from '../preset-picker';
 
 type Props = {
-  letterId: string;
+  /**
+   * Id surat untuk autosave. Dikosongkan saat panel dipakai di editor
+   * template — di sana desain ikut disimpan bersama seluruh draft, jadi
+   * panel ini murni terkendali dan tidak menulis ke database sendiri.
+   */
+  letterId?: string;
   design: DesignSpec;
   onChange: (design: DesignSpec) => void;
 };
@@ -45,6 +50,8 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
   const first = useRef(true);
 
   useEffect(() => {
+    if (!letterId) return; // mode template: induk yang menyimpan
+
     if (first.current) {
       first.current = false;
       return;
@@ -95,7 +102,11 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
     <div className="grid gap-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {saving ? 'Menyimpan desain…' : 'Desain tersimpan'}
+          {!letterId
+            ? 'Ikut tersimpan bersama template'
+            : saving
+              ? 'Menyimpan desain…'
+              : 'Desain tersimpan'}
         </p>
         <Button variant="outline" size="sm" onClick={randomize}>
           <Dices size={13} />

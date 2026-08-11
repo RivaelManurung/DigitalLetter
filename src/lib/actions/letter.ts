@@ -5,7 +5,7 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { customBlock, letter, letterTemplate, media, section } from '@/db/schema';
-import { designSchema, slugSchema } from '@/design/schemas';
+import { designSchema, sectionStyleSchema, slugSchema } from '@/design/schemas';
 import { getPreset } from '@/design/presets';
 import { createRegistry, parseWith, starterWith } from '@/design/blocks/resolve';
 import { OCCASIONS, isOccasionId, type OccasionId } from '@/design/occasions';
@@ -348,6 +348,39 @@ export async function setSectionVariant(input: unknown): Promise<ActionResult> {
   }
 }
 
+export async function setSectionStyle(input: unknown): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const { sectionId, style } = z
+      .object({
+        sectionId: z.string().uuid(),
+        style: sectionStyleSchema,
+      })
+      .parse(input);
+
+    // Field kosong dibuang, bukan disimpan sebagai undefined: baris style yang
+    // bersih membuat "ikut desain surat" bisa dibedakan dari "sengaja diisi".
+    await db
+      .update(section)
+      .set({ style: prune(style) })
+      .where(eq(section.id, sectionId));
+
+    await touchLetterBySection(sectionId);
+    return { ok: true };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Membuang kunci kosong supaya objek style tidak menumpuk nilai tak berarti. */
+function prune<T extends Record<string, unknown>>(value: T): T {
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      ([, v]) => v !== undefined && v !== null && v !== '',
+    ),
+  ) as T;
+}
+
 export async function deleteSection(sectionId: string): Promise<ActionResult> {
   try {
     await requireAdmin();
@@ -483,7 +516,13 @@ export async function importSectionsMarkdown(
 type LoadedTemplate = {
   preset: string;
   design: DesignSpec | null;
-  sections: { type: string; variant: string; enabled: boolean; content?: unknown }[];
+  sections: {
+    type: string;
+    variant: string;
+    enabled: boolean;
+    content?: unknown;
+    style?: unknown;
+  }[];
 };
 
 async function loadTemplate(id: string): Promise<LoadedTemplate | null> {
@@ -528,6 +567,10 @@ async function sectionsFromTemplate(
       content.label = `Untuk ${recipient}`;
     }
 
+    // Style dari template ikut turun ke surat. Nilai yang tidak lolos
+    // validasi diabaikan diam-diam — template lama tetap bisa dipakai.
+    const style = sectionStyleSchema.safeParse(item.style ?? {});
+
     rows.push({
       letterId,
       type: item.type,
@@ -535,6 +578,7 @@ async function sectionsFromTemplate(
       enabled: item.enabled ?? true,
       variant: item.variant ?? '',
       content,
+      style: style.success ? prune(style.data) : {},
     });
     order += 1;
   }

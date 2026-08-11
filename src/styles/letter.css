@@ -135,16 +135,84 @@
 
 /* ── Section & tipografi dasar ── */
 
+/* Padding & lebar memakai fallback: kalau panel Design section tidak mengisi
+   variabelnya, nilai bawaan desain surat yang dipakai. */
 .section {
   position: relative;
   z-index: 3;
-  padding-block: var(--space-section);
+  padding-block: var(--section-pad-top, var(--space-section))
+    var(--section-pad-bottom, var(--space-section));
   padding-inline: clamp(1.25rem, 5vw, 4rem);
 }
 
 .section-inner {
-  max-width: 1180px;
+  max-width: var(--section-max-width, 1180px);
   margin-inline: auto;
+}
+
+/* ── Penyesuaian per section (panel Design) ───────────────────────────────
+   Dipasang oleh <SectionShell>. Tanpa atribut ini section berperilaku persis
+   seperti sebelumnya. */
+
+.section-shell {
+  position: relative;
+}
+
+/* Latar khusus section — di belakang konten, di atas surface surat. */
+.section-shell[data-has-bg] > .section {
+  isolation: isolate;
+}
+
+.section-shell[data-has-bg] > .section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--section-bg, transparent);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Peredup gambar latar, supaya teks tetap terbaca di atas foto apa pun. */
+.section-shell[data-has-bg] > .section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(
+    in srgb,
+    var(--c-bg-deep) calc(var(--section-overlay, 0) * 100%),
+    transparent
+  );
+}
+
+.section-shell[data-align='center'] {
+  text-align: center;
+}
+
+.section-shell[data-align='center'] :is(.body-text, .measure) {
+  margin-inline: auto;
+}
+
+.section-shell[data-align='right'] {
+  text-align: right;
+}
+
+.section-shell[data-align='right'] :is(.body-text, .measure) {
+  margin-inline: auto 0;
+}
+
+.section-shell[data-align='left'] {
+  text-align: left;
+}
+
+.section-shell[data-align='left'] :is(.body-text, .measure) {
+  margin-inline: 0 auto;
+}
+
+/* Jarak antar huruf judul — hanya aktif kalau panel mengisinya. */
+.section-shell .display {
+  letter-spacing: var(--section-tracking, -0.015em);
 }
 
 /* Memakai --c-accent, bukan --c-accent-soft: pada tema terang, aksen lembut

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Blocks, Eye, FileText, LayoutTemplate, Mail, Users } from 'lucide-react';
+import { ArrowRight, Blocks, Eye, LayoutTemplate, Mail, Users } from 'lucide-react';
 import {
   getDashboardStats,
   listLetterCards,
@@ -10,54 +10,58 @@ import { formatRelative } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { NewLetterDialog } from './new-letter-dialog';
 import { PageHeader } from '@/components/dashboard/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { LetterCardItem } from '@/components/dashboard/letters/letter-card';
+import { PanelCard } from '@/components/dashboard/panel-card';
+import { StatusBars } from '@/components/dashboard/status-bars';
 
-export const metadata = { title: 'Ikhtisar · Digital Letter' };
+export const metadata = { title: 'Ikhtisar' };
 
 export default async function DashboardPage() {
   const [stats, cards, recent, templates] = await Promise.all([
     getDashboardStats(),
     listLetterCards(),
-    listRecentRsvp(5),
+    listRecentRsvp(6),
     listTemplates(),
   ]);
 
-  const latest = cards.slice(0, 4);
+  const latest = cards.slice(0, 6);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-5">
       <PageHeader
         title="Ikhtisar"
-        description="Ringkasan seluruh surat, kunjungan, dan konfirmasi kehadiran."
+        description="Ringkasan surat, kunjungan, dan konfirmasi kehadiran."
         action={<NewLetterDialog templates={templates} />}
       />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           icon={Mail}
-          label="Total surat"
+          tone="blue"
+          label="Surat"
           value={stats.total}
           note={`${stats.published} terbit · ${stats.draft} draf`}
         />
         <StatCard
           icon={Eye}
-          label="Total dibuka"
+          tone="green"
+          label="Dibuka"
           value={stats.views}
           note="Akumulasi semua surat"
         />
         <StatCard
           icon={Users}
-          label="Konfirmasi kehadiran"
+          tone="amber"
+          label="Konfirmasi"
           value={stats.rsvpTotal}
           note={
             stats.rsvpTotal > 0
@@ -67,157 +71,166 @@ export default async function DashboardPage() {
         />
         <StatCard
           icon={Blocks}
+          tone="rose"
           label="Kustomisasi"
           value={stats.customBlocks + stats.templates}
           note={`${stats.customBlocks} jenis section · ${stats.templates} template`}
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Surat terbaru</CardTitle>
-            <CardDescription>Empat surat yang paling akhir disunting.</CardDescription>
-            <Link
-              href="/dashboard/letters"
-              className={buttonVariants({ variant: 'ghost', size: 'sm' })}
-            >
-              Lihat semua
-              <ArrowRight size={13} />
-            </Link>
-          </CardHeader>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PanelCard
+          title="Surat per status"
+          meta={`${cards.length} total`}
+          className="min-h-[220px]"
+        >
+          {cards.length === 0 ? (
+            <EmptyNote>Belum ada surat.</EmptyNote>
+          ) : (
+            <StatusBars
+              total={cards.length}
+              rows={[
+                { label: 'Terbit', value: stats.published },
+                { label: 'Draf', value: stats.draft },
+              ]}
+            />
+          )}
+        </PanelCard>
 
-          <CardContent>
-            {latest.length === 0 ? (
-              <EmptyBlock
-                icon={FileText}
-                title="Belum ada surat"
-                note="Buat surat pertama — kamu langsung dapat isi awal yang tinggal disunting."
-              />
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {latest.map((row) => (
-                  <LetterCardItem key={row.id} letter={row} compact />
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <PanelCard
+          title="Konfirmasi terbaru"
+          meta={stats.rsvpTotal > 0 ? `${stats.rsvpTotal} masuk` : undefined}
+          className="min-h-[220px]"
+        >
+          {recent.length === 0 ? (
+            <EmptyNote>
+              Belum ada konfirmasi. Tambahkan section RSVP ke undangan, lalu
+              terbitkan suratnya.
+            </EmptyNote>
+          ) : (
+            <ul className="grid gap-2.5">
+              {recent.map((row) => (
+                <li key={row.id} className="flex items-start justify-between gap-3">
+                  <div className="grid min-w-0 gap-0.5">
+                    <span className="truncate text-sm font-medium">{row.name}</span>
+                    <Link
+                      href={`/dashboard/${row.letterId}`}
+                      className="truncate text-[11px] text-muted-foreground hover:underline"
+                    >
+                      {row.letterTitle} · {formatRelative(row.createdAt)}
+                    </Link>
+                  </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Konfirmasi terbaru</CardTitle>
-            <CardDescription>Dari semua surat yang punya section RSVP.</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            {recent.length === 0 ? (
-              <EmptyBlock
-                icon={Users}
-                title="Belum ada konfirmasi"
-                note="Tambahkan section RSVP ke undangan, lalu terbitkan suratnya."
-              />
-            ) : (
-              <ul className="grid gap-3">
-                {recent.map((row, i) => (
-                  <li key={row.id} className="grid gap-1.5">
-                    {i > 0 && <Separator className="mb-1.5" />}
-
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="grid min-w-0 gap-0.5">
-                        <span className="truncate text-sm font-medium">{row.name}</span>
-                        <Link
-                          href={`/dashboard/${row.letterId}`}
-                          className="truncate text-[11px] text-muted-foreground hover:underline"
-                        >
-                          {row.letterTitle}
-                        </Link>
-                      </div>
-
-                      <Badge
-                        variant={row.attendance === 'yes' ? 'default' : 'secondary'}
-                        className="shrink-0"
-                      >
-                        {row.attendance === 'yes'
-                          ? 'Hadir'
-                          : row.attendance === 'no'
-                            ? 'Tidak'
-                            : 'Ragu'}
-                      </Badge>
-                    </div>
-
-                    {row.message && (
-                      <p className="line-clamp-2 text-xs text-muted-foreground">
-                        {row.message}
-                      </p>
-                    )}
-
-                    <span className="text-[11px] text-muted-foreground">
-                      {formatRelative(row.createdAt)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+                  <Badge
+                    variant={row.attendance === 'yes' ? 'default' : 'secondary'}
+                    className="shrink-0"
+                  >
+                    {row.attendance === 'yes'
+                      ? 'Hadir'
+                      : row.attendance === 'no'
+                        ? 'Tidak'
+                        : 'Ragu'}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          )}
+        </PanelCard>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Kustomisasi</CardTitle>
-          <CardDescription>
-            Bikin jenis section sendiri, atau simpan surat jadi cetakan untuk
-            client berikutnya.
-          </CardDescription>
-        </CardHeader>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PanelCard
+          title="Surat terbaru"
+          action={
+            <Link
+              href="/dashboard/letters"
+              className={buttonVariants({ variant: 'ghost', size: 'xs' })}
+            >
+              Lihat semua
+              <ArrowRight size={12} />
+            </Link>
+          }
+        >
+          {latest.length === 0 ? (
+            <EmptyNote>Belum ada surat.</EmptyNote>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Judul</TableHead>
+                  <TableHead className="text-right">Dibuka</TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {latest.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>
+                      <Link
+                        href={`/dashboard/${row.id}`}
+                        className="grid gap-0.5 hover:underline"
+                      >
+                        <span className="truncate font-medium">{row.title}</span>
+                        <span className="truncate font-mono text-[11px] text-muted-foreground">
+                          /l/{row.slug}
+                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-muted-foreground">
+                      {row.viewCount}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={row.status === 'published' ? 'default' : 'secondary'}
+                      >
+                        {row.status === 'published' ? 'Terbit' : 'Draf'}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </PanelCard>
 
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          <ShortcutCard
-            href="/dashboard/blocks"
-            icon={Blocks}
-            title="Jenis Section"
-            note={
-              stats.customBlocks > 0
-                ? `${stats.customBlocks} jenis section buatanmu`
-                : 'Belum ada — bikin yang pertama'
-            }
-          />
-          <ShortcutCard
-            href="/dashboard/templates"
-            icon={LayoutTemplate}
-            title="Template"
-            note={
-              stats.templates > 0
-                ? `${stats.templates} template + 6 bawaan`
-                : '6 template bawaan siap pakai'
-            }
-          />
-        </CardContent>
-      </Card>
+        <PanelCard title="Kustomisasi">
+          <div className="grid gap-2">
+            <Shortcut
+              href="/dashboard/blocks"
+              icon={Blocks}
+              title="Jenis Section"
+              note={
+                stats.customBlocks > 0
+                  ? `${stats.customBlocks} jenis section buatanmu`
+                  : 'Belum ada — bikin yang pertama'
+              }
+            />
+            <Shortcut
+              href="/dashboard/templates"
+              icon={LayoutTemplate}
+              title="Template"
+              note={
+                stats.templates > 0
+                  ? `${stats.templates} template + 6 bawaan`
+                  : '6 template bawaan siap pakai'
+              }
+            />
+          </div>
+        </PanelCard>
+      </div>
     </div>
   );
 }
 
-function EmptyBlock({
-  icon: Icon,
-  title,
-  note,
-}: {
-  icon: typeof FileText;
-  title: string;
-  note: string;
-}) {
+function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid place-items-center gap-2 rounded-lg border border-dashed px-4 py-10 text-center">
-      <Icon size={20} className="text-muted-foreground" />
-      <p className="text-sm font-medium">{title}</p>
-      <p className="max-w-xs text-xs text-muted-foreground">{note}</p>
+    <div className="grid h-full place-items-center px-4 py-8 text-center">
+      <p className="max-w-xs text-xs text-muted-foreground">{children}</p>
     </div>
   );
 }
 
-function ShortcutCard({
+function Shortcut({
   href,
   icon: Icon,
   title,

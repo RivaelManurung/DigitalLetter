@@ -136,6 +136,7 @@ export function EditorShell({
               sections={bundle.sections}
               media={bundle.media}
               registry={registry}
+              design={bundle.design}
               onChange={patchSections}
             />
           )}

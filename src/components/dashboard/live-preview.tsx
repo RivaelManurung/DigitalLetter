@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Monitor, Smartphone } from 'lucide-react';
 import type { LetterBundle } from '@/design/types';
-import { fontPairHref } from '@/design/fonts';
+import { fontPairHref, usedFontPairIds } from '@/design/fonts';
 import { LetterView } from '@/components/letter/letter-view';
 import { cn } from '@/lib/utils';
 import '@/styles/letter.css';
@@ -55,8 +55,11 @@ export function LivePreview({ bundle }: { bundle: LetterBundle }) {
         </div>
       </div>
 
-      {/* Font pasangan aktif dimuat di dokumen dashboard agar preview akurat */}
-      <link rel="stylesheet" href={fontPairHref(bundle.design.fontPair)} />
+      {/* Font pasangan aktif dimuat di dokumen dashboard agar preview akurat —
+          termasuk font yang dipilih sendiri oleh masing-masing section. */}
+      {usedFontPairIds(bundle.design.fontPair, bundle.sections).map((id) => (
+        <link key={id} rel="stylesheet" href={fontPairHref(id)} />
+      ))}
 
       {/* Tinggi dipatok ke panel, bukan diregangkan mengikuti tinggi kolom
           editor — kalau diregangkan, sisa ruang muncul sebagai blok kosong. */}

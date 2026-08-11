@@ -9,7 +9,7 @@ import {
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
-import type { AnySectionType, DesignSpec } from '@/design/types';
+import type { AnySectionType, DesignSpec, SectionStyle } from '@/design/types';
 
 /**
  * Kunci arsitektur: `design` dan `section.content` bertipe JSONB.
@@ -65,6 +65,11 @@ export const section = pgTable(
     /** varian layout khusus section ini; '' = ikut varian bawaan desain */
     variant: text('variant').notNull().default(''),
     content: jsonb('content').$type<Record<string, unknown>>().notNull().default({}),
+    /**
+     * Penyesuaian tampilan khusus section ini (warna, font, jarak, animasi).
+     * Objek kosong = sepenuhnya ikut desain surat.
+     */
+    style: jsonb('style').$type<SectionStyle>().notNull().default({}),
   },
   (t) => [index('section_letter_order_idx').on(t.letterId, t.order)],
 );

@@ -1,4 +1,4 @@
-import type { DesignSpec } from '@/design/types';
+import type { DesignSpec, SectionStyle } from '@/design/types';
 
 /**
  * Bentuk data template. Sengaja terpisah dari berkas Server Action:
@@ -12,6 +12,8 @@ export type TemplateSection = {
   enabled: boolean;
   /** kosong = pakai naskah awal block-nya */
   content?: Record<string, unknown>;
+  /** penyesuaian tampilan section; kosong = ikut desain surat */
+  style?: SectionStyle;
 };
 
 export type TemplateRow = {

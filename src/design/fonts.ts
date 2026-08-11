@@ -98,3 +98,21 @@ export function getFontPair(id: string): FontPair {
 export function fontPairHref(id: string): string {
   return `https://fonts.googleapis.com/css2?${getFontPair(id).googleQuery}&display=swap`;
 }
+
+/**
+ * Semua pasangan font yang dipakai satu surat: font desainnya, ditambah font
+ * yang dipilih sendiri oleh masing-masing section.
+ *
+ * Tanpa ini, section yang memilih font berbeda akan meminta keluarga font yang
+ * stylesheet-nya tidak pernah dimuat, lalu diam-diam jatuh ke font fallback.
+ */
+export function usedFontPairIds(
+  designFontPair: string,
+  sections: { style?: { fontPair?: string } }[],
+): string[] {
+  const ids = new Set<string>([designFontPair]);
+  for (const section of sections) {
+    if (section.style?.fontPair) ids.add(section.style.fontPair);
+  }
+  return [...ids];
+}

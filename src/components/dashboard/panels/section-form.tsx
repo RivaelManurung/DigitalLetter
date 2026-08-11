@@ -73,19 +73,7 @@ export function SectionForm({ section, media, registry, onLocalChange }: Props) 
 
   return (
     <div className="grid gap-3">
-      {groupRows(fields).map((row, index) => (
-        <div key={index} className={rowClass(row)}>
-          {row.map((field) => (
-            <FieldRenderer
-              key={field.key}
-              field={field}
-              value={parsed[field.key]}
-              media={media}
-              onChange={(value) => set(field.key, value)}
-            />
-          ))}
-        </div>
-      ))}
+      <SectionFields fields={fields} values={parsed} media={media} onSet={set} />
 
       <p className="text-[11px] text-muted-foreground">
         {saving ? 'Menyimpan…' : 'Tersimpan otomatis'}
@@ -95,6 +83,40 @@ export function SectionForm({ section, media, registry, onLocalChange }: Props) 
         </span>
       </p>
     </div>
+  );
+}
+
+/**
+ * Kumpulan input untuk satu daftar field — tanpa penyimpanan, tanpa status.
+ * Dipakai bersama oleh editor surat dan editor template.
+ */
+export function SectionFields({
+  fields,
+  values,
+  media,
+  onSet,
+}: {
+  fields: FieldSpec[];
+  values: Record<string, unknown>;
+  media: MediaRecord[];
+  onSet: (key: string, value: unknown) => void;
+}) {
+  return (
+    <>
+      {groupRows(fields).map((row, index) => (
+        <div key={index} className={rowClass(row)}>
+          {row.map((field) => (
+            <FieldRenderer
+              key={field.key}
+              field={field}
+              value={values[field.key]}
+              media={media}
+              onChange={(value) => onSet(field.key, value)}
+            />
+          ))}
+        </div>
+      ))}
+    </>
   );
 }
 

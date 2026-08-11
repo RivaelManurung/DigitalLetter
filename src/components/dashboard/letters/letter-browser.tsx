@@ -1,9 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { FileText, Search, X } from 'lucide-react';
+import Link from 'next/link';
+import { FileText, LayoutGrid, List, Search, X } from 'lucide-react';
 import type { LetterCard } from '@/lib/queries';
+import { cn, formatRelative } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -12,11 +16,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LetterActions } from '@/app/(admin)/dashboard/letter-actions';
 import { LetterCardItem } from './letter-card';
 
 type Status = 'all' | 'published' | 'draft';
 type Sort = 'updated' | 'views' | 'title';
+type View = 'table' | 'grid';
 
 /**
  * Pencarian, filter, dan urutan dijalankan di klien.
@@ -25,10 +39,17 @@ type Sort = 'updated' | 'views' | 'title';
  * di memori jauh lebih responsif daripada bolak-balik ke server, dan
  * datanya memang sudah ada di halaman.
  */
-export function LetterBrowser({ letters }: { letters: LetterCard[] }) {
-  const [query, setQuery] = useState('');
+export function LetterBrowser({
+  letters,
+  initialQuery = '',
+}: {
+  letters: LetterCard[];
+  initialQuery?: string;
+}) {
+  const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<Status>('all');
   const [sort, setSort] = useState<Sort>('updated');
+  const [view, setView] = useState<View>('table');
 
   const counts = useMemo(
     () => ({
@@ -120,6 +141,17 @@ export function LetterBrowser({ letters }: { letters: LetterCard[] }) {
             <SelectItem value="title">Judul A–Z</SelectItem>
           </SelectContent>
         </Select>
+
+        <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+          <TabsList>
+            <TabsTrigger value="table" aria-label="Tampilan tabel">
+              <List size={13} />
+            </TabsTrigger>
+            <TabsTrigger value="grid" aria-label="Tampilan kartu">
+              <LayoutGrid size={13} />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {visible.length === 0 ? (
@@ -141,12 +173,9 @@ export function LetterBrowser({ letters }: { letters: LetterCard[] }) {
             Bersihkan filter
           </Button>
         </div>
-      ) : (
+      ) : view === 'grid' ? (
         <>
-          <p className="text-[11px] text-muted-foreground">
-            Menampilkan {visible.length} dari {letters.length} surat
-          </p>
-
+          <Count shown={visible.length} total={letters.length} />
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((row) => (
               <li key={row.id}>
@@ -155,7 +184,106 @@ export function LetterBrowser({ letters }: { letters: LetterCard[] }) {
             ))}
           </ul>
         </>
+      ) : (
+        <>
+          <Count shown={visible.length} total={letters.length} />
+          <Card className="gap-0 overflow-hidden py-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Surat</TableHead>
+                  <TableHead className="hidden md:table-cell">Penerima</TableHead>
+                  <TableHead className="text-right">Section</TableHead>
+                  <TableHead className="text-right">Dibuka</TableHead>
+                  <TableHead className="hidden text-right lg:table-cell">
+                    Diubah
+                  </TableHead>
+                  <TableHead className="text-right">Status</TableHead>
+                  <TableHead className="w-10" />
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {visible.map((row) => {
+                  const palette = row.design?.palette;
+
+                  return (
+                    <TableRow key={row.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            aria-hidden="true"
+                            className="size-7 shrink-0 rounded-md border"
+                            style={{
+                              background: palette
+                                ? `linear-gradient(135deg, ${palette.bgDeep}, ${palette.accent})`
+                                : 'var(--muted)',
+                            }}
+                          />
+                          <Link
+                            href={`/dashboard/${row.id}`}
+                            className="grid min-w-0 gap-0.5 hover:underline"
+                          >
+                            <span className="truncate font-medium">{row.title}</span>
+                            <span className="truncate font-mono text-[11px] text-muted-foreground">
+                              /l/{row.slug}
+                            </span>
+                          </Link>
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="hidden text-muted-foreground md:table-cell">
+                        {row.recipientName || '—'}
+                      </TableCell>
+
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {row.sectionCount}
+                      </TableCell>
+
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {row.viewCount}
+                        {row.rsvpCount > 0 && (
+                          <span className="ml-1.5 text-[11px]">
+                            · {row.rsvpCount} RSVP
+                          </span>
+                        )}
+                      </TableCell>
+
+                      <TableCell className="hidden whitespace-nowrap text-right text-[11px] text-muted-foreground lg:table-cell">
+                        {formatRelative(row.updatedAt)}
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <Badge
+                          variant={row.status === 'published' ? 'default' : 'secondary'}
+                        >
+                          {row.status === 'published' ? 'Terbit' : 'Draf'}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <LetterActions
+                          letterId={row.id}
+                          title={row.title}
+                          recipientName={row.recipientName ?? ''}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Card>
+        </>
       )}
     </div>
+  );
+}
+
+function Count({ shown, total }: { shown: number; total: number }) {
+  return (
+    <p className={cn('text-[11px] text-muted-foreground')}>
+      Menampilkan {shown} dari {total} surat
+    </p>
   );
 }

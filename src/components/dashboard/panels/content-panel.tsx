@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -20,12 +20,18 @@ import { ChevronDown, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-rea
 import { toast } from 'sonner';
 import { GROUP_LABEL, type BlockGroup } from '@/design/blocks';
 import type { BlockRegistry } from '@/design/blocks/resolve';
-import type { MediaRecord, SectionRecord } from '@/design/types';
+import type {
+  DesignSpec,
+  MediaRecord,
+  SectionRecord,
+  SectionStyle,
+} from '@/design/types';
 import { variantLabel } from '@/design/variant-labels';
 import {
   addSection,
   deleteSection,
   reorderSections,
+  setSectionStyle,
   setSectionVariant,
   toggleSection,
 } from '@/lib/actions/letter';
@@ -33,8 +39,10 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Field, Select } from '@/components/ui/field';
 import { Card } from '@/components/ui/surface';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MarkdownTools } from './markdown-tools';
 import { SectionForm } from './section-form';
+import { SectionStylePanel } from './section-style-panel';
 
 type Props = {
   letterId: string;
@@ -42,6 +50,8 @@ type Props = {
   sections: SectionRecord[];
   media: MediaRecord[];
   registry: BlockRegistry;
+  /** desain surat — jadi nilai bawaan yang ditampilkan panel Design */
+  design: DesignSpec;
   onChange: (sections: SectionRecord[]) => void;
 };
 
@@ -51,6 +61,7 @@ export function ContentPanel({
   sections,
   media,
   registry,
+  design,
   onChange,
 }: Props) {
   /** Nama section; tipe yang definisinya hilang tetap punya label. */
@@ -62,6 +73,17 @@ export function ContentPanel({
   // dipasang ulang agar isinya ikut berganti, bukan menahan nilai lama.
   const [revision, setRevision] = useState(0);
   const [, start] = useTransition();
+
+  // Satu timer per section: menyunting dua section berurutan tidak boleh
+  // membuat simpanan section pertama dibatalkan oleh yang kedua.
+  const styleTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => {
+    const timers = styleTimers.current;
+    return () => {
+      for (const timer of Object.values(timers)) clearTimeout(timer);
+    };
+  }, []);
 
   const sorted = [...sections].sort((a, b) => a.order - b.order);
   const sensors = useSensors(
@@ -153,6 +175,24 @@ export function ContentPanel({
     });
   }
 
+  /**
+   * Penyimpanan style ditunda sejenak: menggeser slider menghasilkan puluhan
+   * perubahan beruntun, dan tiap perubahan tidak perlu jadi satu permintaan.
+   * Preview tetap ikut seketika karena state lokal diperbarui lebih dulu.
+   */
+  function handleStyleChange(section: SectionRecord, style: SectionStyle) {
+    onChange(sections.map((s) => (s.id === section.id ? { ...s, style } : s)));
+
+    const timers = styleTimers.current;
+    if (timers[section.id]) clearTimeout(timers[section.id]);
+
+    timers[section.id] = setTimeout(() => {
+      void setSectionStyle({ sectionId: section.id, style }).then((result) => {
+        if (!result.ok) toast.error(result.error);
+      });
+    }, 500);
+  }
+
   // Block boleh berulang — yang disembunyikan hanya block bertanda unique
   // yang sudah dipakai (mis. Pembuka, yang melapisi seluruh halaman).
   const available = registry
@@ -185,39 +225,63 @@ export function ContentPanel({
                 onToggleEnabled={() => handleToggle(section)}
                 onDelete={() => handleDelete(section)}
               >
-                {variantsOf(section.type).length > 1 && (
-                  <Field
-                    label="Varian layout"
-                    hint="Khusus section ini. Kosong = ikut varian bawaan desain."
-                    className="mb-3"
-                  >
-                    <Select
-                      value={section.variant}
-                      onChange={(e) => handleVariantChange(section, e.target.value)}
-                    >
-                      <option value="">Ikut desain</option>
-                      {variantsOf(section.type).map((variant) => (
-                        <option key={variant} value={variant}>
-                          {variantLabel(variant)}
-                        </option>
-                      ))}
-                    </Select>
-                  </Field>
-                )}
+                <Tabs defaultValue="konten">
+                  <TabsList className="mb-3">
+                    <TabsTrigger value="konten">Konten</TabsTrigger>
+                    <TabsTrigger value="design">
+                      Design
+                      {countStyle(section.style) > 0 && (
+                        <span className="ml-1.5 rounded-full bg-primary/15 px-1.5 text-[10px] font-medium text-primary">
+                          {countStyle(section.style)}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                  </TabsList>
 
-                <SectionForm
-                  key={`${section.id}-${revision}`}
-                  section={section}
-                  media={media}
-                  registry={registry}
-                  onLocalChange={(content) =>
-                    onChange(
-                      sections.map((s) =>
-                        s.id === section.id ? { ...s, content } : s,
-                      ),
-                    )
-                  }
-                />
+                  <TabsContent value="konten">
+                    {variantsOf(section.type).length > 1 && (
+                      <Field
+                        label="Varian layout"
+                        hint="Khusus section ini. Kosong = ikut varian bawaan desain."
+                        className="mb-3"
+                      >
+                        <Select
+                          value={section.variant}
+                          onChange={(e) => handleVariantChange(section, e.target.value)}
+                        >
+                          <option value="">Ikut desain</option>
+                          {variantsOf(section.type).map((variant) => (
+                            <option key={variant} value={variant}>
+                              {variantLabel(variant)}
+                            </option>
+                          ))}
+                        </Select>
+                      </Field>
+                    )}
+
+                    <SectionForm
+                      key={`${section.id}-${revision}`}
+                      section={section}
+                      media={media}
+                      registry={registry}
+                      onLocalChange={(content) =>
+                        onChange(
+                          sections.map((s) =>
+                            s.id === section.id ? { ...s, content } : s,
+                          ),
+                        )
+                      }
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="design">
+                    <SectionStylePanel
+                      style={section.style ?? {}}
+                      design={design}
+                      onChange={(style) => handleStyleChange(section, style)}
+                    />
+                  </TabsContent>
+                </Tabs>
               </SortableRow>
             ))}
           </ul>
@@ -264,6 +328,11 @@ export function ContentPanel({
       />
     </div>
   );
+}
+
+/** Jumlah penyesuaian tampilan — dipakai sebagai lencana di tab Design. */
+function countStyle(style: SectionStyle | undefined): number {
+  return style ? Object.keys(style).length : 0;
 }
 
 function SortableRow({
