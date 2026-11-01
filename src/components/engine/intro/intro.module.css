@@ -225,11 +225,13 @@
   top: 0;
   bottom: 0;
   width: 50.5%;
-  background: linear-gradient(
-    to right,
-    var(--c-bg-deep),
-    color-mix(in srgb, var(--c-bg-soft) 60%, var(--c-bg-deep))
-  );
+  /* foto beludru diwarnai ulang oleh warna tema lewat blend luminosity */
+  background-color: color-mix(in srgb, var(--c-accent) 55%, var(--c-bg-deep));
+  background-image: url('/image/velvet-noir-bg.webp');
+  background-size: 200% 100%;
+  background-position: left center;
+  background-blend-mode: luminosity;
+  box-shadow: inset -30px 0 60px rgba(0, 0, 0, 0.45);
   transition: transform calc(var(--dur-slow) * 2) var(--ease-out-expo);
 }
 
@@ -239,11 +241,8 @@
 
 .curtainRight {
   right: 0;
-  background: linear-gradient(
-    to left,
-    var(--c-bg-deep),
-    color-mix(in srgb, var(--c-bg-soft) 60%, var(--c-bg-deep))
-  );
+  background-position: right center;
+  box-shadow: inset 30px 0 60px rgba(0, 0, 0, 0.45);
 }
 
 .curtainOpen .curtainLeft {

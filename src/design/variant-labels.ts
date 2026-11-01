@@ -60,6 +60,13 @@ export const VARIANT_LABEL: Record<string, string> = {
   inline: 'Menyatu',
   playful: 'Jenaka',
 
+  // unwrap / scratch / chat
+  pile: 'Tumpukan',
+  frost: 'Embun',
+  foil: 'Foil emas',
+  phone: 'Ponsel',
+  plain: 'Polos',
+
   // wish
   spotlight: 'Sorotan',
 };

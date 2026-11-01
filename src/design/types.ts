@@ -39,7 +39,15 @@ export type Palette = {
 
 export type SurfaceKind = 'aurora' | 'gradient' | 'mesh' | 'grain' | 'solid';
 export type RevealKind = 'fade-up' | 'fade' | 'blur-in';
-export type ParticleKind = 'sakura' | 'rose' | 'dust' | 'none';
+export type ParticleKind =
+  | 'sakura'
+  | 'rose'
+  | 'dust'
+  | 'snow'
+  | 'snowflake'
+  | 'heart'
+  | 'star'
+  | 'none';
 
 export type DesignSpec = {
   /** id preset asal, untuk menandai "preset + override" */
@@ -54,6 +62,10 @@ export type DesignSpec = {
     vignette: number;
     /** 0–1 */
     grain: number;
+    /** ilustrasi latar (path /image/... atau https); kosong = gradien saja */
+    image?: string;
+    /** 0–1, lapisan warna latar di atas ilustrasi supaya teks tetap terbaca */
+    imageOverlay?: number;
   };
   motion: {
     /** pengali durasi animasi, 0.5 = dua kali lebih cepat */
@@ -66,6 +78,8 @@ export type DesignSpec = {
     /** 0–1 */
     density: number;
   };
+  /** Musik latar sintetis bawaan; dipakai bila surat tidak punya audio unggahan. */
+  music?: { track: string };
   shape: {
     /** px */
     radius: number;

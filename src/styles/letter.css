@@ -15,6 +15,8 @@
   color: var(--c-text);
   font-family: var(--ff-body);
   overflow-x: clip;
+  /* lapisan latar ber-z-index negatif harus tergambar DI ATAS warna dasar ini */
+  isolation: isolate;
 
   /* Tinggi "panggung" — satu layar penuh di halaman asli, setinggi panel
      saat dirender di dashboard. Semua section tinggi-penuh membacanya. */
@@ -74,6 +76,42 @@
 }
 
 /* Vignette + grain sebagai lapisan terpisah supaya intensitasnya bisa disetel */
+.surface-photo {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Gerak kamera sangat pelan (Ken Burns) supaya ilustrasi terasa hidup, bukan wallpaper diam. */
+.surface-photo::before {
+  content: "";
+  position: absolute;
+  inset: -4%;
+  background: var(--surface-photo) center / cover no-repeat;
+  animation: surface-drift 48s ease-in-out infinite alternate;
+}
+
+.surface-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 30%, var(--c-bg-deep) 100%),
+    var(--c-bg-deep);
+  opacity: var(--surface-photo-dim);
+}
+
+@keyframes surface-drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.08) translate3d(-1.5%, -2%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-photo::before { animation: none; }
+}
+
 .surface-vignette {
   position: fixed;
   inset: 0;

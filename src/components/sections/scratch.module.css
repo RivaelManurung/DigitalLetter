@@ -1,0 +1,120 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.window {
+  position: relative;
+  width: min(100%, 26rem);
+  aspect-ratio: 4 / 5;
+  max-height: 70svh;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--c-bg-soft);
+  box-shadow:
+    0 24px 60px color-mix(in srgb, var(--c-bg-deep) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--c-text) 12%, transparent);
+}
+
+/* Kusen jendela kayu tebal */
+.frost {
+  border: 0.7rem solid color-mix(in srgb, var(--c-bg-deep) 78%, var(--c-accent));
+  border-radius: calc(var(--radius) * 0.6);
+}
+
+.foil {
+  border-radius: var(--radius);
+  outline: 2px dashed color-mix(in srgb, var(--c-accent) 60%, transparent);
+  outline-offset: 6px;
+}
+
+.hidden {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  background:
+    radial-gradient(circle at 50% 35%, var(--c-glow), transparent 70%),
+    var(--c-bg-mid);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.message {
+  position: relative;
+  font-family: var(--ff-display);
+  font-size: var(--text-xl);
+  line-height: 1.35;
+  text-align: center;
+  color: var(--c-text);
+}
+
+.onPhoto {
+  align-self: end;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-lg);
+  background: color-mix(in srgb, var(--c-bg-deep) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  /* menggosok tidak boleh ikut menggulir halaman */
+  touch-action: none;
+  transition: opacity 900ms var(--ease-out-expo);
+}
+
+.cover:active {
+  cursor: grabbing;
+}
+
+.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mullion {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 0.3rem), color-mix(in srgb, var(--c-bg-deep) 78%, var(--c-accent)) calc(50% - 0.3rem) calc(50% + 0.3rem), transparent calc(50% + 0.3rem)),
+    linear-gradient(0deg, transparent calc(50% - 0.3rem), color-mix(in srgb, var(--c-bg-deep) 78%, var(--c-accent)) calc(50% - 0.3rem) calc(50% + 0.3rem), transparent calc(50% + 0.3rem));
+}
+
+.skip {
+  display: block;
+  margin: var(--space-sm) auto 0;
+  min-height: 40px;
+  padding: 0.4rem 1rem;
+  border: 0;
+  background: none;
+  color: var(--c-text-muted);
+  font: inherit;
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.skip:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}

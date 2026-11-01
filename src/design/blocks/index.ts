@@ -20,6 +20,9 @@ import { rsvpBlock } from './rsvp';
 import { questionBlock } from './question';
 import { memoriesBlock } from './memories';
 import { wishBlock } from './wish';
+import { unwrapBlock } from './unwrap';
+import { scratchBlock } from './scratch';
+import { chatBlock } from './chat';
 
 /**
  * Satu-satunya daftar block yang dikenal aplikasi.
@@ -47,6 +50,9 @@ export const BLOCKS = {
   question: questionBlock,
   memories: memoriesBlock,
   wish: wishBlock,
+  chat: chatBlock,
+  unwrap: unwrapBlock,
+  scratch: scratchBlock,
   finale: finaleBlock,
 } satisfies Record<string, BlockDef>;
 

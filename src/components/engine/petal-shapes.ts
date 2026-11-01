@@ -1,4 +1,11 @@
-export type PetalShape = 'sakura' | 'rose' | 'dust';
+export type PetalShape =
+  | 'sakura'
+  | 'rose'
+  | 'dust'
+  | 'snow'
+  | 'snowflake'
+  | 'heart'
+  | 'star';
 
 /**
  * Bentuk kelopak digambar sebagai path canvas, bukan emoji.
@@ -21,7 +28,17 @@ export function drawPetal(
       drawRose(ctx, size);
       break;
     case 'dust':
+    case 'snow':
       drawDust(ctx, size, color);
+      break;
+    case 'snowflake':
+      drawSnowflake(ctx, size, color);
+      break;
+    case 'heart':
+      drawHeart(ctx, size);
+      break;
+    case 'star':
+      drawStar(ctx, size, color);
       break;
   }
 }
@@ -67,5 +84,50 @@ function drawDust(ctx: CanvasRenderingContext2D, s: number, color: string): void
   ctx.fillStyle = gradient;
   ctx.beginPath();
   ctx.arc(0, 0, s, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+/** Kristal salju enam lengan dengan cabang kecil. */
+function drawSnowflake(ctx: CanvasRenderingContext2D, s: number, color: string): void {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = Math.max(0.8, s * 0.09);
+  ctx.lineCap = 'round';
+  const arm = s * 0.5;
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    ctx.save();
+    ctx.rotate((Math.PI / 3) * i);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -arm);
+    ctx.moveTo(0, -arm * 0.55);
+    ctx.lineTo(arm * 0.28, -arm * 0.8);
+    ctx.moveTo(0, -arm * 0.55);
+    ctx.lineTo(-arm * 0.28, -arm * 0.8);
+    ctx.restore();
+  }
+  ctx.stroke();
+}
+
+/** Hati: dua lengkung bertemu di satu titik. */
+function drawHeart(ctx: CanvasRenderingContext2D, s: number): void {
+  const h = s * 0.5;
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.9);
+  ctx.bezierCurveTo(-h * 1.5, h * 0.1, -h * 1.1, -h, 0, -h * 0.35);
+  ctx.bezierCurveTo(h * 1.1, -h, h * 1.5, h * 0.1, 0, h * 0.9);
+  ctx.closePath();
+  ctx.fill();
+}
+
+/** Kilau empat sudut dengan halo lembut. */
+function drawStar(ctx: CanvasRenderingContext2D, s: number, color: string): void {
+  drawDust(ctx, s * 1.6, color);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 1.6);
+  ctx.quadraticCurveTo(0, 0, s * 1.6, 0);
+  ctx.quadraticCurveTo(0, 0, 0, s * 1.6);
+  ctx.quadraticCurveTo(0, 0, -s * 1.6, 0);
+  ctx.quadraticCurveTo(0, 0, 0, -s * 1.6);
   ctx.fill();
 }

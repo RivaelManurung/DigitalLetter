@@ -17,7 +17,7 @@ type Props = {
  * null (viewport), tapi di preview dashboard surat hidup di dalam panel —
  * panel itulah yang harus jadi root observer, bukan viewport.
  */
-function scrollRoot(el: HTMLElement): HTMLElement | null {
+export function scrollRoot(el: HTMLElement): HTMLElement | null {
   let node = el.parentElement;
 
   while (node && node !== document.body) {

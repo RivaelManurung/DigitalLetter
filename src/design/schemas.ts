@@ -114,6 +114,8 @@ export const designSchema = z.object({
     kind: z.enum(['aurora', 'gradient', 'mesh', 'grain', 'solid']),
     vignette: z.number().min(0).max(1),
     grain: z.number().min(0).max(1),
+    image: imageUrl.optional(),
+    imageOverlay: z.number().min(0).max(1).optional(),
   }),
   motion: z.object({
     speed: z.number().min(0.4).max(2),
@@ -121,9 +123,10 @@ export const designSchema = z.object({
     parallax: z.boolean(),
   }),
   particles: z.object({
-    kind: z.enum(['sakura', 'rose', 'dust', 'none']),
+    kind: z.enum(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star', 'none']),
     density: z.number().min(0).max(1),
   }),
+  music: z.object({ track: z.string().max(40) }).optional(),
   shape: z.object({
     radius: z.number().min(0).max(48),
     glassBlur: z.number().min(0).max(40),

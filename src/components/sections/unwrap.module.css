@@ -1,0 +1,233 @@
+.header {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: var(--text-2xl);
+}
+
+.hint {
+  font-family: var(--ff-script);
+  font-size: var(--text-lg);
+  color: var(--c-accent);
+  animation: hint-pulse 2.4s ease-in-out infinite;
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pile {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(0.75rem, 3vw, 1.75rem);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: var(--space-md);
+}
+
+.slot {
+  display: grid;
+  place-items: end center;
+  min-height: 15rem;
+}
+
+/* Tiap kado sedikit berbeda ukuran dan miringnya — tumpukan nyata tidak seragam. */
+.pile .slot:nth-child(3n + 1) { --size: 10rem; --tilt: -5deg; }
+.pile .slot:nth-child(3n + 2) { --size: 12rem; --tilt: 3deg; }
+.pile .slot:nth-child(3n + 3) { --size: 9rem; --tilt: 6deg; }
+
+.gift {
+  position: relative;
+  width: var(--size, 10.5rem);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  rotate: var(--tilt, 0deg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.giftImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 18px 22px color-mix(in srgb, var(--c-bg-deep) 70%, transparent));
+  transition:
+    transform var(--dur-normal) var(--ease-out-expo),
+    filter var(--dur-normal) ease;
+  user-select: none;
+}
+
+.gift:hover .giftImage {
+  transform: translateY(-8px) scale(1.04);
+  filter: drop-shadow(0 26px 26px color-mix(in srgb, var(--c-bg-deep) 70%, transparent))
+    drop-shadow(0 0 22px var(--c-glow));
+}
+
+.gift:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.tag {
+  position: absolute;
+  right: -0.6rem;
+  top: 38%;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--c-text);
+  color: var(--c-bg-deep);
+  font-family: var(--ff-script);
+  font-size: var(--text-sm);
+  rotate: 8deg;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--c-bg-deep) 35%, transparent);
+}
+
+.gift[data-state='closed'] {
+  animation: idle-wiggle 5s ease-in-out infinite;
+}
+
+.slot:nth-child(2) .gift { animation-delay: 1.3s; }
+.slot:nth-child(3) .gift { animation-delay: 2.6s; }
+
+.gift[data-state='opening'] {
+  animation: shake 300ms ease-in-out 2;
+}
+
+.gift[data-state='opening'] .giftImage {
+  animation: gift-burst calc(820ms * var(--motion-speed)) cubic-bezier(0.5, 0, 0.7, 0.4) 240ms forwards;
+}
+
+.gift[data-state='opening'] .tag {
+  animation: fade-out 300ms ease forwards;
+}
+
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  pointer-events: none;
+}
+
+.burst span {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 2px;
+  background: var(--c-accent-soft);
+  box-shadow: 0 0 10px var(--c-glow);
+  animation: spark 700ms ease-out 260ms forwards;
+  opacity: 0;
+}
+
+.burst span:nth-child(odd) {
+  background: var(--c-accent);
+  border-radius: 50%;
+}
+
+.card {
+  display: grid;
+  gap: 0.6rem;
+  width: min(100%, 16rem);
+  padding: 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--c-text) 14%, transparent);
+  background: color-mix(in srgb, var(--c-bg-deep) 74%, transparent);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  text-align: center;
+  box-shadow: 0 18px 40px var(--c-glow);
+  animation: pop-in 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.cardTitle {
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
+  color: var(--c-accent);
+}
+
+.cardBody {
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+  line-height: 1.6;
+}
+
+.done {
+  margin-top: var(--space-lg);
+  text-align: center;
+  font-family: var(--ff-script);
+  font-size: var(--text-xl);
+  color: var(--c-accent);
+  animation: pop-in 700ms var(--ease-out-expo) both;
+}
+
+@keyframes idle-wiggle {
+  0%, 86%, 100% { transform: rotate(0); }
+  89% { transform: rotate(-3deg); }
+  92% { transform: rotate(3deg); }
+  95% { transform: rotate(-2deg); }
+}
+
+@keyframes shake {
+  25% { transform: translateX(-4px) rotate(-3deg); }
+  75% { transform: translateX(4px) rotate(3deg); }
+}
+
+/* kado terangkat, berkilau, lalu lenyap jadi cahaya */
+@keyframes gift-burst {
+  40% { transform: translateY(-18px) scale(1.12); filter: brightness(1.35) drop-shadow(0 0 30px var(--c-glow)); opacity: 1; }
+  100% { transform: translateY(-30px) scale(1.4); filter: brightness(2.2) blur(6px); opacity: 0; }
+}
+
+@keyframes spark {
+  0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--a)) translateY(-5.5rem) scale(0.4); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.7) translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes hint-pulse {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift,
+  .gift *,
+  .hint,
+  .card,
+  .done {
+    animation: none !important;
+  }
+}

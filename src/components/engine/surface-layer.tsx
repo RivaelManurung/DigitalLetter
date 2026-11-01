@@ -23,6 +23,18 @@ export function SurfaceLayer({ design }: { design: DesignSpec }) {
   return (
     <>
       <div className="surface-layer" style={style} aria-hidden="true" />
+      {design.surface.image && (
+        <div
+          className="surface-photo"
+          style={
+            {
+              '--surface-photo': `url(${JSON.stringify(design.surface.image)})`,
+              '--surface-photo-dim': String(design.surface.imageOverlay ?? 0.5),
+            } as CSSProperties
+          }
+          aria-hidden="true"
+        />
+      )}
       {design.surface.vignette > 0 && (
         <div className="surface-vignette" aria-hidden="true" />
       )}

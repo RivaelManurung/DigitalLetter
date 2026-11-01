@@ -19,6 +19,9 @@ import { RsvpSection } from '../sections/rsvp';
 import { QuestionSection } from '../sections/question';
 import { MemoriesSection } from '../sections/memories';
 import { WishSection } from '../sections/wish';
+import { ChatSection } from '../sections/chat';
+import { UnwrapSection } from '../sections/unwrap';
+import { ScratchSection } from '../sections/scratch';
 
 /**
  * Peta tipe section → komponen. Bersama design/blocks/index.ts, ini
@@ -55,5 +58,8 @@ export const BLOCK_RENDERERS: Partial<Record<SectionType, ComponentType<BlockPro
   question: QuestionSection,
   memories: MemoriesSection,
   wish: WishSection,
+  chat: ChatSection,
+  unwrap: UnwrapSection,
+  scratch: ScratchSection,
   finale: FinaleSection,
 };

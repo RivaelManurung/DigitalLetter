@@ -29,6 +29,31 @@ const SHAPE_FOR: Record<Exclude<ParticleKind, 'none'>, PetalShape> = {
   sakura: 'sakura',
   rose: 'rose',
   dust: 'dust',
+  snow: 'snow',
+  snowflake: 'snowflake',
+  heart: 'heart',
+  star: 'star',
+};
+
+type Motion = {
+  /** ukuran dasar + rentang oleh kedalaman (z), px */
+  size: [number, number];
+  /** kecepatan vertikal; negatif = naik */
+  fall: [number, number];
+  alpha: [number, number];
+  /** ayunan horizontal */
+  drift: number;
+  twinkle?: boolean;
+};
+
+const MOTION: Record<PetalShape, Motion> = {
+  sakura: { size: [9, 16], fall: [0.18, 0.73], alpha: [0.35, 0.45], drift: 0.35 },
+  rose: { size: [9, 16], fall: [0.18, 0.73], alpha: [0.35, 0.45], drift: 0.35 },
+  dust: { size: [2, 3], fall: [0.08, 0.25], alpha: [0.25, 0.45], drift: 0.35 },
+  snow: { size: [1.6, 3.4], fall: [0.35, 0.9], alpha: [0.4, 0.5], drift: 0.6 },
+  snowflake: { size: [7, 12], fall: [0.22, 0.6], alpha: [0.4, 0.5], drift: 0.5 },
+  heart: { size: [8, 12], fall: [-0.3, -0.7], alpha: [0.3, 0.45], drift: 0.45 },
+  star: { size: [3, 6], fall: [0.01, 0.04], alpha: [0.3, 0.6], drift: 0.1, twinkle: true },
 };
 
 /**
@@ -52,6 +77,8 @@ export function ParticleField({ kind, density, speed }: Props) {
     if (!ctx) return;
 
     const shape = SHAPE_FOR[kind];
+    const motion = MOTION[shape];
+    const rises = motion.fall[0] < 0;
     const tier = detectTier();
     const count = particleBudget(tier, density);
 
@@ -84,15 +111,16 @@ export function ParticleField({ kind, density, speed }: Props) {
       const z = Math.random();
       p.z = z;
       p.x = Math.random() * (width + 120) - 60;
-      p.y = initial ? Math.random() * height : -40 - Math.random() * 120;
-      p.size = (shape === 'dust' ? 2 : 9) + z * (shape === 'dust' ? 3 : 16);
-      p.vy = (0.18 + z * 0.55) * (shape === 'dust' ? 0.45 : 1);
+      const edge = rises ? height + 40 + Math.random() * 120 : -40 - Math.random() * 120;
+      p.y = initial ? Math.random() * height : edge;
+      p.size = motion.size[0] + z * motion.size[1];
+      p.vy = motion.fall[0] + z * (motion.fall[1] - motion.fall[0]);
       p.vx = (Math.random() - 0.5) * 0.28;
       p.rot = Math.random() * Math.PI * 2;
       p.vrot = (Math.random() - 0.5) * 0.018;
       p.sway = Math.random() * Math.PI * 2;
       p.swaySpeed = 0.006 + Math.random() * 0.012;
-      p.alpha = (shape === 'dust' ? 0.25 : 0.35) + z * 0.45;
+      p.alpha = motion.alpha[0] + z * motion.alpha[1];
     }
 
     const pool: Particle[] = Array.from({ length: count }, () => {
@@ -120,18 +148,20 @@ export function ParticleField({ kind, density, speed }: Props) {
 
       for (const p of pool) {
         p.sway += p.swaySpeed * dt;
-        p.x += (p.vx + Math.sin(p.sway) * 0.35 * p.z) * dt * speed;
+        p.x += (p.vx + Math.sin(p.sway) * motion.drift * p.z) * dt * speed;
         p.y += p.vy * dt * speed;
         p.rot += p.vrot * dt * speed;
 
-        if (p.y > height + 60) spawn(p, false);
+        if (rises ? p.y < -60 : p.y > height + 60) spawn(p, false);
         if (p.x < -80) p.x = width + 60;
         if (p.x > width + 80) p.x = -60;
 
         ctx!.save();
         ctx!.translate(p.x, p.y);
         ctx!.rotate(p.rot);
-        ctx!.globalAlpha = p.alpha;
+        ctx!.globalAlpha = motion.twinkle
+          ? p.alpha * (0.35 + 0.65 * Math.abs(Math.sin(p.sway * 4)))
+          : p.alpha;
         drawPetal(ctx!, shape, p.size, p.z > 0.55 ? colorSoft : colorMain);
         ctx!.restore();
       }

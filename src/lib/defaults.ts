@@ -1,5 +1,6 @@
 import { BLOCKS, starterContent, type SectionType } from '@/design/blocks';
-import { OCCASIONS, type OccasionId } from '@/design/occasions';
+import { sectionStyleSchema } from '@/design/schemas';
+import { OCCASIONS, type OccasionBlueprint, type OccasionId } from '@/design/occasions';
 
 /**
  * Isi awal surat baru. Editor tidak boleh menyambut user dengan halaman
@@ -15,10 +16,10 @@ export function defaultSectionsFor(
   recipient: string,
   occasion: OccasionId = 'love',
 ) {
-  const blueprint = OCCASIONS[occasion] ?? OCCASIONS.love;
+  const blueprint: OccasionBlueprint = OCCASIONS[occasion] ?? OCCASIONS.love;
 
   return blueprint.sections.map((type, index) => {
-    const content = starterContent(type);
+    const content = { ...starterContent(type), ...blueprint.content?.[type] };
 
     // Sapaan personal kalau nama penerima diisi
     if (type === 'intro' && recipient) {
@@ -32,6 +33,7 @@ export function defaultSectionsFor(
       enabled: true,
       variant: '',
       content: BLOCKS[type].schema.parse(content) as Record<string, unknown>,
+      style: sectionStyleSchema.parse(blueprint.style?.[type] ?? {}),
     };
   });
 }

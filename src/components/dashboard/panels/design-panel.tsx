@@ -1,5 +1,7 @@
 'use client';
 
+import { THEME_IMAGES } from '@/design/theme-images';
+import { AUDIO_TRACKS, MUSIC_TRACKS } from '@/design/music-tracks';
 import { useEffect, useRef, useState } from 'react';
 import { Dices, ImageDown } from 'lucide-react';
 import { toast } from 'sonner';
@@ -91,7 +93,7 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
     patch({
       fontPair: pick(FONT_PAIRS).id,
       surface: { ...design.surface, kind: pick(['aurora', 'gradient', 'mesh', 'grain', 'solid'] as const) },
-      particles: { ...design.particles, kind: pick(['sakura', 'rose', 'dust'] as const) },
+      particles: { ...design.particles, kind: pick(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star'] as const) },
       variants: Object.fromEntries(
         SECTION_TYPES.map((type) => [type, pick(SECTION_VARIANTS[type])]),
       ) as DesignSpec['variants'],
@@ -184,6 +186,33 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
             </Select>
           </Field>
 
+          <Field label="Ilustrasi latar">
+            <Select
+              value={design.surface.image ?? ''}
+              onChange={(e) =>
+                patch({ surface: { ...design.surface, image: e.target.value || undefined } })
+              }
+            >
+              <option value="">Tanpa ilustrasi</option>
+              {THEME_IMAGES.map((img) => (
+                <option key={img.src} value={img.src}>
+                  {img.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
+          {design.surface.image && (
+            <Slider
+              label="Redupkan ilustrasi"
+              min={0} max={0.9} step={0.05}
+              value={design.surface.imageOverlay ?? 0.5}
+              onChange={(e) =>
+                patch({ surface: { ...design.surface, imageOverlay: Number(e.target.value) } })
+              }
+            />
+          )}
+
           <Slider
             label="Vignette"
             min={0} max={1} step={0.05}
@@ -267,7 +296,36 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
               <option value="sakura">Kelopak sakura</option>
               <option value="rose">Kelopak mawar</option>
               <option value="dust">Debu cahaya</option>
+              <option value="snow">Salju</option>
+              <option value="snowflake">Kristal salju</option>
+              <option value="heart">Hati melayang</option>
+              <option value="star">Bintang berkilau</option>
               <option value="none">Tidak ada</option>
+            </Select>
+          </Field>
+
+          <Field label="Musik latar bawaan">
+            <Select
+              value={design.music?.track ?? ''}
+              onChange={(e) =>
+                patch({ music: e.target.value ? { track: e.target.value } : undefined })
+              }
+            >
+              <option value="">Tanpa musik</option>
+              <optgroup label="Rekaman asli">
+                {AUDIO_TRACKS.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.title}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Kotak musik (synth)">
+                {MUSIC_TRACKS.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.title}
+                  </option>
+                ))}
+              </optgroup>
             </Select>
           </Field>
 

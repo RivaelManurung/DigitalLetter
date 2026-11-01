@@ -45,7 +45,8 @@ export function MusicPlayer({ tracks, unlocked }: Props) {
 
     const step = (now: number) => {
       const t = Math.min((now - start) / FADE_MS, 1);
-      audio.volume = from + (target - from) * t;
+      // pembulatan float bisa sedikit keluar dari [0,1] → browser melempar error dan fade macet
+      audio.volume = Math.min(1, Math.max(0, from + (target - from) * t));
       if (t < 1) {
         fadeRef.current = requestAnimationFrame(step);
       } else {
