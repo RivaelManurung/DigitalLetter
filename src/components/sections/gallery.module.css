@@ -47,7 +47,7 @@
 
 .caption {
   text-align: center;
-  font-family: var(--ff-script);
+  font-family: var(--ff-hand);
   font-size: var(--text-sm);
   color: var(--c-accent-soft);
 }

@@ -184,7 +184,7 @@ function paintCover(
   const css = getComputedStyle(host);
   const accent = css.getPropertyValue('--c-accent').trim() || '#d4a94a';
   const soft = css.getPropertyValue('--c-accent-soft').trim() || '#f3e6c0';
-  const script = css.getPropertyValue('--ff-script').trim() || 'cursive';
+  const hand = css.getPropertyValue('--ff-hand').trim() || 'cursive';
 
   ctx.globalCompositeOperation = 'source-over';
   ctx.clearRect(0, 0, w, h);
@@ -240,14 +240,15 @@ function paintCover(
   }
 
   if (hint) {
-    ctx.font = `${Math.round(Math.min(w, 420) / 8)}px ${script}`;
+    ctx.font = `600 ${Math.round(Math.min(w, 420) / 7)}px ${hand}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     // halo terang di belakang huruf supaya terbaca di atas pola es yang ramai
     ctx.shadowColor = foil ? 'rgba(255,240,200,0.9)' : 'rgba(255,255,255,0.95)';
     ctx.shadowBlur = 14;
     ctx.fillStyle = foil ? 'rgba(60,40,10,0.75)' : 'rgba(25,45,75,0.85)';
-    ctx.fillText(hint, w / 2, h / 2);
+    // sedikit di atas tengah supaya tidak tertimpa palang jendela
+    ctx.fillText(hint, w / 2, h * 0.38);
     ctx.shadowBlur = 0;
     ctx.shadowColor = 'transparent';
   }

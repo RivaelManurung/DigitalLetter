@@ -90,6 +90,15 @@ export class SynthEngine {
     }, FADE_S * 1000 + 50);
   }
 
+  /** posisi putar dalam satuan beat sejak awal lagu (0 … panjang lagu) */
+  currentBeat(): number {
+    if (!this.ctx || !this.playing || this.loopBeats === 0) return -1;
+    let beat = (this.ctx.currentTime - this.loopStart) / this.secPerBeat;
+    // penjadwal sudah memajukan loopStart ke putaran berikutnya sebelum bunyinya tiba
+    if (beat < 0) beat += this.loopBeats;
+    return beat;
+  }
+
   setVolume(v: number) {
     this.volume = v;
     if (this.playing) this.fadeTo(v);

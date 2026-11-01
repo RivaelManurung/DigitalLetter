@@ -15,6 +15,12 @@ for (const t of MUSIC_TRACKS) {
     const chords = parseSequence(t.chords);
     assert(chords.total === melody.total, `${t.id}: akor ${chords.total} beat ≠ melodi ${melody.total} beat`);
   }
+  if (t.lyrics) {
+    t.lyrics.forEach((l, i) => {
+      assert(l.beat < melody.total, `${t.id}: lirik "${l.text}" melewati akhir lagu`);
+      if (i) assert(l.beat > t.lyrics![i - 1].beat, `${t.id}: urutan lirik salah`);
+    });
+  }
   console.log(`ok ${t.id}: ${melody.events.length} not, ${melody.total} beat`);
 }
 

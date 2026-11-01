@@ -17,6 +17,14 @@
   list-style: none;
 }
 
+.cardIndex {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  line-height: 0.9;
+  font-style: italic;
+  color: var(--c-accent);
+}
+
 .cardTitle {
   font-family: var(--ff-display);
   font-size: var(--text-lg);

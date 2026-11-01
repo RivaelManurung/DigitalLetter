@@ -11,8 +11,8 @@
 }
 
 .hint {
-  font-family: var(--ff-script);
-  font-size: var(--text-lg);
+  font-family: var(--ff-hand);
+  font-size: var(--text-xl);
   color: var(--c-accent);
   animation: hint-pulse 2.4s ease-in-out infinite;
 }
@@ -90,7 +90,7 @@
   border-radius: 999px;
   background: var(--c-text);
   color: var(--c-bg-deep);
-  font-family: var(--ff-script);
+  font-family: var(--ff-hand);
   font-size: var(--text-sm);
   rotate: 8deg;
   white-space: nowrap;
@@ -180,7 +180,7 @@
 .done {
   margin-top: var(--space-lg);
   text-align: center;
-  font-family: var(--ff-script);
+  font-family: var(--ff-hand);
   font-size: var(--text-xl);
   color: var(--c-accent);
   animation: pop-in 700ms var(--ease-out-expo) both;

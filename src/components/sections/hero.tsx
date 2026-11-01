@@ -1,7 +1,6 @@
 import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { Reveal } from '../engine/reveal';
-import { FlowerMark } from '../graphics/flower-mark';
 import styles from './hero.module.css';
 
 type Props = {
@@ -46,10 +45,6 @@ function HeroCentered({ content, reveal }: VariantProps) {
           </Reveal>
         )}
 
-        <Reveal kind={reveal} index={3}>
-          <FlowerMark size={104} />
-        </Reveal>
-
         {content.scrollLabel && <ScrollCue label={content.scrollLabel} />}
       </div>
     </section>
@@ -79,9 +74,6 @@ function HeroSplit({ content, reveal }: VariantProps) {
           )}
         </div>
 
-        <Reveal kind={reveal} index={2} className={styles.splitVisual}>
-          <FlowerMark size={220} />
-        </Reveal>
       </div>
     </section>
   );
@@ -127,7 +119,7 @@ function ScrollCue({ label, align = 'center' }: { label: string; align?: 'center
   return (
     <div className={styles.scrollCue} data-align={align}>
       <span>{label}</span>
-      <span className={styles.scrollLine} aria-hidden="true" />
+      <span className={styles.scrollArrow} aria-hidden="true">↓</span>
     </div>
   );
 }

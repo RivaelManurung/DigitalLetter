@@ -33,52 +33,7 @@
   margin-top: var(--space-md);
 }
 
-.crown {
-  display: flex;
-  align-items: flex-end;
-  gap: clamp(0.5rem, 2vw, 1.1rem);
-  margin-bottom: var(--space-sm);
-}
 
-.crown > span {
-  animation: crownRise calc(4.4s * var(--motion-speed)) ease-in-out infinite;
-}
-
-@keyframes crownRise {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-3deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(3deg);
-  }
-}
-
-/* ── heart ── */
-
-.heart {
-  animation: heartBeat calc(1.9s * var(--motion-speed)) ease-in-out infinite;
-  filter: drop-shadow(0 0 34px var(--c-glow));
-}
-
-@keyframes heartBeat {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.15);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.11);
-  }
-  56% {
-    transform: scale(1);
-  }
-}
 
 /* ── starlit ── */
 
@@ -112,4 +67,9 @@
     opacity: 0.85;
     transform: scale(1.25);
   }
+}
+
+.signatureBig {
+  font-size: clamp(2.6rem, 9vw, 4.2rem);
+  margin-top: var(--space-sm);
 }

@@ -2,7 +2,6 @@ import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
-import { IconGlyph } from '../graphics/icon-glyph';
 import styles from './letter.module.css';
 
 type Props = {
@@ -63,11 +62,6 @@ export function LetterSection({ content, design, variant }: Props) {
     <section className={`section ${styles.wrap}`}>
       <div className="section-inner">
         <Reveal kind={reveal} className={`glass ${styles.card} ${styles.glassCard}`}>
-          <div className={styles.cardCrown} aria-hidden="true">
-            <IconGlyph name="sakura" size={26} />
-            <IconGlyph name="rose" size={30} />
-            <IconGlyph name="sakura" size={26} />
-          </div>
           {inner}
         </Reveal>
       </div>

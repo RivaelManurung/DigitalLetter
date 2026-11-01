@@ -122,7 +122,7 @@ export const OCCASIONS = {
     label: 'Natal Berdua',
     note: 'Untuk pasangan: gosok jendela berembun untuk melihat fotomu, surat, kenangan, dan pertanyaan manis di akhir.',
     preset: 'winter-frost',
-    style: { hero: { bgImage: '/image/berdua-hero.webp', bgOverlay: 0.35 } },
+    style: { hero: { bgImage: '/image/berdua-hero.webp', bgOverlay: 0.6 } },
     sections: ['intro', 'hero', 'scratch', 'letter', 'memories', 'quote', 'question', 'finale'],
     content: {
       hero: {

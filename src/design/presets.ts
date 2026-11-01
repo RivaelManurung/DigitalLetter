@@ -217,7 +217,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       scratch: 'frost',
       intro: 'gift',
       hero: 'centered',
-      letter: 'glass',
+      letter: 'paper',
       reasons: 'grid',
       countdown: 'ring',
       memories: 'polaroid',
@@ -245,7 +245,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     surface: { kind: 'mesh', vignette: 0.55, grain: 0.2, image: '/image/berdua-bg.webp', imageOverlay: 0.5 },
     motion: { speed: 1.1, reveal: 'blur-in', parallax: true },
     particles: { kind: 'snowflake', density: 0.7 },
-    music: { track: 'o-holy-night' },
+    music: { track: 'box-natal-kita' },
     shape: { radius: 22, glassBlur: 22 },
     variants: {
       chat: 'plain',

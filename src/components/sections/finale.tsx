@@ -2,7 +2,6 @@ import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
-import { IconGlyph } from '../graphics/icon-glyph';
 import styles from './finale.module.css';
 
 type Props = {
@@ -10,8 +9,6 @@ type Props = {
   design: DesignSpec;
   variant: string;
 };
-
-const CROWN = ['sakura', 'hibiscus', 'rose', 'sakura', 'tulip'];
 
 export function FinaleSection({ content, design, variant }: Props) {
   const reveal = design.motion.reveal;
@@ -36,29 +33,15 @@ export function FinaleSection({ content, design, variant }: Props) {
       {variant === 'starlit' && <Starfield />}
 
       <div className={`section-inner ${styles.inner}`}>
-        {variant !== 'starlit' && (
-          <Reveal kind={reveal} className={styles.crown}>
-            {CROWN.map((name, i) => (
-              <span key={i} style={{ animationDelay: `${i * 220}ms` }}>
-                <IconGlyph name={name} size={30} />
-              </span>
-            ))}
-          </Reveal>
-        )}
-
         <Reveal kind={reveal} index={1} className={styles.textStack}>
           {text}
         </Reveal>
 
-        {variant === 'heart' && (
-          <Reveal kind={reveal} index={2} className={styles.heart}>
-            <IconGlyph name="heart" size={72} />
-          </Reveal>
-        )}
-
         {content.signature && (
           <Reveal kind={reveal} index={3}>
-            <p className={`signature ${styles.signature}`}>{content.signature}</p>
+            <p className={`signature ${styles.signature} ${variant === 'heart' ? styles.signatureBig : ''}`}>
+              {content.signature}
+            </p>
           </Reveal>
         )}
       </div>

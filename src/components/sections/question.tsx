@@ -5,7 +5,6 @@ import type { BlockContent } from '@/design/blocks';
 import type { DesignSpec } from '@/design/types';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
-import { FlowerMark } from '../graphics/flower-mark';
 import styles from './question.module.css';
 
 type Props = {
@@ -46,7 +45,6 @@ export function QuestionSection({ content, design, variant }: Props) {
       <section className="section">
         <div className="section-inner">
           <Reveal kind={reveal} className={styles.answer}>
-            <FlowerMark size={110} />
             <p
               className={`body-text ${styles.answerText}`}
               dangerouslySetInnerHTML={{ __html: renderLite(content.yesResponse) }}

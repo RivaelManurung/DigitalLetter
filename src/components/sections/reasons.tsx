@@ -2,7 +2,6 @@ import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
-import { IconGlyph } from '../graphics/icon-glyph';
 import styles from './reasons.module.css';
 
 type Props = {
@@ -65,9 +64,11 @@ export function ReasonsSection({ content, design, variant }: Props) {
               kind={reveal}
               index={i}
               key={i}
-              className={`glass hover-lift ${styles.card}`}
+              className={`glass ${styles.card}`}
             >
-              <IconGlyph name={item.icon} size={38} />
+              <span className={styles.cardIndex} aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
               <h3 className={styles.cardTitle}>{item.title}</h3>
               <p
                 className="body-text"

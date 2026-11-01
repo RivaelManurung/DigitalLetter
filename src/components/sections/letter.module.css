@@ -29,33 +29,6 @@
   margin-top: var(--space-sm);
 }
 
-.cardCrown {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.75rem;
-}
-
-.cardCrown > :nth-child(1) {
-  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
-}
-.cardCrown > :nth-child(2) {
-  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
-  animation-delay: calc(0.4s * var(--motion-speed));
-}
-.cardCrown > :nth-child(3) {
-  animation: crownFloat calc(4s * var(--motion-speed)) ease-in-out infinite;
-  animation-delay: calc(0.8s * var(--motion-speed));
-}
-
-@keyframes crownFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-7px);
-  }
-}
 
 /* ── paper ── */
 
@@ -134,4 +107,34 @@
     transparent 70%
   );
   opacity: 0.5;
+}
+
+/* Kertas surat sungguhan: garis buku, margin merah tipis, isi ditulis tangan. */
+.paper {
+  rotate: -0.6deg;
+  background:
+    linear-gradient(90deg, transparent 2.6rem, color-mix(in srgb, var(--c-accent) 35%, transparent) 2.6rem 2.7rem, transparent 2.7rem),
+    repeating-linear-gradient(to bottom, transparent 0 calc(2.1rem - 1px), color-mix(in srgb, var(--c-bg-deep) 12%, transparent) calc(2.1rem - 1px) 2.1rem),
+    color-mix(in srgb, var(--c-text) 94%, var(--c-accent-soft));
+  padding-left: clamp(3.4rem, 6vw, 4.5rem);
+}
+
+.paper .body {
+  font-family: var(--ff-hand);
+  font-size: calc(var(--text-lg) * 1.12);
+  line-height: 2.1rem;
+}
+
+.paper :global(.body-text) p + p {
+  margin-top: 2.1rem;
+}
+
+.paper,
+.paper :global(.display) {
+  text-align: left;
+}
+
+.paper :global(.eyebrow) {
+  justify-self: start;
+  align-self: start;
 }

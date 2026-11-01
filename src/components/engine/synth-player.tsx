@@ -22,6 +22,7 @@ export function SynthPlayer({ trackId, unlocked }: Props) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [line, setLine] = useState('');
 
   const track = MUSIC_TRACKS[index] ?? MUSIC_TRACKS[0];
 
@@ -66,6 +67,18 @@ export function SynthPlayer({ trackId, unlocked }: Props) {
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, []);
 
+  // Lirik mengikuti posisi lagu; dicek 4x per detik, cukup untuk ganti baris tiap ~5 detik.
+  useEffect(() => {
+    const lyrics = track.lyrics;
+    if (!playing || !lyrics?.length) return;
+    const timer = window.setInterval(() => {
+      const beat = engineRef.current?.currentBeat() ?? -1;
+      const current = [...lyrics].reverse().find((l) => beat >= l.beat);
+      setLine(beat < 0 ? '' : (current?.text ?? ''));
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [playing, track]);
+
   async function toggle() {
     const engine = engineRef.current;
     if (!engine) return;
@@ -103,7 +116,9 @@ export function SynthPlayer({ trackId, unlocked }: Props) {
       <div className={styles.panel}>
         <div className={styles.meta}>
           <span className={styles.title}>{track.title}</span>
-          <span className={styles.artist}>{track.artist}</span>
+          <span className={styles.artist} aria-live="off">
+            {track.lyrics?.length && playing && line ? `♪ ${line}` : track.artist}
+          </span>
         </div>
 
         <div className={styles.controls}>

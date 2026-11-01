@@ -27,6 +27,7 @@ export function designToCssVars(design: DesignSpec): CSSProperties {
     '--ff-display': `'${font.display}', serif`,
     '--ff-script': `'${font.script}', cursive`,
     '--ff-body': `'${font.body}', sans-serif`,
+    '--ff-hand': `'Caveat', cursive`,
 
     '--surface-vignette': String(surface.vignette),
     '--surface-grain': String(surface.grain),

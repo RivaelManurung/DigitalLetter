@@ -96,7 +96,8 @@ export function getFontPair(id: string): FontPair {
 
 /** URL stylesheet Google Fonts untuk satu pasangan. */
 export function fontPairHref(id: string): string {
-  return `https://fonts.googleapis.com/css2?${getFontPair(id).googleQuery}&display=swap`;
+  // Caveat dimuat untuk semua pasangan: dipakai sebagai "tulisan tangan" (tanda tangan, keterangan foto).
+  return `https://fonts.googleapis.com/css2?${getFontPair(id).googleQuery}&family=Caveat:wght@400;600&display=swap`;
 }
 
 /**

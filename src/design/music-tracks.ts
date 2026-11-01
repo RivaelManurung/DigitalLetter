@@ -14,6 +14,8 @@ export type MusicTrack = {
   melody: string;
   /** "NOT,NOT,NOT:DURASI_BEAT" — dimainkan lembut di bawah melodi */
   chords?: string;
+  /** baris lirik dan beat mulainya, ditampilkan di pemutar mengikuti lagu */
+  lyrics?: { beat: number; text: string }[];
 };
 
 const CANON_ARPEGGIO =
@@ -25,6 +27,37 @@ const CANON_CHORDS =
   'D3,F#3,A3:2 A2,C#3,E3:2 B2,D3,F#3:2 F#2,A2,C#3:2 G2,B2,D3:2 D3,F#3,A3:2 G2,B2,D3:2 A2,C#3,E3:2';
 
 export const MUSIC_TRACKS: MusicTrack[] = [
+  {
+    // Lagu original untuk aplikasi ini — bebas dipakai, tanpa lisensi pihak ketiga.
+    id: 'box-natal-kita',
+    title: 'Natal Kita',
+    artist: 'Lagu original · kotak musik',
+    bpm: 88,
+    melody:
+      // bait
+      'R:.5 D4:.5 G4:.5 G4:.5 A4:.5 B4:.5 B4:1 A4:1 G4:.5 E4:.5 G4:1 E4:1 ' +
+      'R:.5 E4:.5 G4:.5 G4:.5 C5:.5 B4:.5 A4:1 A4:.5 A4:.5 B4:.5 A4:.5 F#4:1 D4:1 ' +
+      'R:.5 D4:.5 G4:.5 B4:.5 D5:1.5 B4:.5 C5:.5 B4:.5 A4:.5 G4:.5 E4:1 G4:1 ' +
+      'A4:.5 B4:.5 C5:.5 B4:.5 A4:.5 G4:.5 F#4:.5 A4:.5 G4:1 F#4:.5 G4:2.5 ' +
+      // reff
+      'E5:1 D5:.5 C5:.5 D5:1 E5:1 D5:.5 B4:.5 G4:.5 A4:.5 B4:1 G4:1 ' +
+      'C5:1 B4:.5 A4:.5 C5:1 E5:1 D5:1.5 A4:.5 B4:.5 A4:.5 F#4:1 ' +
+      'E5:.5 E5:.5 E5:.5 D5:.5 C5:1 E5:1 D5:1 B4:1 G4:2 ' +
+      'C5:.5 C5:.5 C5:1 B4:.5 A4:.5 D5:1 B4:.5 A4:.5 G4:3',
+    chords:
+      'G2,D3,B3:4 E2,B2,G3:4 C3,E3,G3:4 D3,F#3,A3:4 G2,D3,B3:4 E2,B2,G3:4 A2,C3,E3:2 D3,F#3,A3:2 G2,D3,B3:4 ' +
+      'C3,E3,G3:4 G2,D3,B3:4 A2,C3,E3:4 D3,F#3,A3:4 C3,E3,G3:4 B2,D3,G3:4 A2,C3,E3:2 D3,F#3,A3:2 G2,D3,B3:4',
+    lyrics: [
+      { beat: 0, text: 'Lampu kecil berkelip di jendela' },
+      { beat: 8, text: 'Salju turun walau hanya dalam mimpi' },
+      { beat: 16, text: 'Kau di sini, hangatkan malam sunyi' },
+      { beat: 24, text: 'Tak ada kado seindah hadirmu' },
+      { beat: 32, text: 'Natal kita, sederhana saja' },
+      { beat: 40, text: 'Cukup kau dan aku, dan doa' },
+      { beat: 48, text: 'Bila lonceng berbunyi nanti' },
+      { beat: 56, text: 'Kupeluk kamu, selamanya' },
+    ],
+  },
   {
     id: 'box-canon-d',
     title: 'Canon in D (kotak musik)',

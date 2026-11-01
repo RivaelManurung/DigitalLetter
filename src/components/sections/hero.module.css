@@ -46,20 +46,14 @@
   width: 100%;
 }
 
-@media (min-width: 900px) {
-  .splitGrid {
-    grid-template-columns: 1.15fr 0.85fr;
-  }
+/* split: judul besar di kiri, sisanya mengisi ruang kosong seperti sampul majalah */
+.splitText {
+  max-width: 46rem;
 }
 
 .splitText {
   display: grid;
   gap: var(--space-md);
-}
-
-.splitVisual {
-  display: grid;
-  place-items: center;
 }
 
 /* ── editorial ── */
@@ -107,40 +101,27 @@
 /* ── scroll cue ── */
 
 .scrollCue {
-  display: grid;
-  justify-items: center;
-  gap: 0.7rem;
-  font-size: var(--text-xs);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: var(--text-sm);
   color: var(--c-text-muted);
 }
 
+.scrollArrow {
+  display: inline-block;
+  color: var(--c-accent);
+  animation: arrow-nudge 2.2s ease-in-out infinite;
+}
+
+@keyframes arrow-nudge {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(5px); }
+}
+
 .scrollCue[data-align='start'] {
-  justify-items: start;
+  justify-content: flex-start;
   margin-top: var(--space-md);
 }
 
-.scrollLine {
-  width: 1px;
-  height: 54px;
-  background: linear-gradient(
-    to bottom,
-    var(--c-accent),
-    transparent
-  );
-  animation: scrollDrift calc(2.4s * var(--motion-speed)) ease-in-out infinite;
-  transform-origin: top;
-}
-
-@keyframes scrollDrift {
-  0%,
-  100% {
-    transform: scaleY(0.55);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}

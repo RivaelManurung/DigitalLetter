@@ -27,9 +27,7 @@
 }
 
 .source {
-  font-size: var(--text-xs);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
   color: var(--c-accent);
   font-style: normal;
 }
