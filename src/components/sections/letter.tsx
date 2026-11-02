@@ -1,5 +1,6 @@
 import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
+import { INTRO_IMAGES } from '@/design/theme-images';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
 import styles from './letter.module.css';
@@ -38,6 +39,7 @@ export function LetterSection({ content, design, variant }: Props) {
         <div className="section-inner">
           <Reveal kind={reveal} className={`${styles.card} ${styles.paper}`}>
             <span className={styles.paperFold} aria-hidden="true" />
+            <img className={styles.paperSeal} src={INTRO_IMAGES.seal} alt="" loading="lazy" draggable={false} />
             {inner}
           </Reveal>
         </div>

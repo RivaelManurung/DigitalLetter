@@ -33,7 +33,7 @@ export const OCCASIONS = {
   },
 
   wedding: {
-    label: 'Undangan Nikahan',
+    label: 'Undangan Pernikahan',
     note: 'Mempelai, akad & resepsi, hitung mundur, rundown, amplop digital, dan RSVP.',
     preset: 'golden-hour',
     sections: [
@@ -53,14 +53,14 @@ export const OCCASIONS = {
   },
 
   confess: {
-    label: 'Nembak / Confess',
+    label: 'Pernyataan Cinta',
     note: 'Pengakuan perasaan, alasan suka, kenangan, dan pertanyaan ya/tidak.',
     preset: 'midnight-ink',
     sections: ['intro', 'hero', 'letter', 'reasons', 'memories', 'question', 'finale'],
   },
 
   valentine: {
-    label: 'Valentine',
+    label: 'Hari Valentine',
     note: 'Kartu valentine dengan alasan cinta, kutipan, dan galeri.',
     preset: 'dark-romantic',
     sections: ['intro', 'hero', 'letter', 'reasons', 'quote', 'gallery', 'garden', 'finale'],
@@ -119,7 +119,7 @@ export const OCCASIONS = {
   },
 
   'christmas-couple': {
-    label: 'Natal Berdua',
+    label: 'Natal untuk Pasangan',
     note: 'Untuk pasangan: gosok jendela berembun untuk melihat fotomu, surat, kenangan, dan pertanyaan manis di akhir.',
     preset: 'winter-frost',
     style: { hero: { bgImage: '/image/berdua-hero.webp', bgOverlay: 0.6 } },
@@ -160,10 +160,10 @@ export const OCCASIONS = {
   },
 
   anniversary: {
-    label: 'Anniversary',
+    label: 'Hari Jadi',
     note: 'Perjalanan berdua dengan langit berbintang, cerita, kenangan, dan surat penutup.',
     preset: 'starlit-couple',
-    sections: ['intro', 'hero', 'story', 'memories', 'letter', 'gallery', 'finale'],
+    sections: ['intro', 'hero', 'story', 'memories', 'letter', 'garden', 'gallery', 'finale'],
     content: {
       hero: {
         eyebrow: 'anniversary',
@@ -172,6 +172,18 @@ export const OCCASIONS = {
         subtitle: 'Satu lagi tahun yang kita lewati berdua, dan aku masih jatuh cinta padamu.',
       },
       story: { eyebrow: 'perjalanan kita', title: 'Dari Awal Sampai Hari Ini' },
+      garden: {
+        eyebrow: 'seikat untukmu',
+        title: 'Satu Bunga untuk Tiap Hal yang Kusyukuri',
+        note: 'sentuh tiap bunga untuk membaca maknanya',
+        flowers: [
+          { flower: 'rose', name: 'Mawar', meaning: 'Cinta yang tidak pernah habis' },
+          { flower: 'sakura', name: 'Sakura', meaning: 'Hari pertama kita bertemu' },
+          { flower: 'sunflower', name: 'Bunga Matahari', meaning: 'Kamu yang selalu menghangatkan' },
+          { flower: 'tulip', name: 'Tulip', meaning: 'Bahagia yang sederhana' },
+          { flower: 'lotus', name: 'Teratai', meaning: 'Tetap tumbuh di masa sulit' },
+        ],
+      },
       letter: {
         label: 'di hari kita',
         title: 'Terima kasih sudah bertahan bersamaku.',
@@ -184,6 +196,59 @@ export const OCCASIONS = {
         title: 'Aku Pilih Kamu, Lagi dan Lagi',
         body: 'Di bawah langit yang sama, aku ingin menua bersamamu.',
         signature: 'Selamat anniversary',
+      },
+    },
+  },
+
+  'dinner-date': {
+    label: 'Undangan Makan Malam',
+    note: 'Ajakan makan malam berdua: surat, alasan, hitung mundur ke malamnya, dan pertanyaan "mau?" di akhir.',
+    preset: 'rose-gold-couple',
+    sections: ['intro', 'hero', 'letter', 'reasons', 'countdown', 'question', 'finale'],
+    content: {
+      hero: {
+        eyebrow: 'satu malam untuk kita',
+        titleTop: 'Lilin Sudah Menyala,',
+        titleBottom: 'Tinggal Kamu',
+        subtitle: 'Mawar sudah di meja, gelas sudah terisi. Kursi di depanku masih menunggumu.',
+      },
+      letter: {
+        label: 'undangan kecil',
+        title: 'Aku ingin satu malam yang pelan, hanya berdua.',
+        body:
+          'Belakangan kita sama-sama sibuk, sampai lupa rasanya duduk lama tanpa terburu-buru. Jadi aku menyiapkan satu malam: lampu temaram, makanan yang enak, dan obrolan yang tidak perlu cepat selesai.\n\nTidak usah bawa apa-apa. Cukup datang dengan senyummu yang biasa.',
+        signature: '— Yang menunggumu di meja',
+      },
+      reasons: {
+        eyebrow: 'kenapa malam ini',
+        title: 'Alasan Aku Mengajakmu',
+        items: [
+          { icon: 'heart', title: 'Rindu', body: 'Bertemu setiap hari pun, aku tetap rindu ngobrol lama denganmu.' },
+          { icon: 'sparkle', title: 'Tawamu', body: 'Aku ingin mendengarnya di bawah cahaya lilin.' },
+          { icon: 'star', title: 'Terima kasih', body: 'Untuk semua hari yang kamu buat lebih ringan.' },
+          { icon: 'leaf', title: 'Kita', body: 'Karena hubungan juga perlu dirayakan, bukan hanya dijalani.' },
+        ],
+      },
+      countdown: {
+        eyebrow: 'catat tanggalnya',
+        title: 'Menuju Malam Kita',
+        targetAt: '2026-11-14T19:00',
+        passedLabel: 'Malamnya sudah tiba. Aku menunggumu. 🕯️',
+      },
+      question: {
+        eyebrow: 'jadi, bagaimana?',
+        title: 'Mau makan malam bersamaku?',
+        body: 'Jam tujuh malam. Aku yang jemput.',
+        yesLabel: 'Mau!',
+        noLabel: 'Nanti dulu',
+        noBehavior: 'dodge',
+        yesResponse: 'Yeay! Pakai baju yang paling kamu suka, ya. Sampai ketemu malam itu. 🌹',
+      },
+      finale: {
+        eyebrow: 'sampai jumpa',
+        title: 'Kursi di Depanku Milikmu',
+        body: 'Malam ini, dan malam-malam berikutnya.',
+        signature: 'Dengan cinta, dari aku',
       },
     },
   },

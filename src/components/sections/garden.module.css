@@ -60,6 +60,12 @@
   transition: transform var(--dur-normal) var(--ease-out-expo);
 }
 
+.sticker {
+  width: 64px;
+  height: auto;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
 .stalk:nth-child(2n) .bloom {
   animation-delay: calc(-1.4s * var(--motion-speed));
 }
@@ -76,12 +82,8 @@
   flex: 1;
   width: 2px;
   min-height: 60px;
-  background: linear-gradient(
-    to bottom,
-    var(--c-accent-soft),
-    color-mix(in srgb, var(--c-accent) 35%, transparent)
-  );
-  opacity: 0.7;
+  background: linear-gradient(to bottom, #6f8f5a, color-mix(in srgb, #6f8f5a 30%, transparent));
+  opacity: 0.85;
 }
 
 .tooltip {

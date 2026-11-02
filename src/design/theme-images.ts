@@ -10,6 +10,9 @@ export const THEME_IMAGES = [
   { src: '/image/velvet-noir-bg.webp', label: 'Tirai beludru' },
   { src: '/image/sage-morning-bg.webp', label: 'Kebun pagi' },
   { src: '/image/berdua-hero.webp', label: 'Berdua di salju' },
+  { src: '/image/rose-gold-bg.webp', label: 'Makan malam lilin' },
+  { src: '/image/starlit-bg.webp', label: 'Langit berbintang' },
+  { src: '/image/intro-tirai.webp', label: 'Tirai panggung' },
 ] as const;
 
 export const GIFT_IMAGES = [
@@ -19,6 +22,29 @@ export const GIFT_IMAGES = [
 ] as const;
 
 export const FROST_IMAGE = '/image/berdua-embun.webp';
-export const CURTAIN_IMAGE = '/image/velvet-noir-bg.webp';
+export const INTRO_IMAGES = {
+  envelope: '/image/intro/envelope.webp',
+  seal: '/image/intro/seal.webp',
+  giftBox: '/image/intro/gift-box.webp',
+  giftLid: '/image/intro/gift-lid.webp',
+} as const;
+
+/** Sticker ilustrasi per nama glyph; glyph tanpa sticker tetap digambar vektor. */
+export const STICKERS: Partial<Record<string, string>> = {
+  rose: '/image/stickers/rose.webp',
+  sakura: '/image/stickers/sakura.webp',
+  lotus: '/image/stickers/lotus.webp',
+  tulip: '/image/stickers/tulip.webp',
+  sunflower: '/image/stickers/sunflower.webp',
+  hibiscus: '/image/stickers/hibiscus.webp',
+  leaf: '/image/stickers/leaf.webp',
+  heart: '/image/stickers/heart.webp',
+};
+
+export const PARTICLE_SPRITES = {
+  sakura: ['/image/particles/sakura-1.webp', '/image/particles/sakura-2.webp', '/image/particles/sakura-3.webp'],
+  rose: ['/image/particles/rose-1.webp', '/image/particles/rose-2.webp', '/image/particles/rose-3.webp'],
+  heart: ['/image/particles/heart-1.webp', '/image/particles/heart-2.webp', '/image/particles/heart-3.webp'],
+} as const;
 
 export const CHAT_WALLPAPERS = { natal: '/image/natal-chat.webp' } as const;

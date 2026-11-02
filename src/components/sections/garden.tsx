@@ -1,5 +1,6 @@
 import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
+import { STICKERS } from '@/design/theme-images';
 import { Reveal } from '../engine/reveal';
 import { IconGlyph } from '../graphics/icon-glyph';
 import styles from './garden.module.css';
@@ -58,7 +59,17 @@ export function GardenSection({ content, design, variant }: Props) {
                 style={placement(variant, i, flowers.length)}
               >
                 <span className={styles.bloom}>
-                  <IconGlyph name={flower.flower} size={46} />
+                  {STICKERS[flower.flower] ? (
+                    <img
+                      className={styles.sticker}
+                      src={STICKERS[flower.flower]}
+                      alt=""
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  ) : (
+                    <IconGlyph name={flower.flower} size={46} />
+                  )}
                 </span>
                 <span className={styles.stem} aria-hidden="true" />
                 <span className={`glass ${styles.tooltip}`}>

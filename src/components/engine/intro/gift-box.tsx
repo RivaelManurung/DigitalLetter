@@ -1,20 +1,14 @@
+import { INTRO_IMAGES } from '@/design/theme-images';
 import styles from './intro.module.css';
 
-/** Kotak kado 3D murni CSS — tutup terangkat lalu miring saat dibuka. */
+/** Kotak kado ilustrasi: tutup terangkat dan berputar, cahaya naik dari dalam. */
 export function GiftBox({ opening }: { opening: boolean }) {
   return (
     <div className={`${styles.gift} ${opening ? styles.giftOpen : ''}`}>
-      <div className={styles.giftLid}>
-        <span className={styles.ribbonH} />
-        <span className={styles.ribbonV} />
-        <span className={styles.bowLeft} />
-        <span className={styles.bowRight} />
-        <span className={styles.bowKnot} />
-      </div>
-      <div className={styles.giftBody}>
-        <span className={styles.ribbonBodyV} />
-        <span className={styles.giftGlow} />
-      </div>
+      <span className={styles.envShadow} aria-hidden="true" />
+      <img className={styles.giftBody} src={INTRO_IMAGES.giftBox} alt="" draggable={false} />
+      <span className={styles.giftGlow} aria-hidden="true" />
+      <img className={styles.giftLid} src={INTRO_IMAGES.giftLid} alt="" draggable={false} />
     </div>
   );
 }

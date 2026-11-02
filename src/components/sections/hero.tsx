@@ -1,6 +1,7 @@
 import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { Reveal } from '../engine/reveal';
+import { SplitTitle, splitLength } from '../engine/split-title';
 import styles from './hero.module.css';
 
 type Props = {
@@ -33,9 +34,11 @@ function HeroCentered({ content, reveal }: VariantProps) {
 
         <Reveal kind={reveal} index={1}>
           <h1 className={`display ${styles.title}`}>
-            {content.titleTop}
+            <SplitTitle text={content.titleTop} />
             <br />
-            <em>{content.titleBottom}</em>
+            <em>
+              <SplitTitle text={content.titleBottom} offset={splitLength(content.titleTop)} />
+            </em>
           </h1>
         </Reveal>
 
@@ -61,7 +64,10 @@ function HeroSplit({ content, reveal }: VariantProps) {
           </Reveal>
           <Reveal kind={reveal} index={1}>
             <h1 className={`display ${styles.title}`}>
-              {content.titleTop} <em>{content.titleBottom}</em>
+              <SplitTitle text={content.titleTop} />{' '}
+              <em>
+                <SplitTitle text={content.titleBottom} offset={splitLength(content.titleTop)} />
+              </em>
             </h1>
           </Reveal>
           {content.subtitle && (
@@ -90,9 +96,11 @@ function HeroEditorial({ content, reveal }: VariantProps) {
 
         <Reveal kind={reveal} index={1}>
           <h1 className={`display ${styles.titleEditorial}`}>
-            {content.titleTop}
+            <SplitTitle text={content.titleTop} />
             <br />
-            <em>{content.titleBottom}</em>
+            <em>
+              <SplitTitle text={content.titleBottom} offset={splitLength(content.titleTop)} />
+            </em>
           </h1>
         </Reveal>
 

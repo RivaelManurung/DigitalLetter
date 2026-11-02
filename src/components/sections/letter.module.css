@@ -55,6 +55,16 @@
   color: color-mix(in srgb, var(--c-bg-deep) 78%, transparent);
 }
 
+.paperSeal {
+  position: absolute;
+  right: 18px;
+  bottom: -22px;
+  width: 64px;
+  rotate: -12deg;
+  filter: drop-shadow(0 6px 8px rgba(70, 10, 10, 0.4));
+  pointer-events: none;
+}
+
 .paperFold {
   position: absolute;
   inset: 0;

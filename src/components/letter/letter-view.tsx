@@ -11,6 +11,8 @@ import { SynthPlayer } from '../engine/synth-player';
 import { getTrack, playlistFrom } from '@/design/music-tracks';
 import { ParticleField } from '../engine/particle-field';
 import { SurfaceLayer } from '../engine/surface-layer';
+import { AmbientLayer } from '../engine/ambient/ambient-layer';
+import { TapBurst } from '../engine/tap-burst';
 import { SectionRenderer } from './section-renderer';
 
 type Props = {
@@ -66,6 +68,7 @@ export function LetterView({ letter, preview = false }: Props) {
     <div
       className="letter-root"
       data-preview={preview ? 'true' : undefined}
+      data-title={design.motion.title ?? 'none'}
       style={designToCssVars(design)}
     >
       {/* Satu pembungkus untuk semua lapisan latar. Di halaman asli ia
@@ -73,6 +76,7 @@ export function LetterView({ letter, preview = false }: Props) {
           panggung sticky setinggi panel. */}
       <div className="stage-layers" aria-hidden="true">
         <SurfaceLayer design={design} />
+        <AmbientLayer kind={design.motion.ambient} />
 
         <ParticleField
           kind={design.particles.kind}
@@ -102,6 +106,8 @@ export function LetterView({ letter, preview = false }: Props) {
           />
         ))}
       </main>
+
+      {design.motion.tapBurst && !preview && <TapBurst kind={design.particles.kind} />}
 
       {audio.length > 0 && !preview && (
         <MusicPlayer tracks={audio} unlocked={opened} />

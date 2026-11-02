@@ -2,6 +2,7 @@ import type { SectionContent } from '@/design/schemas';
 import type { DesignSpec } from '@/design/types';
 import { renderLite } from '@/lib/utils';
 import { Reveal } from '../engine/reveal';
+import { SplitTitle } from '../engine/split-title';
 import styles from './finale.module.css';
 
 type Props = {
@@ -17,7 +18,9 @@ export function FinaleSection({ content, design, variant }: Props) {
     <>
       {content.eyebrow && <p className="eyebrow">{content.eyebrow}</p>}
       {content.title && (
-        <h2 className={`display ${styles.title}`}>{content.title}</h2>
+        <h2 className={`display ${styles.title}`}>
+          <SplitTitle text={content.title} />
+        </h2>
       )}
       {content.body && (
         <p

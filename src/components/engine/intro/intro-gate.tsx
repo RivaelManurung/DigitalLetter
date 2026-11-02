@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { INTRO_IMAGES } from '@/design/theme-images';
 import { GiftBox } from './gift-box';
 import styles from './intro.module.css';
 
@@ -72,10 +73,9 @@ export function IntroGate({ variant, hint, label, onOpen }: Props) {
 function Envelope({ opening }: { opening: boolean }) {
   return (
     <div className={`${styles.envelope} ${opening ? styles.envOpen : ''}`}>
-      <div className={styles.envBody} />
-      <span className={styles.envLetter} />
-      <span className={styles.envFlap} />
-      <span className={styles.envSeal} />
+      <span className={styles.envShadow} aria-hidden="true" />
+      <img className={styles.envImg} src={INTRO_IMAGES.envelope} alt="" draggable={false} />
+      <img className={styles.envSeal} src={INTRO_IMAGES.seal} alt="" draggable={false} />
     </div>
   );
 }
@@ -86,9 +86,10 @@ function Curtain({ opening }: { opening: boolean }) {
       <div className={`${styles.curtain} ${opening ? styles.curtainOpen : ''}`}>
         <div className={`${styles.curtainPanel} ${styles.curtainLeft}`} />
         <div className={`${styles.curtainPanel} ${styles.curtainRight}`} />
+        <span className={styles.curtainSpot} aria-hidden="true" />
       </div>
-      <div className={`${opening ? styles.curtainOpen : ''}`}>
-        <div className={styles.curtainMark} />
+      <div className={`${styles.curtainMarkWrap} ${opening ? styles.curtainOpen : ''}`}>
+        <img className={styles.curtainMark} src={INTRO_IMAGES.seal} alt="" draggable={false} />
       </div>
     </>
   );

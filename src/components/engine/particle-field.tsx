@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { PARTICLE_SPRITES } from '@/design/theme-images';
 import type { ParticleKind } from '@/design/types';
 import { detectTier, particleBudget } from './device-tier';
 import { drawPetal, type PetalShape } from './petal-shapes';
@@ -23,6 +24,7 @@ type Particle = {
   sway: number;
   swaySpeed: number;
   alpha: number;
+  sprite: number;
 };
 
 const SHAPE_FOR: Record<Exclude<ParticleKind, 'none'>, PetalShape> = {
@@ -89,6 +91,25 @@ export function ParticleField({ kind, density, speed }: Props) {
     let running = true;
 
     // Warna dibaca sekali per resize/observe, bukan tiap frame (getComputedStyle mahal)
+    // Kelopak & hati memakai ilustrasi; bentuk vektor dipakai sampai gambar siap.
+    const spriteSrcs: readonly string[] =
+      kind in PARTICLE_SPRITES ? PARTICLE_SPRITES[kind as keyof typeof PARTICLE_SPRITES] : [];
+    const sprites: HTMLImageElement[] = [];
+    let spritesReady = false;
+    if (spriteSrcs.length) {
+      let loaded = 0;
+      for (const src of spriteSrcs) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => {
+          loaded += 1;
+          if (loaded === spriteSrcs.length) spritesReady = true;
+        };
+        img.src = src;
+        sprites.push(img);
+      }
+    }
+
     let colorMain = '#e8698a';
     let colorSoft = '#f4a7bb';
 
@@ -121,12 +142,13 @@ export function ParticleField({ kind, density, speed }: Props) {
       p.sway = Math.random() * Math.PI * 2;
       p.swaySpeed = 0.006 + Math.random() * 0.012;
       p.alpha = motion.alpha[0] + z * motion.alpha[1];
+      p.sprite = Math.floor(Math.random() * Math.max(spriteSrcs.length, 1));
     }
 
     const pool: Particle[] = Array.from({ length: count }, () => {
       const p: Particle = {
         x: 0, y: 0, z: 0, vx: 0, vy: 0, rot: 0,
-        vrot: 0, size: 0, sway: 0, swaySpeed: 0, alpha: 0,
+        vrot: 0, size: 0, sway: 0, swaySpeed: 0, alpha: 0, sprite: 0,
       };
       return p;
     });
@@ -162,7 +184,16 @@ export function ParticleField({ kind, density, speed }: Props) {
         ctx!.globalAlpha = motion.twinkle
           ? p.alpha * (0.35 + 0.65 * Math.abs(Math.sin(p.sway * 4)))
           : p.alpha;
-        drawPetal(ctx!, shape, p.size, p.z > 0.55 ? colorSoft : colorMain);
+        if (spritesReady) {
+          const img = sprites[p.sprite];
+          const w = p.size * 1.5;
+          const h = (w * img.naturalHeight) / img.naturalWidth;
+          // ilustrasi sudah berwarna penuh, jadi butuh opasitas lebih tinggi dari vektor
+          ctx!.globalAlpha = Math.min(0.85, p.alpha * 1.4);
+          ctx!.drawImage(img, -w / 2, -h / 2, w, h);
+        } else {
+          drawPetal(ctx!, shape, p.size, p.z > 0.55 ? colorSoft : colorMain);
+        }
         ctx!.restore();
       }
 

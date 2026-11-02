@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BLOCKS, SECTION_TYPES, type SectionType } from './blocks';
+import { AMBIENT_KINDS, REVEAL_KINDS, TITLE_ANIMS } from './types';
 
 /**
  * Schema section berasal dari registry block (design/blocks). Berkas ini
@@ -119,8 +120,11 @@ export const designSchema = z.object({
   }),
   motion: z.object({
     speed: z.number().min(0.4).max(2),
-    reveal: z.enum(['fade-up', 'fade', 'blur-in']),
+    reveal: z.enum(REVEAL_KINDS),
     parallax: z.boolean(),
+    ambient: z.enum(AMBIENT_KINDS).optional(),
+    title: z.enum(TITLE_ANIMS).optional(),
+    tapBurst: z.boolean().optional(),
   }),
   particles: z.object({
     kind: z.enum(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star', 'none']),
@@ -159,7 +163,7 @@ export const sectionStyleSchema = z.object({
   maxWidth: z.number().min(320).max(1600).optional(),
   align: z.enum(['left', 'center', 'right']).optional(),
 
-  reveal: z.enum(['fade-up', 'fade', 'blur-in']).optional(),
+  reveal: z.enum(REVEAL_KINDS).optional(),
   speed: z.number().min(0.4).max(2).optional(),
   particleDensity: z.number().min(0).max(1).optional(),
 });

@@ -38,7 +38,20 @@ export type Palette = {
 };
 
 export type SurfaceKind = 'aurora' | 'gradient' | 'mesh' | 'grain' | 'solid';
-export type RevealKind = 'fade-up' | 'fade' | 'blur-in';
+export const REVEAL_KINDS = [
+  'fade-up', 'fade', 'blur-in', 'glow', 'iris', 'unfold', 'drop', 'ink', 'pop', 'rise', 'petal',
+] as const;
+export type RevealKind = (typeof REVEAL_KINDS)[number];
+
+/** Lapisan suasana yang bergerak di atas latar, khas per tema. */
+export const AMBIENT_KINDS = [
+  'none', 'candle', 'shooting-stars', 'spotlight', 'sunrays', 'fireflies', 'fairy-lights', 'frost',
+] as const;
+export type AmbientKind = (typeof AMBIENT_KINDS)[number];
+
+/** Cara judul besar muncul huruf demi huruf. */
+export const TITLE_ANIMS = ['none', 'cascade', 'flicker', 'twinkle', 'type', 'rise'] as const;
+export type TitleAnim = (typeof TITLE_ANIMS)[number];
 export type ParticleKind =
   | 'sakura'
   | 'rose'
@@ -72,6 +85,10 @@ export type DesignSpec = {
     speed: number;
     reveal: RevealKind;
     parallax: boolean;
+    ambient?: AmbientKind;
+    title?: TitleAnim;
+    /** ketukan di layar memercikkan partikel tema */
+    tapBurst?: boolean;
   };
   particles: {
     kind: ParticleKind;

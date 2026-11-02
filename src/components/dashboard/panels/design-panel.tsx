@@ -1,6 +1,7 @@
 'use client';
 
 import { THEME_IMAGES } from '@/design/theme-images';
+import { AMBIENT_LABEL, REVEAL_LABEL, TITLE_LABEL } from '@/design/motion-labels';
 import { AUDIO_TRACKS, MUSIC_TRACKS } from '@/design/music-tracks';
 import { useEffect, useRef, useState } from 'react';
 import { Dices, ImageDown } from 'lucide-react';
@@ -275,9 +276,51 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
                 })
               }
             >
-              <option value="fade-up">Naik & memudar</option>
-              <option value="fade">Memudar</option>
-              <option value="blur-in">Dari buram</option>
+              {Object.entries(REVEAL_LABEL).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </Select>
+          </Field>
+
+          <Field label="Suasana bergerak">
+            <Select
+              value={design.motion.ambient ?? 'none'}
+              onChange={(e) =>
+                patch({
+                  motion: { ...design.motion, ambient: e.target.value as DesignSpec['motion']['ambient'] },
+                })
+              }
+            >
+              {Object.entries(AMBIENT_LABEL).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </Select>
+          </Field>
+
+          <Field label="Animasi judul">
+            <Select
+              value={design.motion.title ?? 'none'}
+              onChange={(e) =>
+                patch({
+                  motion: { ...design.motion, title: e.target.value as DesignSpec['motion']['title'] },
+                })
+              }
+            >
+              {Object.entries(TITLE_LABEL).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </Select>
+          </Field>
+
+          <Field label="Ketuk layar">
+            <Select
+              value={design.motion.tapBurst ? 'on' : 'off'}
+              onChange={(e) =>
+                patch({ motion: { ...design.motion, tapBurst: e.target.value === 'on' } })
+              }
+            >
+              <option value="on">Memercikkan partikel</option>
+              <option value="off">Diam</option>
             </Select>
           </Field>
 

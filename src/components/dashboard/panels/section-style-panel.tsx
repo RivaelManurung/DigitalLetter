@@ -1,5 +1,7 @@
 'use client';
 
+import { REVEAL_LABEL } from '@/design/motion-labels';
+import type { RevealKind } from '@/design/types';
 import { Paintbrush } from 'lucide-react';
 import { FONT_PAIRS } from '@/design/fonts';
 import type { DesignSpec, SectionStyle } from '@/design/types';
@@ -208,12 +210,8 @@ export function SectionStylePanel({ style, design, onChange }: Props) {
         <ChoiceField
           label="Gaya munculnya"
           value={style.reveal}
-          options={[
-            { value: 'fade-up', label: 'Naik' },
-            { value: 'fade', label: 'Pudar' },
-            { value: 'blur-in', label: 'Buram' },
-          ]}
-          onChange={(v) => set('reveal', v)}
+          options={Object.entries(REVEAL_LABEL).map(([value, label]) => ({ value, label }))}
+          onChange={(v) => set('reveal', v as RevealKind | undefined)}
         />
         <SliderField
           label="Kecepatan"

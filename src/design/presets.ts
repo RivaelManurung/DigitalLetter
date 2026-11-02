@@ -8,7 +8,7 @@ import type { DesignSpec } from './types';
 export const DESIGN_PRESETS: Record<string, DesignSpec> = {
   'dark-romantic': {
     preset: 'dark-romantic',
-    name: 'Dark Romantic',
+    name: 'Mawar Malam',
     palette: {
       bgDeep: '#0e0208',
       bgMid: '#1a0510',
@@ -22,7 +22,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'romantic-serif',
     surface: { kind: 'aurora', vignette: 0.65, grain: 0.25, image: '/image/dark-romantic-bg.webp', imageOverlay: 0.5 },
-    motion: { speed: 1, reveal: 'fade-up', parallax: true },
+    motion: {
+      speed: 1,
+      reveal: 'petal',
+      parallax: true,
+      ambient: 'fireflies',
+      title: 'cascade',
+      tapBurst: true,
+    },
     particles: { kind: 'sakura', density: 0.7 },
     music: { track: 'clair-de-lune' },
     shape: { radius: 24, glassBlur: 18 },
@@ -39,7 +46,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'golden-hour': {
     preset: 'golden-hour',
-    name: 'Golden Hour',
+    name: 'Senja Keemasan',
     palette: {
       bgDeep: '#fdf6ee',
       bgMid: '#f7e8d8',
@@ -53,7 +60,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'modern-luxe',
     surface: { kind: 'gradient', vignette: 0.25, grain: 0.35, image: '/image/golden-hour-bg.webp', imageOverlay: 0.55 },
-    motion: { speed: 1.1, reveal: 'fade-up', parallax: true },
+    motion: {
+      speed: 1.1,
+      reveal: 'rise',
+      parallax: true,
+      ambient: 'sunrays',
+      title: 'rise',
+      tapBurst: false,
+    },
     particles: { kind: 'dust', density: 0.5 },
     music: { track: 'canon-d' },
     shape: { radius: 20, glassBlur: 14 },
@@ -70,7 +84,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'midnight-ink': {
     preset: 'midnight-ink',
-    name: 'Midnight Ink',
+    name: 'Tinta Tengah Malam',
     palette: {
       bgDeep: '#07080f',
       bgMid: '#0d1020',
@@ -84,7 +98,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'nocturne',
     surface: { kind: 'mesh', vignette: 0.7, grain: 0.2, image: '/image/midnight-ink-bg.webp', imageOverlay: 0.45 },
-    motion: { speed: 0.85, reveal: 'blur-in', parallax: true },
+    motion: {
+      speed: 0.85,
+      reveal: 'ink',
+      parallax: true,
+      ambient: 'none',
+      title: 'type',
+      tapBurst: false,
+    },
     particles: { kind: 'dust', density: 0.85 },
     music: { track: 'clair-de-lune' },
     shape: { radius: 8, glassBlur: 22 },
@@ -101,7 +122,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'blush-paper': {
     preset: 'blush-paper',
-    name: 'Blush Paper',
+    name: 'Kertas Merona',
     palette: {
       bgDeep: '#fff9fb',
       bgMid: '#fdeef3',
@@ -115,7 +136,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'vintage-press',
     surface: { kind: 'grain', vignette: 0.2, grain: 0.55, image: '/image/blush-paper-bg.webp', imageOverlay: 0.5 },
-    motion: { speed: 1.15, reveal: 'fade', parallax: false },
+    motion: {
+      speed: 1.15,
+      reveal: 'unfold',
+      parallax: false,
+      ambient: 'none',
+      title: 'cascade',
+      tapBurst: true,
+    },
     particles: { kind: 'sakura', density: 0.45 },
     music: { track: 'canon-d' },
     shape: { radius: 4, glassBlur: 10 },
@@ -132,7 +160,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'velvet-noir': {
     preset: 'velvet-noir',
-    name: 'Velvet Noir',
+    name: 'Panggung Beludru',
     palette: {
       bgDeep: '#0a0505',
       bgMid: '#170808',
@@ -146,7 +174,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'editorial',
     surface: { kind: 'aurora', vignette: 0.8, grain: 0.3, image: '/image/velvet-noir-bg.webp', imageOverlay: 0.4 },
-    motion: { speed: 0.9, reveal: 'fade-up', parallax: true },
+    motion: {
+      speed: 0.9,
+      reveal: 'iris',
+      parallax: true,
+      ambient: 'spotlight',
+      title: 'flicker',
+      tapBurst: false,
+    },
     particles: { kind: 'rose', density: 0.6 },
     music: { track: 'carol-of-the-bells' },
     shape: { radius: 2, glassBlur: 16 },
@@ -163,7 +198,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'sage-morning': {
     preset: 'sage-morning',
-    name: 'Sage Morning',
+    name: 'Embun Pagi',
     palette: {
       bgDeep: '#f4f7f2',
       bgMid: '#e6efe4',
@@ -177,7 +212,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'soft-humanist',
     surface: { kind: 'gradient', vignette: 0.15, grain: 0.4, image: '/image/sage-morning-bg.webp', imageOverlay: 0.58 },
-    motion: { speed: 1.2, reveal: 'fade', parallax: false },
+    motion: {
+      speed: 1.2,
+      reveal: 'blur-in',
+      parallax: false,
+      ambient: 'sunrays',
+      title: 'rise',
+      tapBurst: true,
+    },
     particles: { kind: 'dust', density: 0.35 },
     music: { track: 'canon-d' },
     shape: { radius: 28, glassBlur: 12 },
@@ -193,7 +235,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
   },
   'christmas-eve': {
     preset: 'christmas-eve',
-    name: 'Christmas Eve',
+    name: 'Malam Natal',
     palette: {
       bgDeep: '#06120d',
       bgMid: '#0c2118',
@@ -207,7 +249,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'romantic-serif',
     surface: { kind: 'aurora', vignette: 0.6, grain: 0.3, image: '/image/natal-bg.webp', imageOverlay: 0.6 },
-    motion: { speed: 1, reveal: 'fade-up', parallax: true },
+    motion: {
+      speed: 1,
+      reveal: 'drop',
+      parallax: true,
+      ambient: 'fairy-lights',
+      title: 'cascade',
+      tapBurst: true,
+    },
     particles: { kind: 'snow', density: 0.8 },
     music: { track: 'silent-night' },
     shape: { radius: 24, glassBlur: 18 },
@@ -229,7 +278,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'winter-frost': {
     preset: 'winter-frost',
-    name: 'Winter Frost',
+    name: 'Salju Pertama',
     palette: {
       bgDeep: '#050b1a',
       bgMid: '#0b1730',
@@ -243,7 +292,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'nocturne',
     surface: { kind: 'mesh', vignette: 0.55, grain: 0.2, image: '/image/berdua-bg.webp', imageOverlay: 0.5 },
-    motion: { speed: 1.1, reveal: 'blur-in', parallax: true },
+    motion: {
+      speed: 1.1,
+      reveal: 'blur-in',
+      parallax: true,
+      ambient: 'frost',
+      title: 'twinkle',
+      tapBurst: true,
+    },
     particles: { kind: 'snowflake', density: 0.7 },
     music: { track: 'box-natal-kita' },
     shape: { radius: 22, glassBlur: 22 },
@@ -265,7 +321,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'candy-cane': {
     preset: 'candy-cane',
-    name: 'Candy Cane',
+    name: 'Pagi Natal',
     palette: {
       bgDeep: '#fff7f3',
       bgMid: '#fde9e4',
@@ -279,7 +335,14 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     },
     fontPair: 'editorial',
     surface: { kind: 'gradient', vignette: 0.12, grain: 0.35, image: '/image/candy-cane-bg.webp', imageOverlay: 0.45 },
-    motion: { speed: 1.15, reveal: 'fade-up', parallax: false },
+    motion: {
+      speed: 1.15,
+      reveal: 'pop',
+      parallax: false,
+      ambient: 'fairy-lights',
+      title: 'cascade',
+      tapBurst: true,
+    },
     particles: { kind: 'snow', density: 0.6 },
     music: { track: 'jingle-bells' },
     shape: { radius: 28, glassBlur: 12 },
@@ -301,7 +364,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'rose-gold-couple': {
     preset: 'rose-gold-couple',
-    name: 'Rose Gold',
+    name: 'Makan Malam Lilin',
     palette: {
       bgDeep: '#1a0d12',
       bgMid: '#2a1520',
@@ -313,10 +376,17 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glass: 'rgba(255,230,220,0.07)',
       glow: 'rgba(232,165,152,0.35)',
     },
-    fontPair: 'modern-luxe',
-    surface: { kind: 'aurora', vignette: 0.6, grain: 0.25 },
-    motion: { speed: 1, reveal: 'fade-up', parallax: true },
-    particles: { kind: 'heart', density: 0.55 },
+    fontPair: 'romantic-serif',
+    surface: { kind: 'aurora', vignette: 0.6, grain: 0.25, image: '/image/rose-gold-bg.webp', imageOverlay: 0.55 },
+    motion: {
+      speed: 1,
+      reveal: 'glow',
+      parallax: true,
+      ambient: 'candle',
+      title: 'flicker',
+      tapBurst: true,
+    },
+    particles: { kind: 'rose', density: 0.35 },
     music: { track: 'clair-de-lune' },
     shape: { radius: 26, glassBlur: 20 },
     variants: {
@@ -325,7 +395,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       scratch: 'foil',
       intro: 'envelope',
       hero: 'centered',
-      letter: 'glass',
+      letter: 'paper',
       reasons: 'bento',
       memories: 'polaroid',
       gallery: 'masonry',
@@ -337,7 +407,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
 
   'starlit-couple': {
     preset: 'starlit-couple',
-    name: 'Starlit Couple',
+    name: 'Langit Berbintang',
     palette: {
       bgDeep: '#070816',
       bgMid: '#10122e',
@@ -350,16 +420,23 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(242,199,110,0.32)',
     },
     fontPair: 'editorial',
-    surface: { kind: 'mesh', vignette: 0.7, grain: 0.25 },
-    motion: { speed: 0.9, reveal: 'blur-in', parallax: true },
-    particles: { kind: 'star', density: 0.85 },
+    surface: { kind: 'mesh', vignette: 0.6, grain: 0.2, image: '/image/starlit-bg.webp', imageOverlay: 0.42 },
+    motion: {
+      speed: 0.9,
+      reveal: 'fade',
+      parallax: true,
+      ambient: 'shooting-stars',
+      title: 'twinkle',
+      tapBurst: true,
+    },
+    particles: { kind: 'star', density: 0.55 },
     music: { track: 'canon-d' },
     shape: { radius: 20, glassBlur: 22 },
     variants: {
       chat: 'plain',
       unwrap: 'pile',
       scratch: 'foil',
-      intro: 'curtain',
+      intro: 'gift',
       hero: 'editorial',
       letter: 'glass',
       reasons: 'numbered',
