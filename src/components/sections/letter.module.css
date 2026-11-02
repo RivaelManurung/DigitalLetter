@@ -130,8 +130,8 @@
 }
 
 .paper .body {
-  font-family: var(--ff-hand);
-  font-size: calc(var(--text-lg) * 1.12);
+  font-family: var(--ff-display);
+  font-size: var(--text-lg);
   line-height: 2.1rem;
 }
 

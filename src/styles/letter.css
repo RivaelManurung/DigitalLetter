@@ -302,10 +302,10 @@
 .signature {
   display: inline-block;
   font-family: var(--ff-hand);
-  font-size: calc(var(--text-xl) * 1.15);
-  line-height: 1.1;
+  font-style: italic;
+  font-size: var(--text-lg);
+  line-height: 1.3;
   color: var(--c-accent);
-  rotate: -3deg;
 }
 
 /* ── Scroll reveal: tiap tema punya cara muncul sendiri (DesignSpec.motion.reveal) ── */
@@ -517,7 +517,8 @@
 .intro-hint {
   margin-top: var(--space-lg);
   font-family: var(--ff-hand);
-  font-size: var(--text-lg);
+  font-style: italic;
+  font-size: var(--text-base);
   color: var(--c-accent-soft);
   animation: hint-pulse calc(2.4s * var(--motion-speed)) ease-in-out infinite;
 }

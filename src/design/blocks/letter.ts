@@ -15,9 +15,9 @@ export const letterBlock = defineBlock({
   }),
   starter: {
     label: 'dari hatiku',
-    title: 'Kamu adalah mimpi terliarku yang jadi nyata.',
+    title: 'Ada banyak hal yang belum sempat kukatakan padamu.',
     body:
-      'Di dunia yang penuh hal biasa, kamu adalah yang luar biasa. Caramu tertawa, caramu peduli, caramu sekadar ada — semuanya mengisi setiap sudut duniaku dengan sesuatu yang tak pernah kutahu aku butuhkan.\n\nBunga-bunga ini tidak akan pernah cukup. Tidak ada kata yang cukup. Tapi semuanya membawa setiap rasa yang tak terucap, terselip di antara kelopaknya seperti surat-surat kecil yang menunggu ditemukan.',
+      'Aku sering memikirkan hidupku sebelum kamu ada. Semuanya berjalan, tapi terasa seperti menunggu sesuatu yang tidak kutahu namanya. Lalu kamu datang, dan pelan-pelan aku mengerti apa yang selama ini kutunggu.\n\nKamu tidak mengubah duniaku dengan hal-hal besar. Kamu mengubahnya lewat hal kecil: pesan selamat pagi yang tidak pernah absen, caramu mengingat cerita yang bahkan aku sendiri sudah lupa, dan tanganmu yang selalu mencari tanganku saat kita menyeberang jalan.\n\nSurat ini tidak akan pernah cukup untuk menjelaskan semuanya. Tapi setidaknya kamu tahu: di setiap hari yang kujalani, ada bagian dari diriku yang selalu bersyukur karena kamu ada.',
     signature: '— Selalu milikmu',
   },
   fields: [

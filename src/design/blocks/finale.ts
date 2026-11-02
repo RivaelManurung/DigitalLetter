@@ -16,7 +16,7 @@ export const finaleBlock = defineBlock({
     eyebrow: 'selalu & selamanya',
     title: 'Kamu Dicintai Melebihi Kata',
     body:
-      'Ke mana pun hidup membawa kita, ketahuilah bahwa di suatu tempat di semesta ini, ada taman yang mekar dengan setiap rasa yang pernah kusimpan untukmu. Kamu layak mendapatkan dunia.',
+      'Ke mana pun hidup membawa kita nanti, aku ingin kamu ingat surat ini di hari-hari yang berat. Bahwa ada seseorang yang memperhatikan hal-hal kecil tentangmu, yang bangga pada caramu bertahan, dan yang akan selalu memilihmu, bahkan di hari-hari ketika kamu sendiri ragu.',
     signature: 'Dibuat dengan cinta, hanya untukmu',
   },
   fields: [

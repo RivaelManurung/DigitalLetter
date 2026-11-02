@@ -48,6 +48,7 @@
 .caption {
   text-align: center;
   font-family: var(--ff-hand);
+  font-style: italic;
   font-size: var(--text-sm);
   color: var(--c-accent-soft);
 }

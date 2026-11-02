@@ -58,7 +58,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glass: 'rgba(255,255,255,0.55)',
       glow: 'rgba(200,135,63,0.28)',
     },
-    fontPair: 'modern-luxe',
+    fontPair: 'soft-humanist',
     surface: { kind: 'gradient', vignette: 0.25, grain: 0.35, image: '/image/golden-hour-bg.webp', imageOverlay: 0.55 },
     motion: {
       speed: 1.1,
@@ -96,7 +96,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glass: 'rgba(255,255,255,0.06)',
       glow: 'rgba(142,162,255,0.32)',
     },
-    fontPair: 'nocturne',
+    fontPair: 'quiet-swiss',
     surface: { kind: 'mesh', vignette: 0.7, grain: 0.2, image: '/image/midnight-ink-bg.webp', imageOverlay: 0.45 },
     motion: {
       speed: 0.85,
@@ -134,7 +134,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glass: 'rgba(255,255,255,0.65)',
       glow: 'rgba(212,96,127,0.2)',
     },
-    fontPair: 'vintage-press',
+    fontPair: 'romantic-serif',
     surface: { kind: 'grain', vignette: 0.2, grain: 0.55, image: '/image/blush-paper-bg.webp', imageOverlay: 0.5 },
     motion: {
       speed: 1.15,
@@ -290,7 +290,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glass: 'rgba(180,215,255,0.08)',
       glow: 'rgba(156,201,255,0.35)',
     },
-    fontPair: 'nocturne',
+    fontPair: 'editorial',
     surface: { kind: 'mesh', vignette: 0.55, grain: 0.2, image: '/image/berdua-bg.webp', imageOverlay: 0.5 },
     motion: {
       speed: 1.1,

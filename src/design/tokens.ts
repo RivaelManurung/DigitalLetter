@@ -27,7 +27,7 @@ export function designToCssVars(design: DesignSpec): CSSProperties {
     '--ff-display': `'${font.display}', serif`,
     '--ff-script': `'${font.script}', cursive`,
     '--ff-body': `'${font.body}', sans-serif`,
-    '--ff-hand': `'Caveat', cursive`,
+    '--ff-hand': `'${font.display}', serif`,
 
     '--surface-vignette': String(surface.vignette),
     '--surface-grain': String(surface.grain),
@@ -73,6 +73,7 @@ export function sectionStyleToCssVars(style: SectionStyle | undefined): CSSPrope
     vars['--ff-display'] = `'${font.display}', serif`;
     vars['--ff-script'] = `'${font.script}', cursive`;
     vars['--ff-body'] = `'${font.body}', sans-serif`;
+    vars['--ff-hand'] = `'${font.display}', serif`;
   }
 
   // Skala tipografi ditulis ulang sebagai kelipatan nilai dasarnya, jadi

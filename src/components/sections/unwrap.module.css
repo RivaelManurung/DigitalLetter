@@ -12,7 +12,8 @@
 
 .hint {
   font-family: var(--ff-hand);
-  font-size: var(--text-xl);
+  font-style: italic;
+  font-size: var(--text-base);
   color: var(--c-accent);
   animation: hint-pulse 2.4s ease-in-out infinite;
 }
@@ -90,8 +91,9 @@
   border-radius: 999px;
   background: var(--c-text);
   color: var(--c-bg-deep);
-  font-family: var(--ff-hand);
-  font-size: var(--text-sm);
+  font-family: var(--ff-body);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
   rotate: 8deg;
   white-space: nowrap;
   box-shadow: 0 4px 10px color-mix(in srgb, var(--c-bg-deep) 35%, transparent);
@@ -181,7 +183,8 @@
   margin-top: var(--space-lg);
   text-align: center;
   font-family: var(--ff-hand);
-  font-size: var(--text-xl);
+  font-style: italic;
+  font-size: var(--text-lg);
   color: var(--c-accent);
   animation: pop-in 700ms var(--ease-out-expo) both;
 }

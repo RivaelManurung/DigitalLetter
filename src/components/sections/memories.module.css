@@ -163,7 +163,8 @@
 
 .polaroid .itemTitle {
   font-family: var(--ff-hand);
-  font-size: calc(var(--text-xl) * 1.05);
+  font-style: italic;
+  font-size: var(--text-lg);
   color: var(--c-bg-deep);
 }
 

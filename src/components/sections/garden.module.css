@@ -126,7 +126,8 @@
 .note {
   margin-top: var(--space-lg);
   text-align: center;
-  font-family: var(--ff-script);
+  font-family: var(--ff-body);
+  font-style: italic;
   font-size: var(--text-sm);
   color: var(--c-text-muted);
 }

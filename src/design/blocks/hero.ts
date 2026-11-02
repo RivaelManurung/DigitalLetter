@@ -17,7 +17,7 @@ export const heroBlock = defineBlock({
     eyebrow: 'sebuah surat yang mekar',
     titleTop: 'Untukmu,',
     titleBottom: 'Segalanya Bagiku',
-    subtitle: 'Setiap kelopak menyimpan bisikan tentang betapa berartinya kamu.',
+    subtitle: 'Surat ini kutulis pelan-pelan, satu kalimat untuk setiap hal yang belum sempat kukatakan padamu.',
     scrollLabel: 'gulir untuk melanjutkan',
   },
   fields: [

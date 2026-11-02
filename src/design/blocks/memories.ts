@@ -29,15 +29,15 @@ export const memoriesBlock = defineBlock({
     note: '',
     items: [
       {
-        title: 'Hari Pertama',
+        title: 'Hari pertama',
         date: '',
-        body: 'Momen kecil yang ternyata jadi awal dari banyak hal indah setelahnya.',
+        body: 'Aku masih ingat baju yang kamu pakai dan kalimat pertama yang kamu ucapkan. Waktu itu rasanya biasa saja, ternyata itu awal dari hampir semua hal baik dalam hidupku.',
         photoId: '',
       },
       {
-        title: 'Perjalanan Itu',
+        title: 'Perjalanan itu',
         date: '',
-        body: 'Tidak ada rencana, tidak ada persiapan — tapi jadi salah satu hari terbaik.',
+        body: 'Tanpa rencana dan tanpa persiapan. Kita tersesat dua kali dan kehujanan sekali, tapi sampai sekarang itu masih jadi salah satu hari favoritku.',
         photoId: '',
       },
     ],

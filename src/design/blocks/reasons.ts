@@ -21,12 +21,12 @@ export const reasonsBlock = defineBlock({
     eyebrow: 'seribu alasan',
     title: 'Kenapa Aku Mencintaimu',
     items: [
-      { icon: 'rose', title: 'Senyummu', body: 'Menerangi setiap ruangan, dan setiap sudut hatiku.' },
-      { icon: 'sparkle', title: 'Jiwamu', body: 'Langka, tulus, dan lebih indah dari bunga mana pun.' },
-      { icon: 'sakura', title: 'Kebaikanmu', body: 'Caramu mencintai dunia membuatku ingin jadi lebih baik.' },
-      { icon: 'star', title: 'Tawamu', body: 'Suara terbaik di semesta. Melodi favoritku, selalu.' },
-      { icon: 'hibiscus', title: 'Kekuatanmu', body: 'Kamu melewati semuanya dengan begitu anggun.' },
-      { icon: 'heart', title: 'Kamu Apa Adanya', body: 'Setiap versi dirimu — kamu lebih dari cukup.' },
+      { icon: 'rose', title: 'Caramu tersenyum', body: 'Senyummu selalu datang lebih dulu dari kata-katamu, dan entah bagaimana selalu tiba tepat saat aku paling membutuhkannya.' },
+      { icon: 'sparkle', title: 'Ketulusanmu', body: 'Kamu baik bahkan kepada orang yang tidak pernah tahu kamu sedang berbuat baik. Itu yang membuatku kagum setiap hari.' },
+      { icon: 'sakura', title: 'Caramu peduli', body: 'Kamu ingat makanan yang tidak kusuka, lagu yang membuatku sedih, dan tanggal-tanggal kecil yang bahkan aku sendiri lupa.' },
+      { icon: 'star', title: 'Tawamu', body: 'Tawamu lepas dan tidak dibuat-buat. Mendengarnya seperti diingatkan bahwa hidup tidak perlu selalu serius.' },
+      { icon: 'hibiscus', title: 'Kekuatanmu', body: 'Kamu pernah melewati hari-hari berat tanpa banyak mengeluh, dan tetap punya ruang untuk menguatkan orang lain.' },
+      { icon: 'heart', title: 'Kamu apa adanya', body: 'Versi dirimu yang rapi maupun yang berantakan, yang ceria maupun yang lelah. Semuanya sudah lebih dari cukup bagiku.' },
     ],
   },
   fields: [
