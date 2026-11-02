@@ -26,6 +26,8 @@ function admin() {
 }
 
 export function publicUrl(storagePath: string): string {
+  // Sample photos bundled in public/ are stored as site paths, not bucket keys.
+  if (storagePath.startsWith('/image/')) return storagePath;
   const { data } = admin()
     .storage.from(serverEnv.storageBucket)
     .getPublicUrl(storagePath);
