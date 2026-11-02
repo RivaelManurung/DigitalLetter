@@ -660,3 +660,121 @@
   15% { opacity: 1; }
   100% { opacity: 0; transform: translate(var(--tx), calc(var(--ty) + 60px)) scale(1) rotate(var(--rot)); }
 }
+
+/* ── Photo motion: develops like an instant print once its section reveals ── */
+
+[data-reveal] .photo-develop {
+  filter: sepia(0.55) brightness(1.7) contrast(0.55) saturate(0.4) blur(3px);
+}
+
+[data-reveal].is-visible .photo-develop {
+  animation: photo-develop 2.6s var(--ease-out-expo, ease-out) calc(var(--reveal-delay, 0ms) + 250ms) both;
+}
+
+[data-reveal].is-visible .photo-develop.photo-wipe {
+  animation:
+    photo-develop 2.6s var(--ease-out-expo, ease-out) calc(var(--reveal-delay, 0ms) + 450ms) both,
+    photo-wipe 1.3s cubic-bezier(0.65, 0, 0.35, 1) var(--reveal-delay, 0ms) both;
+}
+
+@keyframes photo-develop {
+  from { filter: sepia(0.55) brightness(1.7) contrast(0.55) saturate(0.4) blur(3px); }
+  45% { filter: sepia(0.3) brightness(1.15) contrast(0.85) saturate(0.7) blur(0.5px); }
+  to { filter: none; }
+}
+
+@keyframes photo-wipe {
+  from { clip-path: inset(0 0 100% 0 round var(--radius)); }
+  to { clip-path: inset(0 0 0 0 round var(--radius)); }
+}
+
+/* Slow Ken Burns drift on story photos. */
+.photo-drift {
+  animation: photo-drift 22s ease-in-out infinite alternate;
+  transform-origin: 60% 40%;
+}
+
+@keyframes photo-drift {
+  from { transform: scale(1.02) translate(0, 0); }
+  to { transform: scale(1.12) translate(-2%, -1.5%); }
+}
+
+/* Parallax inside the frame, tied to the photo's own scroll position. */
+@supports (animation-timeline: view()) {
+  .photo-parallax {
+    scale: 1.18;
+    animation: photo-parallax linear both;
+    animation-timeline: view();
+  }
+
+  @keyframes photo-parallax {
+    from { translate: 0 -7%; }
+    to { translate: 0 7%; }
+  }
+}
+
+/* ── Scroll thread: a gold line with a heart tracing reading progress ── */
+
+.scroll-thread {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-thread {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 2px;
+    z-index: 40;
+    pointer-events: none;
+  }
+
+  .scroll-thread::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--c-accent) 30%, var(--c-accent-soft));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--c-accent) 70%, transparent);
+    transform-origin: left;
+    animation: thread-grow linear both;
+    animation-timeline: scroll(root);
+  }
+
+  .scroll-thread::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    background: var(--c-accent);
+    clip-path: path('M6 11 C6 11 0 7 0 3.5 C0 1.5 1.5 0 3.3 0 C4.5 0 5.4 .7 6 1.6 C6.6 .7 7.5 0 8.7 0 C10.5 0 12 1.5 12 3.5 C12 7 6 11 6 11Z');
+    filter: drop-shadow(0 0 6px var(--c-accent));
+    animation: thread-heart linear both;
+    animation-timeline: scroll(root);
+  }
+
+  @keyframes thread-grow {
+    from { scale: 0 1; }
+    to { scale: 1 1; }
+  }
+
+  @keyframes thread-heart {
+    from { translate: -6px 0; }
+    to { translate: calc(100vw - 6px) 0; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] .photo-develop,
+  .photo-drift,
+  .photo-parallax {
+    filter: none !important;
+    animation: none !important;
+    scale: none;
+    translate: none;
+  }
+  .scroll-thread::after {
+    display: none;
+  }
+}

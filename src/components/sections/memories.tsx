@@ -39,13 +39,13 @@ export function MemoriesSection({ content, design, variant, media }: Props) {
             return (
               <Reveal as="li" kind={reveal} index={i} key={i} className={styles.item}>
                 {photo && (
-                  <div className={styles.frame}>
+                  <div className={`${styles.frame} photo-develop`}>
                     <Image
                       src={photo.url}
                       alt={item.title || photo.caption || ''}
                       fill
                       sizes="(max-width: 720px) 88vw, 320px"
-                      className={styles.image}
+                      className={`${styles.image} photo-parallax`}
                     />
                   </div>
                 )}

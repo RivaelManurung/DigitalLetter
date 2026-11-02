@@ -39,13 +39,13 @@ export function StorySection({ content, design, variant, media }: Props) {
             return (
               <Reveal as="li" kind={reveal} index={i} key={i} className={styles.item}>
                 {photo && (
-                  <div className={styles.photo}>
+                  <div className={`${styles.photo} photo-develop photo-wipe`}>
                     <Image
                       src={photo.url}
                       alt={item.title || photo.caption || ''}
                       fill
                       sizes="(max-width: 720px) 90vw, 340px"
-                      className={styles.photoImg}
+                      className={`${styles.photoImg} photo-drift`}
                     />
                   </div>
                 )}

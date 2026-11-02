@@ -107,6 +107,8 @@ export function LetterView({ letter, preview = false }: Props) {
         ))}
       </main>
 
+      {!preview && <div className="scroll-thread" aria-hidden="true" />}
+
       {design.motion.tapBurst && !preview && <TapBurst kind={design.particles.kind} />}
 
       {audio.length > 0 && !preview && (

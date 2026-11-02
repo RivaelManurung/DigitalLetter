@@ -44,7 +44,7 @@ export function GallerySection({ content, design, media, variant }: Props) {
               className={`${styles.item} hover-lift`}
             >
               <figure className={styles.figure}>
-                <div className={styles.frame}>
+                <div className={`${styles.frame} photo-develop`}>
                   <Image
                     src={photo.url}
                     alt={photo.caption ?? `Foto ${i + 1}`}

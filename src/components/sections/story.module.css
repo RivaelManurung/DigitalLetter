@@ -73,7 +73,37 @@
   grid-template-columns: 1fr;
   position: relative;
   padding-left: clamp(1.2rem, 3vw, 2rem);
-  border-left: 1px solid color-mix(in srgb, var(--c-text) 16%, transparent);
+}
+
+/* The thread draws itself downward as each chapter arrives. */
+.timeline .item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: calc(-1 * clamp(1.6rem, 3.5vw, 2.8rem));
+  width: 1px;
+  background: linear-gradient(var(--c-accent), color-mix(in srgb, var(--c-text) 16%, transparent));
+  transform-origin: top;
+  scale: 1 0;
+  transition: scale 1.6s var(--ease-out-expo, ease-out) var(--reveal-delay, 0ms);
+}
+
+.timeline .item:last-child::after {
+  bottom: 0;
+}
+
+.timeline :global(.is-visible)::after {
+  scale: 1 1;
+}
+
+.timeline :global(.is-visible)::before {
+  animation: dot-beat 2.8s ease-out var(--reveal-delay, 0ms) infinite;
+}
+
+@keyframes dot-beat {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 70%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 12px transparent; }
 }
 
 .timeline .item::before {
@@ -85,6 +115,7 @@
   height: 7px;
   border-radius: 50%;
   background: var(--c-accent);
+  z-index: 1;
 }
 
 /* ── alternating: foto dan teks berselang-seling kiri-kanan ── */
@@ -114,4 +145,9 @@
   .cards {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline .item::after { scale: 1 1; transition: none; }
+  .timeline :global(.is-visible)::before { animation: none; }
 }
