@@ -86,6 +86,14 @@ export const FONT_PAIRS: FontPair[] = [
     googleQuery:
       'family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400&family=Great+Vibes&family=Manrope:wght@200;300;400;500',
   },
+  {
+    id: 'playful-round',
+    label: 'Playful Round',
+    display: 'Fredoka',
+    script: 'Fredoka',
+    body: 'Nunito',
+    googleQuery: 'family=Fredoka:wght@400;500;600&family=Nunito:ital,wght@0,400;0,600;1,400',
+  },
 ];
 
 export const DEFAULT_FONT_PAIR = FONT_PAIRS[0];

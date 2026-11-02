@@ -366,6 +366,12 @@
   animation: reveal-drop calc(var(--dur-slow) * 1.5) var(--reveal-delay, 0ms) both;
 }
 
+/* kartun: memantul kenyal seperti agar-agar */
+[data-reveal="jelly"] { transform: scale(0.4, 0.4); }
+[data-reveal="jelly"].is-visible {
+  animation: reveal-jelly 0.9s var(--reveal-delay, 0ms) both;
+}
+
 /* lilin: menyala dari gelap dengan kedipan pendek */
 [data-reveal="glow"] { filter: brightness(0.15) blur(5px); }
 [data-reveal="glow"].is-visible {
@@ -393,6 +399,15 @@
   0% { opacity: 0; transform: translate3d(0, -46px, 0); }
   55% { opacity: 1; transform: translate3d(0, 6px, 0); }
   75% { transform: translate3d(0, -3px, 0); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes reveal-jelly {
+  0% { opacity: 0; transform: scale(0.4, 0.4); }
+  35% { opacity: 1; transform: scale(1.12, 0.88); }
+  55% { transform: scale(0.92, 1.08); }
+  72% { transform: scale(1.04, 0.97); }
+  86% { transform: scale(0.99, 1.01); }
   100% { opacity: 1; transform: none; }
 }
 

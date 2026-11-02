@@ -305,13 +305,121 @@
   90% { opacity: 0; transform: scale(0.4) rotate(90deg); }
 }
 
+/* ── fireworks: roket naik lalu pecah jadi percikan yang jatuh pelan ── */
+
+.firework {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+}
+
+.rocket {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: 26px;
+  border-radius: 2px;
+  background: linear-gradient(transparent, var(--c));
+  opacity: 0;
+  animation: rocket var(--t) cubic-bezier(0.2, 0.6, 0.4, 1) var(--d) infinite;
+}
+
+@keyframes rocket {
+  0% { opacity: 0; transform: translateY(85vh); }
+  3% { opacity: 1; }
+  24% { opacity: 1; transform: translateY(0); }
+  27%, 100% { opacity: 0; transform: translateY(0); }
+}
+
+.spark {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 8px 2px var(--c);
+  opacity: 0;
+  animation: spark var(--t) cubic-bezier(0.1, 0.7, 0.3, 1) var(--d) infinite;
+}
+
+@keyframes spark {
+  0%, 25% { opacity: 0; transform: rotate(var(--a)) translateY(0) scale(1); translate: 0 0; }
+  27% { opacity: 1; }
+  50% { opacity: 0.9; transform: rotate(var(--a)) translateY(calc(var(--r) * -1)) scale(0.8); translate: 0 12px; }
+  66%, 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--r) * -1.1)) scale(0.3); translate: 0 46px; }
+}
+
+/* ── champagne: gelembung emas naik bergoyang dari dasar gelas ── */
+
+.toastGlow {
+  position: absolute;
+  inset: auto -10% -20% -10%;
+  height: 45%;
+  background: radial-gradient(ellipse 50% 60% at 50% 100%, rgba(255, 220, 150, 0.22), transparent 70%);
+  animation: breathe 8s ease-in-out infinite;
+}
+
+.bubble {
+  position: absolute;
+  left: var(--x);
+  bottom: -20px;
+  width: var(--s);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 236, 190, 0.7);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 224, 160, 0.15) 45%, transparent 70%);
+  opacity: 0;
+  animation: bubbleRise var(--t) ease-in var(--d) infinite, bubbleWobble 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes bubbleRise {
+  0% { opacity: 0; transform: translateY(0); }
+  10% { opacity: 0.85; }
+  85% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-105vh); }
+}
+
+@keyframes bubbleWobble {
+  from { translate: calc(var(--w) * -0.5) 0; }
+  to { translate: calc(var(--w) * 0.5) 0; }
+}
+
+/* ── confetti: kertas warna-warni berputar sambil jatuh ── */
+
+.confetto {
+  position: absolute;
+  left: var(--x);
+  top: -20px;
+  width: 8px;
+  height: var(--h);
+  border-radius: var(--shape);
+  background: var(--c);
+  opacity: 0.85;
+  animation: confettiFall var(--t) linear var(--d) infinite;
+}
+
+@keyframes confettiFall {
+  0% { transform: translate(0, 0) rotateX(0) rotateZ(0); }
+  50% { transform: translate(var(--dx), 55vh) rotateX(540deg) rotateZ(160deg); }
+  100% { transform: translate(calc(var(--dx) * -0.4), 110vh) rotateX(1080deg) rotateZ(320deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .layer * {
     animation: none !important;
   }
   .meteor,
   .ember,
-  .glint {
+  .glint,
+  .rocket,
+  .spark,
+  .bubble,
+  .confetto {
     display: none;
   }
 }

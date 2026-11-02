@@ -444,6 +444,348 @@ export const OCCASIONS = {
     },
   },
 
+  'new-year': {
+    "label": "Tahun Baru",
+    "note": "Kembang api, hitung mundur ke tengah malam, rekap setahun, dan doa untuk tahun yang baru.",
+    "preset": "new-year-midnight",
+    "sections": [
+      "intro",
+      "hero",
+      "countdown",
+      "reasons",
+      "wish",
+      "letter",
+      "gallery",
+      "finale"
+    ],
+    "content": {
+      "intro": {
+        "hint": "ketuk untuk menyalakan kembang api",
+        "label": "2027"
+      },
+      "hero": {
+        "eyebrow": "selamat tahun baru",
+        "titleTop": "Selamat Tinggal 2026,",
+        "titleBottom": "Halo Lembar Baru",
+        "subtitle": "Sebelum jam berdentang dua belas kali, aku ingin berhenti sebentar dan berterima kasih untuk satu tahun yang kita lewati bersama: yang berat, yang lucu, dan yang diam-diam mengubah kita."
+      },
+      "countdown": {
+        "eyebrow": "detik-detik terakhir",
+        "title": "Menuju Tengah Malam",
+        "targetAt": "2027-01-01T00:00",
+        "passedLabel": "Selamat Tahun Baru 2027! Semoga tahun ini lebih ramah padamu. 🎆"
+      },
+      "reasons": {
+        "eyebrow": "rekap 2026",
+        "title": "Hal-Hal yang Membuat 2026 Layak Dikenang",
+        "items": [
+          {
+            "icon": "star",
+            "title": "Kita bertahan",
+            "body": "Ada bulan-bulan yang terasa seperti mendaki tanpa puncak. Tapi kita masih di sini, sedikit lebih kuat daripada Januari lalu."
+          },
+          {
+            "icon": "heart",
+            "title": "Orang-orang yang tinggal",
+            "body": "Tahun ini mengajariku siapa yang benar-benar ada saat keadaan tidak mudah. Kamu salah satunya, dan aku tidak akan lupa."
+          },
+          {
+            "icon": "sparkle",
+            "title": "Tawa yang tidak direncanakan",
+            "body": "Obrolan tengah malam, lelucon yang cuma kita yang paham, dan tertawa sampai perut sakit di hari yang seharusnya buruk."
+          },
+          {
+            "icon": "leaf",
+            "title": "Hal kecil yang tumbuh",
+            "body": "Kebiasaan baru, keberanian kecil, dan kesabaran yang ternyata bisa dilatih. Pelan, tapi nyata."
+          }
+        ]
+      },
+      "wish": {
+        "eyebrow": "untuk tahun yang baru",
+        "bigText": "2027",
+        "title": "Doaku untukmu",
+        "body": "Aku tidak mendoakan tahun yang sempurna, karena tahun seperti itu tidak ada. Aku mendoakan tahun yang cukup: cukup sehat, cukup tenang, dan cukup banyak alasan untuk tersenyum.",
+        "itemsTitle": "Semoga tahun ini kamu",
+        "items": [
+          {
+            "text": "Tidur lebih nyenyak dan khawatir lebih sedikit."
+          },
+          {
+            "text": "Berani memulai hal yang selama ini hanya kamu simpan di catatan."
+          },
+          {
+            "text": "Dikelilingi orang-orang yang membuatmu merasa cukup apa adanya."
+          },
+          {
+            "text": "Menemukan lagi hal-hal yang dulu membuatmu bersemangat."
+          }
+        ],
+        "signature": "— Dari yang ikut menghitung mundur bersamamu"
+      },
+      "letter": {
+        "label": "surat akhir tahun",
+        "title": "Terima kasih untuk 365 hari yang tidak selalu mudah.",
+        "body": "Kalau aku membuka lagi kalender tahun ini, isinya campur aduk. Ada tanggal yang kulingkari karena bahagia, ada juga minggu-minggu yang ingin cepat-cepat kulewati. Tapi di hampir setiap halamannya, entah bagaimana, ada kamu.\n\nKamu yang membalas pesan panjangku di jam yang tidak masuk akal. Kamu yang mengajak keluar sebentar saat aku terlalu lama diam di kamar. Kamu yang tidak pernah bilang \"sudahlah\", tapi selalu bilang \"pelan-pelan saja\".\n\nAku belajar banyak tahun ini: bahwa rencana boleh berantakan, bahwa istirahat bukan kemalasan, dan bahwa teman yang tepat bisa membuat tahun terberat pun terasa bisa dijalani.\n\nJadi sebelum kembang api pertama menyala, aku ingin kamu tahu: apa pun yang menunggu di 2027, aku ada di sini. Untuk merayakan, untuk menemani, atau sekadar untuk mendengarkan.",
+        "signature": "— Sampai jumpa di 2027"
+      },
+      "gallery": {
+        "eyebrow": "potongan 2026",
+        "title": "Setahun dalam Gambar"
+      },
+      "finale": {
+        "eyebrow": "tahun baru, cerita baru",
+        "title": "Selamat Tahun Baru",
+        "body": "Kembang apinya akan habis dalam beberapa menit, tapi harapan yang kita nyalakan malam ini boleh menyala sepanjang tahun. Terima kasih sudah jadi bagian terbaik dari tahun yang lama. Ayo kita isi yang baru dengan lebih banyak tawa.",
+        "signature": "Bersulang untuk kita 🥂"
+      }
+    }
+  },
+
+  'new-year-couple': {
+    "label": "Tahun Baru untuk Pasangan",
+    "note": "Gelembung sampanye, kilas balik setahun berdua, surat, dan satu pertanyaan sebelum tengah malam.",
+    "preset": "champagne-toast",
+    "sections": [
+      "intro",
+      "hero",
+      "memories",
+      "letter",
+      "quote",
+      "question",
+      "finale"
+    ],
+    "content": {
+      "intro": {
+        "hint": "ketuk untuk bersulang",
+        "label": ""
+      },
+      "hero": {
+        "eyebrow": "malam pergantian tahun",
+        "titleTop": "Tahun Berganti,",
+        "titleBottom": "Kamu Tetap Rumahku",
+        "subtitle": "Di antara dentang jam dan riuh terompet, ada satu hal yang tidak ingin kuganti saat tahun berganti: kamu, dan cara kita saling memilih setiap hari."
+      },
+      "memories": {
+        "eyebrow": "kilas balik",
+        "title": "Tahun Kita, Dalam Beberapa Babak",
+        "items": [
+          {
+            "title": "Awal tahun yang canggung",
+            "body": "Kita masih belajar membaca diam satu sama lain. Ternyata diam-mu yang paling panjang biasanya berarti kamu cuma lapar.",
+            "photoId": "",
+            "date": "Januari"
+          },
+          {
+            "title": "Pertengkaran yang membuat kita dewasa",
+            "body": "Kita pernah sama-sama keras kepala. Tapi kita juga sama-sama memilih pulang dan bicara, bukan pergi.",
+            "photoId": "",
+            "date": "Pertengahan tahun"
+          },
+          {
+            "title": "Malam-malam biasa yang paling kusuka",
+            "body": "Masak mi instan bersama, menonton film yang tidak selesai, dan tertidur di tengah obrolan. Ternyata itu yang paling ingin kuulang.",
+            "photoId": "",
+            "date": "Sepanjang tahun"
+          }
+        ]
+      },
+      "letter": {
+        "label": "untukmu, sebelum tengah malam",
+        "title": "Satu tahun lagi, dan aku masih jatuh cinta dengan cara yang sama.",
+        "body": "Tahun ini kita tidak selalu romantis. Ada hari-hari kita sibuk sampai lupa bertanya kabar, ada malam-malam kita tidur dengan punggung saling membelakangi. Tapi besoknya, selalu ada salah satu dari kita yang lebih dulu mengulurkan tangan.\n\nItu yang paling kusyukuri. Bukan momen-momen besar yang kita unggah, tapi kebiasaan kecil untuk kembali. Caramu menyisakan potongan terakhir untukku. Caramu mengingat hal yang pernah kuceritakan sambil lalu.\n\nAku tidak tahu 2027 akan membawa apa. Mungkin pekerjaan baru, mungkin kota baru, mungkin masalah yang belum terbayang. Tapi aku tahu aku ingin menghadapinya dengan tanganmu di genggamanku.\n\nJadi saat hitungan mundur sampai di angka nol nanti, lihat ke arahku. Ciuman pertama tahun ini, seperti biasa, untukmu.",
+        "signature": "— Yang ingin bersamamu di setiap pergantian tahun"
+      },
+      "quote": {
+        "text": "Aku tidak butuh tahun yang sempurna. Aku hanya butuh kamu, di setiap tahun yang tidak sempurna itu.",
+        "source": "Catatan kecil di malam tahun baru",
+        "translation": ""
+      },
+      "question": {
+        "eyebrow": "sebelum jam dua belas",
+        "title": "Mau lewati 2027 bersamaku?",
+        "body": "Dengan semua kejutan, rencana yang berubah, dan hari-hari biasa di antaranya.",
+        "yesLabel": "Mau, selalu",
+        "noLabel": "Pikir dulu",
+        "noBehavior": "dodge",
+        "yesResponse": "Kalau begitu, ayo kita bersulang. Untuk tahun baru, dan untuk kita yang tidak ke mana-mana. 🥂",
+        "noResponse": "Tidak apa-apa, pikirkan pelan-pelan. Aku tetap di sini, menunggumu di sisi gelas yang satunya."
+      },
+      "finale": {
+        "eyebrow": "lima, empat, tiga, dua, satu",
+        "title": "Selamat Tahun Baru, Sayang",
+        "body": "Terompet akan berhenti, kembang api akan padam, dan kota akan kembali tidur. Tapi janji kecil malam ini tetap berlaku: apa pun yang datang tahun ini, kita hadapi berdua.",
+        "signature": "Dengan cinta, di detik pertama 2027"
+      }
+    }
+  },
+
+  'christmas-kids': {
+    "label": "Kartu Natal untuk Si Kecil",
+    "note": "Gaya kartun yang ceria: kado yang bisa dibuka, alasan dia anak hebat, dan hitung mundur ke malam Natal.",
+    "preset": "gingerbread",
+    "sections": [
+      "intro",
+      "hero",
+      "unwrap",
+      "reasons",
+      "countdown",
+      "letter",
+      "finale"
+    ],
+    "content": {
+      "intro": {
+        "hint": "ketuk kadonya, ada kejutan!",
+        "label": "Untuk Si Kecil"
+      },
+      "hero": {
+        "eyebrow": "hore, sudah natal!",
+        "titleTop": "Selamat Natal,",
+        "titleBottom": "Anak Hebat!",
+        "subtitle": "Lampu pohon sudah menyala, kue jahe sudah keluar dari oven, dan ada beberapa kado kecil yang menunggu untuk dibuka. Siap?"
+      },
+      "unwrap": {
+        "eyebrow": "di bawah pohon natal",
+        "title": "Tiga Kado untukmu",
+        "doneNote": "Semua kado sudah terbuka! Tapi kado paling besar tidak muat di kotak: rasa sayang Ayah dan Ibu yang tidak ada habisnya.",
+        "items": [
+          {
+            "tag": "Kado 1",
+            "title": "Tiket Hari Bebas",
+            "body": "Satu hari penuh kamu yang jadi kaptennya: kamu pilih sarapannya, kamu pilih tempat mainnya, kamu pilih film sebelum tidur.",
+            "photoId": ""
+          },
+          {
+            "tag": "Kado 2",
+            "title": "Kupon Kue Jahe",
+            "body": "Berlaku untuk membuat kue jahe bersama, menghias sesukamu, dan boleh makan satu sebelum makan malam. Rahasia kita, ya!",
+            "photoId": ""
+          },
+          {
+            "tag": "Kado 3",
+            "title": "Petualangan Malam Natal",
+            "body": "Kita akan berjalan-jalan melihat lampu Natal di kompleks, pakai senter, sambil mencari rumah dengan lampu paling terang.",
+            "photoId": ""
+          }
+        ]
+      },
+      "reasons": {
+        "eyebrow": "kata ayah & ibu",
+        "title": "Kenapa Kamu Anak yang Luar Biasa",
+        "items": [
+          {
+            "icon": "star",
+            "title": "Kamu pemberani",
+            "body": "Ingat waktu kamu mencoba hal baru walaupun takut? Itu namanya berani. Kami bangga sekali."
+          },
+          {
+            "icon": "heart",
+            "title": "Kamu suka berbagi",
+            "body": "Kamu memberikan mainanmu ke teman yang sedih. Hati sebaik itu adalah kado Natal paling indah."
+          },
+          {
+            "icon": "sparkle",
+            "title": "Tawamu menular",
+            "body": "Kalau kamu tertawa, seisi rumah ikut tertawa. Rumah jadi terang seperti pohon Natal."
+          },
+          {
+            "icon": "sunflower",
+            "title": "Kamu terus tumbuh",
+            "body": "Tahun ini kamu belajar banyak hal baru. Setiap hari kamu jadi sedikit lebih hebat dari kemarin."
+          }
+        ]
+      },
+      "countdown": {
+        "eyebrow": "sabar ya, sebentar lagi",
+        "title": "Menuju Malam Natal",
+        "targetAt": "2026-12-24T18:00",
+        "passedLabel": "Malam Natal sudah tiba! Waktunya buka kado dan makan kue jahe. 🎄"
+      },
+      "letter": {
+        "label": "surat dari ayah & ibu",
+        "title": "Untuk anak kami yang paling kami sayang,",
+        "body": "Tahun ini kamu tumbuh tinggi sekali. Celana tahun lalu sudah kependekan, dan kamu sekarang bisa meraih toples kue di rak atas (iya, kami tahu).\n\nTapi yang paling membuat kami bangga bukan tinggimu. Kami bangga karena kamu belajar meminta maaf, belajar menunggu giliran, dan belajar memeluk adik atau teman yang sedang menangis.\n\nNatal adalah waktu untuk mengingat bahwa kita semua dicintai. Dan kamu, Nak, dicintai lebih dari semua lampu, kado, dan kue jahe di dunia ini.\n\nSelamat Natal. Teruslah jadi anak yang baik hati dan penuh rasa ingin tahu.",
+        "signature": "— Peluk erat, Ayah & Ibu"
+      },
+      "finale": {
+        "eyebrow": "selamat natal!",
+        "title": "Merry Christmas, Jagoan!",
+        "body": "Sekarang matikan layarnya, lalu cari Ayah dan Ibu. Ada satu pelukan Natal yang belum diberikan, dan itu khusus untukmu.",
+        "signature": "Dengan sayang yang tidak ada habisnya"
+      }
+    }
+  },
+
+  'santa-letter': {
+    "label": "Surat dari Sinterklas",
+    "note": "Surat ajaib dari Kutub Utara untuk anak-anak: catatan kebaikan mereka tahun ini dan pesan dari Sinterklas.",
+    "preset": "north-pole",
+    "sections": [
+      "intro",
+      "hero",
+      "letter",
+      "reasons",
+      "countdown",
+      "finale"
+    ],
+    "content": {
+      "intro": {
+        "hint": "ada surat dari Kutub Utara! ketuk untuk membuka",
+        "label": ""
+      },
+      "hero": {
+        "eyebrow": "kiriman khusus dari kutub utara",
+        "titleTop": "Surat untukmu",
+        "titleBottom": "dari Sinterklas",
+        "subtitle": "Surat ini diantar oleh rusa tercepat di Kutub Utara. Ia terbang melewati salju, awan, dan bintang-bintang, hanya untuk sampai di tanganmu."
+      },
+      "letter": {
+        "label": "kutub utara, desember",
+        "title": "Halo, temanku yang baik,",
+        "body": "Ho ho ho! Di sini salju sedang turun lebat, dan para peri sibuk sekali di bengkel mainan. Tapi aku menyempatkan diri menulis surat ini, karena namamu ada di Daftar Anak Baik tahun ini.\n\nPara peri pengamatku bercerita banyak tentangmu. Katanya kamu sudah belajar merapikan mainan sendiri, berani mencoba makanan baru, dan pernah menghibur teman yang sedang sedih. Itu hal-hal yang membuat Kutub Utara bersinar lebih terang.\n\nIngat ya, kebaikan tidak hanya untuk bulan Desember. Kebaikan kecil yang kamu lakukan setiap hari, seperti berkata terima kasih atau berbagi bekal, adalah sihir Natal yang sesungguhnya.\n\nMalam Natal nanti, tidurlah lebih awal. Rusa-rusaku perlu mendarat diam-diam!",
+        "signature": "— Sinterklas, dari Kutub Utara"
+      },
+      "reasons": {
+        "eyebrow": "dari buku catatan sinterklas",
+        "title": "Catatan Kebaikanmu Tahun Ini",
+        "items": [
+          {
+            "icon": "star",
+            "title": "Membantu di rumah",
+            "body": "Para peri melihatmu membantu merapikan meja makan. Satu bintang emas untukmu!"
+          },
+          {
+            "icon": "heart",
+            "title": "Berbagi dengan teman",
+            "body": "Kamu membagi bekal dengan teman yang lupa membawa makanan. Hati yang hangat, cocok untuk musim dingin."
+          },
+          {
+            "icon": "sparkle",
+            "title": "Berani mencoba",
+            "body": "Kamu tetap mencoba walaupun awalnya takut. Bahkan rusa terbang pun dulu belajar terbang pelan-pelan."
+          },
+          {
+            "icon": "moon",
+            "title": "Tidur tepat waktu",
+            "body": "Hampir setiap malam! Para peri menandai ini dengan pensil berwarna perak."
+          }
+        ]
+      },
+      "countdown": {
+        "eyebrow": "kereta salju sedang bersiap",
+        "title": "Sinterklas Berangkat Dalam",
+        "targetAt": "2026-12-24T20:00",
+        "passedLabel": "Kereta salju sudah terbang! Cepat tidur, Sinterklas sedang dalam perjalanan. 🦌"
+      },
+      "finale": {
+        "eyebrow": "sampai jumpa malam natal",
+        "title": "Tetaplah Jadi Anak yang Baik",
+        "body": "Aku akan selalu mengingat namamu di Kutub Utara. Selamat Natal, temanku. Semoga rumahmu penuh tawa, kue hangat, dan pelukan dari orang-orang yang menyayangimu.",
+        "signature": "Ho ho ho, Sinterklas & para peri"
+      }
+    }
+  },
+
   apology: {
     label: 'Permintaan Maaf',
     note: 'Surat permintaan maaf dengan cerita dan janji perbaikan.',

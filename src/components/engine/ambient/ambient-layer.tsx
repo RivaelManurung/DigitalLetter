@@ -174,4 +174,63 @@ const RENDER: Record<Exclude<AmbientKind, 'none'>, () => React.ReactNode> = {
       })}
     </>
   ),
+  fireworks: () =>
+    range(5).map((i) => (
+      <span
+        key={i}
+        className={styles.firework}
+        style={vars({
+          '--x': `${10 + rand(i, 1) * 80}%`,
+          '--y': `${8 + rand(i, 2) * 32}%`,
+          '--r': `${70 + rand(i, 3) * 70}px`,
+          '--t': `${5.5 + rand(i, 4) * 3}s`,
+          '--d': `${i * 1.3}s`,
+          '--c': FIREWORK_COLORS[i % FIREWORK_COLORS.length],
+        })}
+      >
+        <span className={styles.rocket} />
+        {range(14).map((k) => (
+          <span key={k} className={styles.spark} style={vars({ '--a': `${(k * 360) / 14}deg` })} />
+        ))}
+      </span>
+    )),
+
+  champagne: () => (
+    <>
+      <span className={styles.toastGlow} />
+      {range(22).map((i) => (
+        <span
+          key={i}
+          className={styles.bubble}
+          style={vars({
+            '--x': `${rand(i, 1) * 100}%`,
+            '--s': `${4 + rand(i, 2) * 9}px`,
+            '--t': `${7 + rand(i, 3) * 8}s`,
+            '--d': `${-rand(i, 4) * 15}s`,
+            '--w': `${8 + rand(i, 5) * 18}px`,
+          })}
+        />
+      ))}
+    </>
+  ),
+
+  confetti: () =>
+    range(26).map((i) => (
+      <span
+        key={i}
+        className={styles.confetto}
+        style={vars({
+          '--x': `${rand(i, 1) * 100}%`,
+          '--t': `${8 + rand(i, 2) * 8}s`,
+          '--d': `${-rand(i, 3) * 16}s`,
+          '--dx': `${(rand(i, 4) - 0.5) * 140}px`,
+          '--c': CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          '--shape': i % 3 === 0 ? '50%' : '2px',
+          '--h': i % 3 === 0 ? '8px' : '14px',
+        })}
+      />
+    )),
 };
+
+const FIREWORK_COLORS = ['#ffd27a', '#ff8fa3', '#9fd8ff', '#fff3d6', '#c8a2ff'];
+const CONFETTI_COLORS = ['#ff6b6b', '#ffd166', '#06d6a0', '#4cc9f0', '#f72585', '#ffffff'];

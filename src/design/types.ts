@@ -39,13 +39,14 @@ export type Palette = {
 
 export type SurfaceKind = 'aurora' | 'gradient' | 'mesh' | 'grain' | 'solid';
 export const REVEAL_KINDS = [
-  'fade-up', 'fade', 'blur-in', 'glow', 'iris', 'unfold', 'drop', 'ink', 'pop', 'rise', 'petal',
+  'fade-up', 'fade', 'blur-in', 'glow', 'iris', 'unfold', 'drop', 'ink', 'pop', 'rise', 'petal', 'jelly',
 ] as const;
 export type RevealKind = (typeof REVEAL_KINDS)[number];
 
 /** Lapisan suasana yang bergerak di atas latar, khas per tema. */
 export const AMBIENT_KINDS = [
   'none', 'candle', 'shooting-stars', 'spotlight', 'sunrays', 'fireflies', 'fairy-lights', 'frost',
+  'fireworks', 'champagne', 'confetti',
 ] as const;
 export type AmbientKind = (typeof AMBIENT_KINDS)[number];
 
