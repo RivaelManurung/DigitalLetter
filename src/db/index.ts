@@ -1,3 +1,4 @@
+import net from 'node:net';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
@@ -41,16 +42,21 @@ function connect(): PostgresJsDatabase<typeof schema> {
     );
   }
 
+  // Node 22 hanya memberi 250 ms per alamat IP (happy eyeballs); pooler
+  // Supabase lintas region sering butuh 300 ms+, sehingga koneksi gagal
+  // ETIMEDOUT secara acak. Lihat CLAUDE.md, "Jebakan".
+  net.setDefaultAutoSelectFamilyAttemptTimeout(3000);
+
   const client =
     globalThis.__pgClient ??
-    postgres(connectionString, { prepare: false, max: 5, idle_timeout: 20 });
+    postgres(connectionString, { prepare: false, max: 5, idle_timeout: 20, connect_timeout: 15 });
 
   const instance = drizzle(client, { schema });
 
-  if (process.env.NODE_ENV !== 'production') {
-    globalThis.__pgClient = client;
-    globalThis.__drizzle = instance;
-  }
+  // Disimpan di semua mode: tanpa ini setiap akses `db` di production
+  // membuat pool baru dan membuka koneksi baru ke pooler.
+  globalThis.__pgClient = client;
+  globalThis.__drizzle = instance;
 
   return instance;
 }

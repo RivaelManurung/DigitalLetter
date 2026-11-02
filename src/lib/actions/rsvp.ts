@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { letter, rsvp } from '@/db/schema';
 import { requireAdmin } from '@/lib/auth';
 import type { ActionResult } from './letter';
+import { actionErrorMessage } from '@/lib/action-error';
 
 /**
  * Satu-satunya action yang boleh dipanggil tanpa login — tamu mengisi
@@ -140,11 +141,7 @@ export async function listRsvp(letterId: string): Promise<ActionResult<RsvpSumma
 
     return { ok: true, data: summary };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
-    if (message === 'UNAUTHORIZED') {
-      return { ok: false, error: 'Sesi berakhir, silakan login lagi.' };
-    }
-    return { ok: false, error: message };
+    return { ok: false, error: actionErrorMessage(error) };
   }
 }
 
@@ -155,7 +152,6 @@ export async function deleteRsvp(id: string): Promise<ActionResult> {
     await db.delete(rsvp).where(eq(rsvp.id, id));
     return { ok: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
-    return { ok: false, error: message };
+    return { ok: false, error: actionErrorMessage(error) };
   }
 }

@@ -8,6 +8,7 @@ import { letter, media } from '@/db/schema';
 import { requireAdmin } from '@/lib/auth';
 import { createSignedUpload, removeObject } from '@/lib/storage';
 import type { ActionResult } from './letter';
+import { actionErrorMessage } from '@/lib/action-error';
 
 /**
  * Upload tidak melewati server ini. Action hanya menerbitkan signed URL,
@@ -167,9 +168,5 @@ async function touch(letterId: string): Promise<void> {
 }
 
 function toFail(error: unknown): ActionResult<never> {
-  const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
-  if (message === 'UNAUTHORIZED') {
-    return { ok: false, error: 'Sesi berakhir, silakan login lagi.' };
-  }
-  return { ok: false, error: message };
+  return { ok: false, error: actionErrorMessage(error) };
 }

@@ -14,6 +14,7 @@ import { hashPassword, requireAdmin } from '@/lib/auth';
 import { parseLetterMarkdown } from '@/lib/markdown/parse';
 import { defaultSectionsFor } from '@/lib/defaults';
 import { slugify } from '@/lib/utils';
+import { actionErrorMessage } from '@/lib/action-error';
 
 /**
  * Setiap action memanggil requireAdmin() sendiri. Middleware saja tidak cukup:
@@ -25,9 +26,7 @@ export type ActionResult<T = undefined> =
   | { ok: false; error: string };
 
 function fail(error: unknown): ActionResult<never> {
-  const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
-  if (message === 'UNAUTHORIZED') return { ok: false, error: 'Sesi berakhir, silakan login lagi.' };
-  return { ok: false, error: message };
+  return { ok: false, error: actionErrorMessage(error) };
 }
 
 function refresh(slug?: string) {

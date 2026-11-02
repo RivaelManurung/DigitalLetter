@@ -19,6 +19,7 @@ import type { TemplateRow, TemplateSection } from '@/lib/template-types';
 import { requireAdmin } from '@/lib/auth';
 import { slugify } from '@/lib/utils';
 import type { ActionResult } from './letter';
+import { actionErrorMessage } from '@/lib/action-error';
 
 /**
  * Template acara bikinan sendiri.
@@ -29,14 +30,7 @@ import type { ActionResult } from './letter';
  */
 
 function fail(error: unknown): ActionResult<never> {
-  const message = error instanceof Error ? error.message : 'Terjadi kesalahan';
-  if (message === 'UNAUTHORIZED') {
-    return { ok: false, error: 'Sesi berakhir, silakan login lagi.' };
-  }
-  if (error instanceof z.ZodError) {
-    return { ok: false, error: error.issues[0]?.message ?? 'Isian tidak valid' };
-  }
-  return { ok: false, error: message };
+  return { ok: false, error: actionErrorMessage(error) };
 }
 
 /** Satu section di dalam template. */
