@@ -97,6 +97,21 @@ export const MUSIC_TRACKS: MusicTrack[] = [
       'F#4:1 D4:1 D4:1 B4:1 B4:.5 C5:.5 B4:.5 A4:.5 G4:1 E4:1 D4:.5 D4:.5 E4:1 A4:1 ' +
       'F#4:1 G4:2',
   },
+  {
+    id: 'box-happy-birthday',
+    title: 'Happy Birthday (kotak musik)',
+    artist: 'Hill bersaudara · domain publik',
+    bpm: 96,
+    melody:
+      'G4:.75 G4:.25 A4:1 G4:1 C5:1 B4:2 G4:.75 G4:.25 A4:1 G4:1 D5:1 C5:2 ' +
+      'G4:.75 G4:.25 G5:1 E5:1 C5:1 B4:1 A4:2 F5:.75 F5:.25 E5:1 C5:1 D5:1 C5:3',
+    lyrics: [
+      { beat: 0, text: 'Selamat ulang tahun' },
+      { beat: 6, text: 'Selamat ulang tahun' },
+      { beat: 12, text: 'Selamat ulang tahun, sayang' },
+      { beat: 19, text: 'Selamat ulang tahun' },
+    ],
+  },
 ];
 
 export function getTrack(id: string | undefined): MusicTrack | null {

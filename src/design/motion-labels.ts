@@ -27,6 +27,9 @@ export const AMBIENT_LABEL: Record<AmbientKind, string> = {
   fireworks: 'Kembang api',
   champagne: 'Gelembung sampanye',
   confetti: 'Hujan konfeti',
+  hearts: 'Hati melayang',
+  balloons: 'Balon pesta',
+  rain: 'Hujan di jendela',
 };
 
 export const TITLE_LABEL: Record<TitleAnim, string> = {

@@ -46,7 +46,7 @@ export type RevealKind = (typeof REVEAL_KINDS)[number];
 /** Lapisan suasana yang bergerak di atas latar, khas per tema. */
 export const AMBIENT_KINDS = [
   'none', 'candle', 'shooting-stars', 'spotlight', 'sunrays', 'fireflies', 'fairy-lights', 'frost',
-  'fireworks', 'champagne', 'confetti',
+  'fireworks', 'champagne', 'confetti', 'hearts', 'balloons', 'rain',
 ] as const;
 export type AmbientKind = (typeof AMBIENT_KINDS)[number];
 

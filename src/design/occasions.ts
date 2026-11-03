@@ -61,16 +61,103 @@ export const OCCASIONS = {
 
   valentine: {
     label: 'Hari Valentine',
-    note: 'Kartu valentine dengan alasan cinta, kutipan, dan galeri.',
-    preset: 'dark-romantic',
+    note: 'Kartu valentine dengan hati yang melayang, alasan cinta, kutipan, taman bunga, dan galeri.',
+    preset: 'valentine-sweetheart',
     sections: ['intro', 'hero', 'letter', 'reasons', 'quote', 'gallery', 'garden', 'finale'],
+    content: {
+      intro: { hint: 'ketuk untuk membuka kartumu', label: '14 Februari' },
+      hero: {
+        eyebrow: 'selamat hari valentine',
+        titleTop: 'Satu Hari untuk Cinta,',
+        titleBottom: 'Setiap Hari untukmu',
+        subtitle: 'Orang bilang hari ini untuk merayakan cinta. Aku cuma ingin memakai hari ini untuk bilang hal yang setiap hari kurasakan, tapi jarang kuucapkan.',
+      },
+      letter: {
+        label: 'kartu kecil untukmu',
+        title: 'Aku tidak pandai merangkai kata, jadi kutulis saja yang sebenarnya.',
+        body: 'Cokelat akan habis dalam seminggu dan bunga akan layu dalam beberapa hari. Karena itu aku ingin memberimu sesuatu yang bisa kamu buka lagi kapan pun kamu mau: kata-kata ini.\n\nAku bersyukur atas hal-hal kecil tentangmu. Cara kamu mengirim pesan "sudah sampai?" setiap aku pulang. Cara kamu menyisakan potongan terakhir untukku walau kamu juga mau. Cara kamu mendengarkan ceritaku yang itu-itu saja seolah baru pertama kali.\n\nKamu membuat hari biasa terasa seperti hari yang layak dirayakan. Jadi, kalau hari ini adalah hari kasih sayang, biar aku jujur: setiap hari bersamamu sudah terasa seperti Valentine.',
+        signature: '— Dengan seluruh hatiku',
+      },
+      reasons: {
+        eyebrow: 'mengapa kamu',
+        title: 'Hal-Hal Kecil yang Membuatku Jatuh Cinta',
+        items: [
+          { icon: 'heart', title: 'Pesan selamat pagimu', body: 'Kamu bukan orang pagi, tapi kamu selalu menyempatkan mengirim pesan pertama di hariku.' },
+          { icon: 'sparkle', title: 'Matamu saat tertawa', body: 'Matamu ikut menyipit setiap kamu tertawa. Aku sering diam-diam membuat lelucon hanya untuk melihatnya.' },
+          { icon: 'rose', title: 'Caramu menenangkan', body: 'Saat aku panik, kamu tidak menyuruhku tenang. Kamu menggenggam tanganku sampai aku tenang sendiri.' },
+          { icon: 'star', title: 'Mimpi-mimpimu', body: 'Kamu bercerita tentang rencanamu dengan mata berbinar, dan aku ingin ada di setiap rencana itu.' },
+        ],
+      },
+      quote: {
+        text: 'Aku tidak mencintaimu karena kamu sempurna. Aku mencintaimu karena bersamamu, aku tidak perlu berpura-pura sempurna.',
+        source: 'Untukmu, di hari kasih sayang',
+        translation: '',
+      },
+      gallery: { eyebrow: 'kita dalam bingkai', title: 'Potret Kecil Kebahagiaan Kita' },
+      garden: {
+        eyebrow: 'buket yang tidak akan layu',
+        title: 'Bunga-Bunga untukmu',
+        note: 'sentuh tiap bunga untuk membaca pesannya',
+      },
+      finale: {
+        eyebrow: 'happy valentine',
+        title: 'Jadi Valentine-ku, Hari Ini dan Seterusnya?',
+        body: 'Tidak perlu makan malam mewah atau hadiah yang besar. Cukup kamu, aku, dan janji untuk terus memilih satu sama lain, bahkan di hari-hari yang tidak ada di kalender.',
+        signature: 'Milikmu 💗',
+      },
+    },
   },
 
   birthday: {
     label: 'Ulang Tahun',
-    note: 'Ucapan, daftar harapan, hitung mundur, dan kenangan.',
-    preset: 'golden-hour',
+    note: 'Balon pesta, kotak musik Happy Birthday, daftar harapan, kenangan setahun, dan galeri.',
+    preset: 'birthday-party',
     sections: ['intro', 'hero', 'wish', 'memories', 'gallery', 'countdown', 'finale'],
+    content: {
+      intro: { hint: 'ketuk untuk membuka kadomu', label: 'selamat ulang tahun' },
+      hero: {
+        eyebrow: 'hari ini harimu',
+        titleTop: 'Selamat Ulang Tahun,',
+        titleBottom: 'Orang Favoritku',
+        subtitle: 'Hari ini balonnya untukmu, lagunya untukmu, dan semua doa baik yang bisa kupikirkan juga untukmu. Tiup lilinnya pelan-pelan, ya.',
+      },
+      wish: {
+        eyebrow: 'tiup lilinnya',
+        bigText: '🎂',
+        title: 'Doa-Doa Kecil di Atas Kue',
+        body: 'Bertambah umur bukan cuma soal angka di atas kue. Ia tanda kamu sudah melewati satu tahun lagi, dengan segala lelah dan senangnya, dan masih berdiri di sini. Itu layak dirayakan.',
+        itemsTitle: 'Semoga di umurmu yang baru',
+        items: [
+          { text: 'Kamu lebih sering tertawa daripada khawatir.' },
+          { text: 'Mimpi yang selama ini kamu tunda akhirnya mulai jalan.' },
+          { text: 'Tubuhmu sehat dan hatimu tenang.' },
+          { text: 'Kamu dikelilingi orang yang tahu betapa berharganya kamu.' },
+          { text: 'Ada lebih banyak kue, tentu saja.' },
+        ],
+        signature: '— Dari yang selalu mendoakanmu',
+      },
+      memories: {
+        eyebrow: 'setahun ke belakang',
+        title: 'Hal-Hal yang Kuingat dari Tahun Ini',
+        items: [
+          { title: 'Hari kamu berani mencoba', date: '', body: 'Kamu gugup setengah mati, tapi tetap melakukannya. Aku bangga sekali waktu itu, dan sampai sekarang masih.', photoId: '' },
+          { title: 'Jalan-jalan dadakan kita', date: '', body: 'Tanpa rencana, tanpa tujuan jelas, dan malah jadi salah satu hari terbaik tahun ini.', photoId: '' },
+          { title: 'Tawa yang tidak berhenti', date: '', body: 'Aku sudah lupa apa yang lucu. Yang kuingat, kita tertawa sampai menangis dan orang-orang menoleh.', photoId: '' },
+        ],
+      },
+      gallery: { eyebrow: 'arsip kebahagiaan', title: 'Wajah-Wajah Bahagiamu' },
+      countdown: {
+        eyebrow: 'sampai jumpa tahun depan',
+        title: 'Menuju Ulang Tahunmu Berikutnya',
+        passedLabel: 'Hari ini harinya! Selamat ulang tahun! 🎉',
+      },
+      finale: {
+        eyebrow: 'happy birthday',
+        title: 'Terima Kasih Sudah Lahir ke Dunia',
+        body: 'Dunia sedikit lebih hangat sejak ada kamu, dan hidupku jauh lebih seru sejak kenal kamu. Selamat bertambah umur. Semoga tahun ini memperlakukanmu sebaik kamu memperlakukan orang-orang di sekitarmu.',
+        signature: 'Peluk jauh 🎈',
+      },
+    },
   },
 
   christmas: {
@@ -788,9 +875,45 @@ export const OCCASIONS = {
 
   apology: {
     label: 'Permintaan Maaf',
-    note: 'Surat permintaan maaf dengan cerita dan janji perbaikan.',
-    preset: 'midnight-ink',
+    note: 'Hujan di balik jendela, surat yang jujur, cerita apa yang terjadi, dan janji untuk berubah.',
+    preset: 'rainy-window',
     sections: ['intro', 'hero', 'letter', 'story', 'quote', 'finale'],
+    content: {
+      intro: { hint: 'ketuk untuk membaca', label: 'maaf' },
+      hero: {
+        eyebrow: 'dari aku, untukmu',
+        titleTop: 'Aku Minta Maaf,',
+        titleBottom: 'dan Aku Serius',
+        subtitle: 'Di luar sedang hujan, dan di sini aku menulis hal yang seharusnya kukatakan sejak awal. Kamu tidak harus memaafkanku sekarang. Aku hanya ingin kamu membacanya.',
+      },
+      letter: {
+        label: 'surat yang jujur',
+        title: 'Aku salah, dan aku tidak akan mencari alasan.',
+        body: 'Aku sudah memikirkan kejadian itu berulang kali. Awalnya aku sibuk membela diri, mencari bagian di mana aku merasa benar. Tapi semakin lama aku sadar: yang penting bukan siapa yang benar, melainkan kamu yang terluka karena sikapku.\n\nAku minta maaf karena tidak mendengarkan saat kamu butuh didengar. Aku minta maaf karena kata-kataku lebih tajam dari yang pantas. Dan aku minta maaf karena butuh waktu selama ini untuk mengakuinya.\n\nAku tidak menulis ini supaya semuanya langsung kembali seperti semula. Kepercayaan tidak pulih karena satu surat. Aku menulis ini karena kamu pantas mendengar permintaan maaf yang utuh, tanpa "tapi" di belakangnya.',
+        signature: '— Yang sedang belajar menjadi lebih baik',
+      },
+      story: {
+        eyebrow: 'yang kupelajari',
+        title: 'Dari Sini, Aku Ingin Berubah',
+        note: '',
+        items: [
+          { date: 'Waktu itu', title: 'Aku tidak mendengarkan', body: 'Kamu mencoba bicara, dan aku malah sibuk menyiapkan jawaban. Aku mendengar kata-katamu, tapi tidak mendengarkan perasaanmu.', photoId: '' },
+          { date: 'Setelahnya', title: 'Aku memilih diam', body: 'Aku pikir diam akan meredakan semuanya. Ternyata diamku justru membuatmu merasa sendirian.', photoId: '' },
+          { date: 'Mulai sekarang', title: 'Aku akan bertanya lebih dulu', body: 'Sebelum membela diri, aku akan bertanya apa yang kamu rasakan, lalu benar-benar mendengarkan jawabannya.', photoId: '' },
+        ],
+      },
+      quote: {
+        text: 'Permintaan maaf yang tulus tidak berakhir di kata maaf. Ia berlanjut dalam cara aku memperlakukanmu besok, lusa, dan hari-hari sesudahnya.',
+        source: 'Janjiku',
+        translation: '',
+      },
+      finale: {
+        eyebrow: 'setelah hujan',
+        title: 'Aku Akan Menunggu dengan Sabar',
+        body: 'Ambil waktu sebanyak yang kamu butuhkan. Kalau nanti kamu siap bicara, aku ada di sini dan kali ini aku akan mendengarkan. Hujan selalu reda pada waktunya. Aku harap kita juga begitu.',
+        signature: 'Maaf, sungguh 🤍',
+      },
+    },
   },
 } satisfies Record<string, OccasionBlueprint>;
 

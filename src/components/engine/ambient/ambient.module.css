@@ -409,6 +409,126 @@
   100% { transform: translate(calc(var(--dx) * -0.4), 110vh) rotateX(1080deg) rotateZ(320deg); }
 }
 
+/* ── hearts: hati lembut naik bergoyang seperti balon kecil ── */
+
+.heartFloat {
+  position: absolute;
+  left: var(--x);
+  bottom: -40px;
+  width: var(--s);
+  aspect-ratio: 1;
+  background: var(--c);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-7.5-4.6-10-9.3C.4 8.4 2.3 4 6.4 4c2.3 0 3.9 1.3 5.6 3.3C13.7 5.3 15.3 4 17.6 4 21.7 4 23.6 8.4 22 11.7 19.5 16.4 12 21 12 21z'/%3E%3C/svg%3E") center / contain no-repeat;
+  filter: blur(var(--blur));
+  opacity: 0;
+  animation: heartRise var(--t) ease-in var(--d) infinite, heartSway 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes heartRise {
+  0% { opacity: 0; transform: translateY(0) scale(0.7); }
+  12% { opacity: var(--o); }
+  80% { opacity: var(--o); }
+  100% { opacity: 0; transform: translateY(-110vh) scale(1.05); }
+}
+
+@keyframes heartSway {
+  from { translate: calc(var(--w) * -0.5) 0; rotate: -10deg; }
+  to { translate: calc(var(--w) * 0.5) 0; rotate: 10deg; }
+}
+
+/* ── balloons: balon pesta naik pelan, talinya ikut melambai ── */
+
+.balloon {
+  position: absolute;
+  left: var(--x);
+  bottom: -160px;
+  width: var(--s);
+  aspect-ratio: 0.82;
+  border-radius: 50% 50% 47% 47% / 56% 56% 44% 44%;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.75), transparent 22%), var(--c);
+  box-shadow: inset -6px -10px 18px rgba(0, 0, 0, 0.12);
+  opacity: 0.7;
+  transform-origin: 50% 140%;
+  animation: balloonRise var(--t) linear var(--d) infinite, balloonSway 4.5s ease-in-out infinite alternate;
+}
+
+.balloon::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  translate: -50% 0;
+  border: 5px solid transparent;
+  border-bottom: 6px solid var(--c);
+  border-top: 0;
+}
+
+.balloon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: calc(var(--s) * 1.6);
+  background: linear-gradient(rgba(120, 90, 80, 0.55), transparent);
+}
+
+@media (max-width: 640px) {
+  .balloon { scale: 0.7; opacity: 0.5; }
+  .balloon:nth-child(even) { display: none; }
+}
+
+@keyframes balloonRise {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100vh - 320px)); }
+}
+
+@keyframes balloonSway {
+  from { rotate: -6deg; }
+  to { rotate: 6deg; }
+}
+
+/* ── rain: hujan di balik jendela; garis tipis jatuh, tetes meluncur di kaca ── */
+
+.rainSheet {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(140, 165, 200, 0.08), transparent 40%, rgba(140, 165, 200, 0.1));
+}
+
+.streak {
+  position: absolute;
+  left: var(--x);
+  top: -15vh;
+  width: 1px;
+  height: var(--h);
+  background: linear-gradient(transparent, rgba(200, 220, 245, 0.45));
+  rotate: 8deg;
+  animation: streakFall var(--t) linear var(--d) infinite;
+}
+
+@keyframes streakFall {
+  to { transform: translateY(130vh); }
+}
+
+.drop {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  aspect-ratio: 0.8;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), rgba(190, 210, 240, 0.12) 60%, transparent 72%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  animation: dropSlide var(--t) cubic-bezier(0.7, 0, 0.9, 0.6) var(--d) infinite;
+}
+
+/* a drop rests, then suddenly slides down the glass leaving the frame */
+@keyframes dropSlide {
+  0%, 55% { transform: translateY(0); opacity: 0.9; }
+  100% { transform: translateY(60vh); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .layer * {
     animation: none !important;
@@ -419,7 +539,11 @@
   .rocket,
   .spark,
   .bubble,
-  .confetto {
+  .confetto,
+  .heartFloat,
+  .balloon,
+  .streak,
+  .drop {
     display: none;
   }
 }

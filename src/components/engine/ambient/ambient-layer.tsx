@@ -230,7 +230,72 @@ const RENDER: Record<Exclude<AmbientKind, 'none'>, () => React.ReactNode> = {
         })}
       />
     )),
+  hearts: () =>
+    range(16).map((i) => (
+      <span
+        key={i}
+        className={styles.heartFloat}
+        style={vars({
+          '--x': `${rand(i, 1) * 100}%`,
+          '--s': `${14 + rand(i, 2) * 26}px`,
+          '--t': `${10 + rand(i, 3) * 9}s`,
+          '--d': `${-rand(i, 4) * 19}s`,
+          '--w': `${20 + rand(i, 5) * 40}px`,
+          '--o': 0.35 + rand(i, 6) * 0.4,
+          '--blur': `${rand(i, 7) > 0.7 ? 2 : 0}px`,
+          '--c': HEART_COLORS[i % HEART_COLORS.length],
+        })}
+      />
+    )),
+
+  balloons: () =>
+    range(9).map((i) => (
+      <span
+        key={i}
+        className={styles.balloon}
+        style={vars({
+          '--x': `${4 + rand(i, 1) * 88}%`,
+          '--s': `${38 + rand(i, 2) * 30}px`,
+          '--t': `${16 + rand(i, 3) * 12}s`,
+          '--d': `${-rand(i, 4) * 28}s`,
+          '--c': BALLOON_COLORS[i % BALLOON_COLORS.length],
+        })}
+      />
+    )),
+
+  rain: () => (
+    <>
+      <span className={styles.rainSheet} />
+      {range(36).map((i) => (
+        <span
+          key={`s${i}`}
+          className={styles.streak}
+          style={vars({
+            '--x': `${rand(i, 1) * 104 - 2}%`,
+            '--h': `${60 + rand(i, 2) * 90}px`,
+            '--t': `${0.7 + rand(i, 3) * 0.6}s`,
+            '--d': `${-rand(i, 4) * 1.3}s`,
+          })}
+        />
+      ))}
+      {range(12).map((i) => (
+        <span
+          key={`d${i}`}
+          className={styles.drop}
+          style={vars({
+            '--x': `${rand(i, 5) * 100}%`,
+            '--y': `${rand(i, 6) * 70}%`,
+            '--s': `${5 + rand(i, 7) * 8}px`,
+            '--t': `${7 + rand(i, 8) * 8}s`,
+            '--d': `${-rand(i, 9) * 15}s`,
+          })}
+        />
+      ))}
+    </>
+  ),
 };
 
 const FIREWORK_COLORS = ['#ffd27a', '#ff8fa3', '#9fd8ff', '#fff3d6', '#c8a2ff'];
 const CONFETTI_COLORS = ['#ff6b6b', '#ffd166', '#06d6a0', '#4cc9f0', '#f72585', '#ffffff'];
+const HEART_COLORS = ['#ff6f91', '#ff9eb5', '#e8435a', '#ffc2d1'];
+const BALLOON_COLORS = ['#ff6b6b', '#ffd166', '#4cc9f0', '#b388ff', '#06d6a0', '#ff8fab'];
