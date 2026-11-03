@@ -90,6 +90,7 @@ export function LetterView({ letter, preview = false }: Props) {
           variant={resolveVariant('intro', introSection.variant, design.variants.intro)}
           hint={introContent.hint}
           label={introContent.label}
+          seal={design.seal}
           onOpen={() => setOpened(true)}
         />
       )}

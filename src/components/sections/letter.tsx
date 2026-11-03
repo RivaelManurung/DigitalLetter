@@ -39,7 +39,7 @@ export function LetterSection({ content, design, variant }: Props) {
         <div className="section-inner">
           <Reveal kind={reveal} className={`${styles.card} ${styles.paper}`}>
             <span className={styles.paperFold} aria-hidden="true" />
-            <img className={styles.paperSeal} src={INTRO_IMAGES.seal} alt="" loading="lazy" draggable={false} />
+            <img className={styles.paperSeal} src={design.seal ?? INTRO_IMAGES.seal} alt="" loading="lazy" draggable={false} />
             {inner}
           </Reveal>
         </div>

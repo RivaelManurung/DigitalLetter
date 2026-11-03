@@ -61,6 +61,7 @@ export type ParticleKind =
   | 'snowflake'
   | 'heart'
   | 'star'
+  | 'toys'
   | 'none';
 
 export type DesignSpec = {
@@ -96,6 +97,8 @@ export type DesignSpec = {
     /** 0–1 */
     density: number;
   };
+  /** wax seal on the envelope and paper letter; empty = default heart seal */
+  seal?: string;
   /** Musik latar sintetis bawaan; dipakai bila surat tidak punya audio unggahan. */
   music?: { track: string };
   shape: {

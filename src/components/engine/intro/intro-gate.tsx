@@ -9,6 +9,8 @@ type Props = {
   variant: string;
   hint: string;
   label: string;
+  /** wax seal image; empty = the default heart seal */
+  seal?: string;
   onOpen: () => void;
 };
 
@@ -17,7 +19,7 @@ type Props = {
  * teknis nyata: browser memblokir autoplay audio sampai ada interaksi
  * pengguna. Satu ketukan di sini memberi izin itu sekaligus membuka surat.
  */
-export function IntroGate({ variant, hint, label, onOpen }: Props) {
+export function IntroGate({ variant, hint, label, seal = INTRO_IMAGES.seal, onOpen }: Props) {
   const [opening, setOpening] = useState(false);
   const [gone, setGone] = useState(false);
 
@@ -50,8 +52,8 @@ export function IntroGate({ variant, hint, label, onOpen }: Props) {
         onClick={open}
         aria-label={label || 'Buka surat'}
       >
-        {variant === 'envelope' && <Envelope opening={opening} />}
-        {variant === 'curtain' && <Curtain opening={opening} />}
+        {variant === 'envelope' && <Envelope opening={opening} seal={seal} />}
+        {variant === 'curtain' && <Curtain opening={opening} seal={seal} />}
         {variant !== 'envelope' && variant !== 'curtain' && (
           <GiftBox opening={opening} />
         )}
@@ -70,17 +72,17 @@ export function IntroGate({ variant, hint, label, onOpen }: Props) {
   );
 }
 
-function Envelope({ opening }: { opening: boolean }) {
+function Envelope({ opening, seal }: { opening: boolean; seal: string }) {
   return (
     <div className={`${styles.envelope} ${opening ? styles.envOpen : ''}`}>
       <span className={styles.envShadow} aria-hidden="true" />
       <img className={styles.envImg} src={INTRO_IMAGES.envelope} alt="" draggable={false} />
-      <img className={styles.envSeal} src={INTRO_IMAGES.seal} alt="" draggable={false} />
+      <img className={styles.envSeal} src={seal} alt="" draggable={false} />
     </div>
   );
 }
 
-function Curtain({ opening }: { opening: boolean }) {
+function Curtain({ opening, seal }: { opening: boolean; seal: string }) {
   return (
     <>
       <div className={`${styles.curtain} ${opening ? styles.curtainOpen : ''}`}>
@@ -89,7 +91,7 @@ function Curtain({ opening }: { opening: boolean }) {
         <span className={styles.curtainSpot} aria-hidden="true" />
       </div>
       <div className={`${styles.curtainMarkWrap} ${opening ? styles.curtainOpen : ''}`}>
-        <img className={styles.curtainMark} src={INTRO_IMAGES.seal} alt="" draggable={false} />
+        <img className={styles.curtainMark} src={seal} alt="" draggable={false} />
       </div>
     </>
   );

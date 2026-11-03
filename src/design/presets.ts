@@ -461,7 +461,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(242,198,109,0.35)',
     },
     fontPair: 'editorial',
-    surface: { kind: 'aurora', vignette: 0.6, grain: 0.25 },
+    surface: { kind: 'aurora', vignette: 0.6, grain: 0.25, image: '/image/newyear-bg.webp', imageOverlay: 0.45 },
     motion: {
       speed: 1,
       reveal: 'pop',
@@ -500,7 +500,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(230,194,122,0.32)',
     },
     fontPair: 'romantic-serif',
-    surface: { kind: 'gradient', vignette: 0.65, grain: 0.3 },
+    surface: { kind: 'gradient', vignette: 0.65, grain: 0.3, image: '/image/champagne-bg.webp', imageOverlay: 0.5 },
     motion: {
       speed: 1.1,
       reveal: 'rise',
@@ -537,7 +537,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(217,72,59,0.25)',
     },
     fontPair: 'playful-round',
-    surface: { kind: 'gradient', vignette: 0.15, grain: 0.15 },
+    surface: { kind: 'gradient', vignette: 0.15, grain: 0.15, image: '/image/gingerbread-bg.webp', imageOverlay: 0.55 },
     motion: {
       speed: 0.9,
       reveal: 'jelly',
@@ -546,7 +546,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       title: 'cascade',
       tapBurst: true,
     },
-    particles: { kind: 'none', density: 0 },
+    particles: { kind: 'toys', density: 0.3 },
     music: { track: 'jingle-bells' },
     shape: { radius: 28, glassBlur: 10 },
     variants: {
@@ -575,7 +575,8 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(224,87,74,0.3)',
     },
     fontPair: 'soft-humanist',
-    surface: { kind: 'mesh', vignette: 0.55, grain: 0.25 },
+    surface: { kind: 'mesh', vignette: 0.55, grain: 0.25, image: '/image/northpole-bg.webp', imageOverlay: 0.62 },
+    seal: '/image/intro/seal-reindeer.webp',
     motion: {
       speed: 1,
       reveal: 'unfold',

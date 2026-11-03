@@ -13,6 +13,10 @@ export const THEME_IMAGES = [
   { src: '/image/rose-gold-bg.webp', label: 'Makan malam lilin' },
   { src: '/image/starlit-bg.webp', label: 'Langit berbintang' },
   { src: '/image/intro-tirai.webp', label: 'Tirai panggung' },
+  { src: '/image/champagne-bg.webp', label: 'Bersulang sampanye' },
+  { src: '/image/newyear-bg.webp', label: 'Kembang api kota' },
+  { src: '/image/gingerbread-bg.webp', label: 'Desa kue jahe (kartun)' },
+  { src: '/image/northpole-bg.webp', label: 'Kereta Sinterklas' },
 ] as const;
 
 export const GIFT_IMAGES = [
@@ -44,6 +48,16 @@ export const STICKERS: Partial<Record<string, string>> = {
 export const PARTICLE_SPRITES = {
   sakura: ['/image/particles/sakura-1.webp', '/image/particles/sakura-2.webp', '/image/particles/sakura-3.webp'],
   rose: ['/image/particles/rose-1.webp', '/image/particles/rose-2.webp', '/image/particles/rose-3.webp'],
+  toys: [
+    '/image/particles/toy-gingerbread.webp',
+    '/image/particles/toy-candy-cane.webp',
+    '/image/particles/toy-ornament.webp',
+    '/image/particles/toy-cocoa.webp',
+    '/image/particles/toy-gift.webp',
+    '/image/particles/toy-mitten.webp',
+    '/image/particles/toy-snowman.webp',
+    '/image/particles/toy-tree.webp',
+  ],
   heart: ['/image/particles/heart-1.webp', '/image/particles/heart-2.webp', '/image/particles/heart-3.webp'],
 } as const;
 

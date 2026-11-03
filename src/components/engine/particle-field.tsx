@@ -35,6 +35,7 @@ const SHAPE_FOR: Record<Exclude<ParticleKind, 'none'>, PetalShape> = {
   snowflake: 'snowflake',
   heart: 'heart',
   star: 'star',
+  toys: 'sakura',
 };
 
 type Motion = {
@@ -186,7 +187,7 @@ export function ParticleField({ kind, density, speed }: Props) {
           : p.alpha;
         if (spritesReady) {
           const img = sprites[p.sprite];
-          const w = p.size * 1.5;
+          const w = p.size * (kind === 'toys' ? 2.6 : 1.5);
           const h = (w * img.naturalHeight) / img.naturalWidth;
           // ilustrasi sudah berwarna penuh, jadi butuh opasitas lebih tinggi dari vektor
           ctx!.globalAlpha = Math.min(0.85, p.alpha * 1.4);

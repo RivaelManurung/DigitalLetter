@@ -94,7 +94,7 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
     patch({
       fontPair: pick(FONT_PAIRS).id,
       surface: { ...design.surface, kind: pick(['aurora', 'gradient', 'mesh', 'grain', 'solid'] as const) },
-      particles: { ...design.particles, kind: pick(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star'] as const) },
+      particles: { ...design.particles, kind: pick(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star', 'toys'] as const) },
       variants: Object.fromEntries(
         SECTION_TYPES.map((type) => [type, pick(SECTION_VARIANTS[type])]),
       ) as DesignSpec['variants'],
@@ -343,6 +343,7 @@ export function DesignPanel({ letterId, design, onChange }: Props) {
               <option value="snowflake">Kristal salju</option>
               <option value="heart">Hati melayang</option>
               <option value="star">Bintang berkilau</option>
+              <option value="toys">Mainan Natal (kartun)</option>
               <option value="none">Tidak ada</option>
             </Select>
           </Field>

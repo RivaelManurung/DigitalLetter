@@ -127,9 +127,10 @@ export const designSchema = z.object({
     tapBurst: z.boolean().optional(),
   }),
   particles: z.object({
-    kind: z.enum(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star', 'none']),
+    kind: z.enum(['sakura', 'rose', 'dust', 'snow', 'snowflake', 'heart', 'star', 'toys', 'none']),
     density: z.number().min(0).max(1),
   }),
+  seal: imageUrl.optional(),
   music: z.object({ track: z.string().max(40) }).optional(),
   shape: z.object({
     radius: z.number().min(0).max(48),
