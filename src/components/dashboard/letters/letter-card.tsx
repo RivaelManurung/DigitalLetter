@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Eye, Layers, PenLine, Users } from 'lucide-react';
 import type { LetterCard } from '@/lib/queries';
 import { cn, formatRelative } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/dashboard/status-badge';
+import { LetterThumb } from '@/components/dashboard/letter-thumb';
 import { buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { LetterActions } from '@/app/(admin)/dashboard/letter-actions';
@@ -18,19 +19,11 @@ export function LetterCardItem({
   letter: LetterCard;
   compact?: boolean;
 }) {
-  const palette = letter.design?.palette;
   const published = letter.status === 'published';
 
   return (
-    <Card className="overflow-hidden py-0 transition-colors hover:border-ring">
-      <div
-        className="h-14 w-full"
-        style={{
-          background: palette
-            ? `linear-gradient(135deg, ${palette.bgDeep}, ${palette.bgSoft} 60%, ${palette.accent})`
-            : 'var(--muted)',
-        }}
-      />
+    <Card className="overflow-hidden rounded-xl py-0 transition-colors hover:border-foreground/20">
+      <LetterThumb design={letter.design} className="block h-28 w-full rounded-none border-0 border-b shadow-none" />
 
       <div className="grid gap-3 p-4">
         <div className="flex items-start justify-between gap-3">
@@ -41,9 +34,7 @@ export function LetterCardItem({
             </p>
           </div>
 
-          <Badge variant={published ? 'default' : 'secondary'} className="shrink-0">
-            {published ? 'Terbit' : 'Draf'}
-          </Badge>
+          <StatusBadge status={published ? 'published' : 'draft'} />
         </div>
 
         <dl className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">

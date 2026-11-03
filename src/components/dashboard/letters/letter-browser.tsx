@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { FileText, LayoutGrid, List, Search, X } from 'lucide-react';
 import type { LetterCard } from '@/lib/queries';
 import { cn, formatRelative } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/dashboard/status-badge';
+import { LetterThumb } from '@/components/dashboard/letter-thumb';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,12 @@ import { LetterCardItem } from './letter-card';
 
 type Status = 'all' | 'published' | 'draft';
 type Sort = 'updated' | 'views' | 'title';
+
+const SORT_LABEL: Record<Sort, string> = {
+  updated: 'Terakhir diubah',
+  views: 'Paling banyak dibuka',
+  title: 'Judul A–Z',
+};
 type View = 'table' | 'grid';
 
 /**
@@ -131,14 +138,16 @@ export function LetterBrowser({
           )}
         </div>
 
-        <Select value={sort} onValueChange={(v) => setSort(v as Sort)}>
-          <SelectTrigger className="w-[150px]" aria-label="Urutkan">
+        <Select items={SORT_LABEL} value={sort} onValueChange={(v) => setSort(v as Sort)}>
+          <SelectTrigger className="w-[190px]" aria-label="Urutkan">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="updated">Terakhir diubah</SelectItem>
-            <SelectItem value="views">Paling banyak dibuka</SelectItem>
-            <SelectItem value="title">Judul A–Z</SelectItem>
+            {Object.entries(SORT_LABEL).map(([value, label]) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -205,21 +214,11 @@ export function LetterBrowser({
 
               <TableBody>
                 {visible.map((row) => {
-                  const palette = row.design?.palette;
-
                   return (
                     <TableRow key={row.id}>
                       <TableCell>
                         <div className="flex items-center gap-2.5">
-                          <span
-                            aria-hidden="true"
-                            className="size-7 shrink-0 rounded-md border"
-                            style={{
-                              background: palette
-                                ? `linear-gradient(135deg, ${palette.bgDeep}, ${palette.accent})`
-                                : 'var(--muted)',
-                            }}
-                          />
+<LetterThumb design={row.design} className="size-9" />
                           <Link
                             href={`/dashboard/${row.id}`}
                             className="grid min-w-0 gap-0.5 hover:underline"
@@ -254,11 +253,7 @@ export function LetterBrowser({
                       </TableCell>
 
                       <TableCell className="text-right">
-                        <Badge
-                          variant={row.status === 'published' ? 'default' : 'secondary'}
-                        >
-                          {row.status === 'published' ? 'Terbit' : 'Draf'}
-                        </Badge>
+                        <StatusBadge status={row.status} />
                       </TableCell>
 
                       <TableCell className="text-right">

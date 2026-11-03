@@ -2,88 +2,70 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail } from 'lucide-react';
+import { Mail, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DEFAULT_PRESET, PRESET_LIST } from '@/design/presets';
 import { NAV_MODULES, isLinkActive } from './nav-config';
 
-/**
- * Satu-satunya sidebar dashboard.
- *
- * Semua modul ditampilkan sekaligus sebagai grup, dengan halaman-halamannya
- * sebagai item di bawahnya — tidak ada kolom ikon terpisah, jadi seluruh peta
- * navigasi terbaca dalam satu kolom.
- */
+/** The only dashboard sidebar: every module as a group, its pages as items. */
 export function NavPanel({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full flex-col bg-sidebar">
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <Link
         href="/dashboard"
         onClick={onNavigate}
-        className="flex h-14 shrink-0 items-center gap-2.5 px-4 transition-opacity hover:opacity-80"
+        className="flex h-14 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-4 transition-opacity hover:opacity-80"
       >
-        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
+        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
           <Mail size={14} />
         </span>
-        <span className="grid gap-0.5 leading-none">
-          <span className="truncate text-sm font-semibold tracking-tight">
-            Digital Letter
-          </span>
-          <span className="truncate text-[10px] text-muted-foreground">
-            Panel admin
-          </span>
-        </span>
+        <span className="truncate text-sm font-semibold tracking-tight">Digital Letter</span>
       </Link>
 
-      <div className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-        {NAV_MODULES.map((mod) => {
-          const Icon = mod.icon;
+      <div className="flex-1 space-y-5 overflow-y-auto px-3 py-3">
+        {NAV_MODULES.map((mod) => (
+          <nav key={mod.id} aria-label={mod.label} className="grid gap-0.5">
+            <div className="px-2.5 pb-1 text-[11px] font-medium text-sidebar-foreground/45">{mod.label}</div>
 
-          return (
-            <nav key={mod.id} aria-label={mod.label} className="grid gap-0.5">
-              <div className="flex items-center gap-2 px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                <Icon size={12} />
-                <span>{mod.label}</span>
-              </div>
+            {mod.links.map((link) => {
+              const active = isLinkActive(pathname, link);
+              const Icon = link.icon;
 
-              {mod.links.map((link) => {
-                const active = isLinkActive(pathname, link);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={onNavigate}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'flex h-9 items-center gap-2.5 rounded-md px-2.5 text-sm transition-colors',
+                    active
+                      ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground ring-1 ring-sidebar-border'
+                      : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
+                  )}
+                >
+                  <Icon size={15} className={cn('shrink-0', active && 'text-sidebar-primary')} />
+                  <span className="truncate">{link.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        ))}
+      </div>
 
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={onNavigate}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'group relative grid gap-0.5 rounded-md px-2.5 py-2 text-sm transition-colors',
-                      active
-                        ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
-                        : 'text-muted-foreground hover:bg-sidebar-accent/50 hover:text-foreground',
-                    )}
-                  >
-                    {/* Penanda tipis di tepi kiri — lebih tenang daripada
-                        mewarnai seluruh baris. */}
-                    <span
-                      aria-hidden
-                      className={cn(
-                        'absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary transition-opacity',
-                        active ? 'opacity-100' : 'opacity-0',
-                      )}
-                    />
-                    <span className="truncate">{link.label}</span>
-                    {link.note && (
-                      <span className="truncate text-[11px] font-normal text-muted-foreground/80">
-                        {link.note}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          );
-        })}
+      <div className="border-t border-sidebar-border p-3">
+        <a
+          href={`/preview/${DEFAULT_PRESET}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+        >
+          <Palette size={15} className="shrink-0" />
+          <span className="truncate">Galeri tema</span>
+          <span className="ml-auto text-[11px] tabular-nums">{PRESET_LIST.length}</span>
+        </a>
       </div>
     </div>
   );

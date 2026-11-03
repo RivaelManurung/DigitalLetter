@@ -69,7 +69,7 @@ export function TopBar({ email, logout }: Props) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md lg:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 text-sidebar-foreground lg:px-6">
       <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
         <DialogTrigger
           render={
@@ -77,7 +77,7 @@ export function TopBar({ email, logout }: Props) {
               variant="ghost"
               size="icon-sm"
               aria-label="Buka navigasi"
-              className="lg:hidden"
+              className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground lg:hidden"
             />
           }
         >
@@ -97,10 +97,10 @@ export function TopBar({ email, logout }: Props) {
         aria-label="Jejak halaman"
         className="flex min-w-0 items-center gap-2 text-sm"
       >
-        <span className="hidden text-muted-foreground sm:inline">{current.label}</span>
+        <span className="hidden text-sidebar-foreground/55 sm:inline">{current.label}</span>
         <ChevronRight
           size={13}
-          className="hidden shrink-0 text-muted-foreground/50 sm:inline"
+          className="hidden shrink-0 text-sidebar-foreground/35 sm:inline"
         />
         <span className="truncate font-medium">{page?.label ?? 'Detail'}</span>
       </nav>
@@ -110,16 +110,16 @@ export function TopBar({ email, logout }: Props) {
           <DialogTrigger
             render={
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="w-9 justify-center bg-muted/40 px-0 font-normal text-muted-foreground shadow-none hover:bg-muted sm:w-64 sm:justify-start sm:px-2.5"
+                className="w-9 justify-center border border-sidebar-border bg-sidebar-accent px-0 font-normal text-sidebar-foreground/60 shadow-none hover:bg-sidebar-accent hover:text-sidebar-foreground sm:w-64 sm:justify-start sm:px-2.5"
                 aria-label="Cari surat"
               />
             }
           >
             <Search size={14} />
             <span className="hidden sm:inline">Cari surat…</span>
-            <kbd className="ml-auto hidden items-center rounded border bg-background px-1.5 py-0.5 font-mono text-[10px] font-medium text-muted-foreground sm:inline-flex">
+            <kbd className="ml-auto hidden items-center rounded border border-sidebar-border px-1.5 py-0.5 font-mono text-[10px] font-medium text-sidebar-foreground/60 sm:inline-flex">
               ⌘K
             </kbd>
           </DialogTrigger>
@@ -154,7 +154,7 @@ export function TopBar({ email, logout }: Props) {
           </DialogContent>
         </Dialog>
 
-        <Separator orientation="vertical" className="hidden h-5 sm:block" />
+        <Separator orientation="vertical" className="hidden h-5 bg-sidebar-border sm:block" />
 
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -163,14 +163,14 @@ export function TopBar({ email, logout }: Props) {
                 variant="ghost"
                 size="sm"
                 aria-label="Menu akun"
-                className="gap-2 pl-1 pr-2"
+                className="gap-2 pl-1 pr-2 hover:bg-sidebar-accent"
               />
             }
           >
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-sidebar-primary text-[10px] font-semibold text-sidebar-primary-foreground">
               {email.slice(0, 1).toUpperCase()}
             </span>
-            <span className="hidden max-w-[160px] truncate font-normal text-muted-foreground sm:inline">
+            <span className="hidden max-w-[160px] truncate font-normal text-sidebar-foreground/70 sm:inline">
               {email}
             </span>
           </DropdownMenuTrigger>

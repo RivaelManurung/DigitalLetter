@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Blocks, Eye, LayoutTemplate, Mail, Users } from 'lucide-react';
+import { ArrowRight, BarChart3, Blocks, Eye, LayoutTemplate, Mail, Users } from 'lucide-react';
 import {
   getDashboardStats,
   listLetterCards,
@@ -9,19 +9,14 @@ import { listTemplates } from '@/lib/actions/templates';
 import { formatRelative } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { NewLetterDialog } from './new-letter-dialog';
-import { PageHeader } from '@/components/dashboard/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { PanelCard } from '@/components/dashboard/panel-card';
 import { StatusBars } from '@/components/dashboard/status-bars';
+import { StatusBadge } from '@/components/dashboard/status-badge';
+import { LetterThumb } from '@/components/dashboard/letter-thumb';
+import { ThemeGallery } from '@/components/dashboard/theme-gallery';
+import { PageHeader } from '@/components/dashboard/page-header';
 
 export const metadata = { title: 'Ikhtisar' };
 
@@ -39,15 +34,21 @@ export default async function DashboardPage() {
     <div className="grid gap-5">
       <PageHeader
         title="Ikhtisar"
-        description="Ringkasan surat, kunjungan, dan konfirmasi kehadiran."
+        description={
+          stats.published > 0
+            ? `${stats.published.toLocaleString('id-ID')} surat terbit, dibuka ${stats.views.toLocaleString('id-ID')} kali.`
+            : 'Belum ada surat yang terbit.'
+        }
         action={<NewLetterDialog templates={templates} />}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatCard
           icon={Mail}
           tone="blue"
           label="Surat"
+          href="/dashboard/letters"
+          linkLabel="Lihat semua surat"
           value={stats.total}
           note={`${stats.published} terbit · ${stats.draft} draf`}
         />
@@ -55,6 +56,8 @@ export default async function DashboardPage() {
           icon={Eye}
           tone="green"
           label="Dibuka"
+          href="/dashboard/letters"
+          linkLabel="Lihat per surat"
           value={stats.views}
           note="Akumulasi semua surat"
         />
@@ -62,6 +65,8 @@ export default async function DashboardPage() {
           icon={Users}
           tone="amber"
           label="Konfirmasi"
+          href="/dashboard/letters"
+          linkLabel="Lihat surat"
           value={stats.rsvpTotal}
           note={
             stats.rsvpTotal > 0
@@ -73,14 +78,19 @@ export default async function DashboardPage() {
           icon={Blocks}
           tone="rose"
           label="Kustomisasi"
+          href="/dashboard/templates"
+          linkLabel="Kelola template"
           value={stats.customBlocks + stats.templates}
           note={`${stats.customBlocks} jenis section · ${stats.templates} template`}
         />
       </div>
 
+      <ThemeGallery />
+
       <div className="grid gap-4 lg:grid-cols-2">
         <PanelCard
           title="Surat per status"
+          icon={BarChart3}
           meta={`${cards.length} total`}
           className="min-h-[220px]"
         >
@@ -99,6 +109,7 @@ export default async function DashboardPage() {
 
         <PanelCard
           title="Konfirmasi terbaru"
+          icon={Users}
           meta={stats.rsvpTotal > 0 ? `${stats.rsvpTotal} masuk` : undefined}
           className="min-h-[220px]"
         >
@@ -122,7 +133,7 @@ export default async function DashboardPage() {
                   </div>
 
                   <Badge
-                    variant={row.attendance === 'yes' ? 'default' : 'secondary'}
+                    variant={row.attendance === 'yes' ? 'success' : row.attendance === 'no' ? 'destructive' : 'warning'}
                     className="shrink-0"
                   >
                     {row.attendance === 'yes'
@@ -141,6 +152,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <PanelCard
           title="Surat terbaru"
+          icon={Mail}
           action={
             <Link
               href="/dashboard/letters"
@@ -154,46 +166,35 @@ export default async function DashboardPage() {
           {latest.length === 0 ? (
             <EmptyNote>Belum ada surat.</EmptyNote>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Judul</TableHead>
-                  <TableHead className="text-right">Dibuka</TableHead>
-                  <TableHead className="text-right">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {latest.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
-                      <Link
-                        href={`/dashboard/${row.id}`}
-                        className="grid gap-0.5 hover:underline"
-                      >
-                        <span className="truncate font-medium">{row.title}</span>
-                        <span className="truncate font-mono text-[11px] text-muted-foreground">
-                          /l/{row.slug}
-                        </span>
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-muted-foreground">
+            <ul className="-mx-2 grid gap-1">
+              {latest.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/dashboard/${row.id}`}
+                    className="flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-muted/70"
+                  >
+                    <LetterThumb design={row.design} className="size-11" />
+                    <span className="grid min-w-0 flex-1 gap-0.5">
+                      <span className="truncate text-sm font-medium">{row.title}</span>
+                      <span className="truncate text-[11px] text-muted-foreground">
+                        {row.recipientName ? `Untuk ${row.recipientName} · ` : ''}
+                        {formatRelative(row.updatedAt)}
+                      </span>
+                    </span>
+                    <span className="hidden items-center gap-1 text-xs tabular-nums text-muted-foreground sm:flex">
+                      <Eye size={13} />
                       {row.viewCount}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant={row.status === 'published' ? 'default' : 'secondary'}
-                      >
-                        {row.status === 'published' ? 'Terbit' : 'Draf'}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </span>
+                    <StatusBadge status={row.status} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </PanelCard>
 
-        <PanelCard title="Kustomisasi">
+        <PanelCard title="Kustomisasi"
+          icon={Blocks}>
           <div className="grid gap-2">
             <Shortcut
               href="/dashboard/blocks"

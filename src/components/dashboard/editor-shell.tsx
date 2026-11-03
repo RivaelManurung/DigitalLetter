@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { createRegistry } from '@/design/blocks/resolve';
 import type { DesignSpec, LetterBundle, SectionRecord } from '@/design/types';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/dashboard/status-badge';
 import { buttonVariants } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ContentPanel } from './panels/content-panel';
@@ -88,12 +88,7 @@ export function EditorShell({
           <div className="grid min-w-0 gap-0.5">
             <div className="flex items-center gap-2">
               <h1 className="truncate text-sm font-semibold">{meta.title}</h1>
-              <Badge
-                variant={meta.status === 'published' ? 'default' : 'secondary'}
-                className="shrink-0"
-              >
-                {meta.status === 'published' ? 'Terbit' : 'Draf'}
-              </Badge>
+              <StatusBadge status={meta.status} />
             </div>
             <p className="truncate font-mono text-[11px] text-muted-foreground">
               /l/{meta.slug}

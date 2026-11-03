@@ -1,4 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 
@@ -22,21 +23,25 @@ export function StatCard({
   value,
   note,
   tone = 'neutral',
+  href,
+  linkLabel,
 }: {
   icon: LucideIcon;
   label: string;
   value: number | string;
   note?: string;
   tone?: Tone;
+  href?: string;
+  linkLabel?: string;
 }) {
   return (
-    <Card className="gap-0 py-0 shadow-xs transition-shadow hover:shadow-sm">
-      <div className="flex items-start justify-between gap-3 p-4">
+    <Card className="gap-0 overflow-hidden rounded-xl py-0 shadow-xs">
+      <div className="flex items-start justify-between gap-3 p-4 sm:p-5">
         <div className="grid gap-2">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="text-[13px] font-medium text-muted-foreground">
             {label}
           </span>
-          <span className="font-heading text-3xl font-semibold leading-none tracking-tight tabular-nums">
+          <span className="font-heading text-2xl font-semibold sm:text-3xl leading-none tracking-tight tabular-nums">
             {typeof value === 'number' ? value.toLocaleString('id-ID') : value}
           </span>
           {note && (
@@ -48,13 +53,22 @@ export function StatCard({
 
         <span
           className={cn(
-            'grid size-9 shrink-0 place-items-center rounded-lg',
+            'grid size-8 shrink-0 place-items-center rounded-lg',
             TONES[tone],
           )}
         >
-          <Icon size={16} />
+          <Icon size={15} />
         </span>
       </div>
+      {href && (
+        <Link
+          href={href}
+          className="group flex items-center justify-between border-t bg-muted/40 px-4 py-2.5 text-xs font-medium text-primary transition-colors hover:bg-muted sm:px-5"
+        >
+          {linkLabel}
+          <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      )}
     </Card>
   );
 }

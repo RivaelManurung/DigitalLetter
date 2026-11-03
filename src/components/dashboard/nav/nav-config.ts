@@ -24,6 +24,7 @@ export type NavLink = {
   href: string;
   label: string;
   note?: string;
+  icon: LucideIcon;
   /** cocok persis, bukan awalan — dipakai halaman indeks modul */
   exact?: boolean;
 };
@@ -44,8 +45,8 @@ export const NAV_MODULES: NavModule[] = [
     icon: LayoutDashboard,
     match: ['/dashboard'],
     links: [
-      { href: '/dashboard', label: 'Ikhtisar', note: 'Ringkasan & aktivitas', exact: true },
-      { href: '/dashboard/letters', label: 'Surat', note: 'Semua surat client' },
+      { href: '/dashboard', label: 'Ikhtisar', note: 'Ringkasan & aktivitas', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/letters', label: 'Surat', note: 'Semua surat client', icon: Mail },
     ],
   },
   {
@@ -54,8 +55,8 @@ export const NAV_MODULES: NavModule[] = [
     icon: Blocks,
     match: ['/dashboard/blocks', '/dashboard/templates'],
     links: [
-      { href: '/dashboard/blocks', label: 'Jenis Section', note: 'Section buatanmu' },
-      { href: '/dashboard/templates', label: 'Template', note: 'Cetakan surat baru' },
+      { href: '/dashboard/blocks', label: 'Jenis Section', note: 'Section buatanmu', icon: Blocks },
+      { href: '/dashboard/templates', label: 'Template', note: 'Cetakan surat baru', icon: LayoutTemplate },
     ],
   },
 ];
