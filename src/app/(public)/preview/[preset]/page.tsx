@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { DESIGN_PRESETS } from '@/design/presets';
 import { fontPairHref } from '@/design/fonts';
-import { OCCASIONS } from '@/design/occasions';
+import { OCCASION_IDS, OCCASIONS, type OccasionId } from '@/design/occasions';
 import type { LetterBundle } from '@/design/types';
-import { starterContent } from '@/lib/defaults';
+import { defaultSectionsFor } from '@/lib/defaults';
 import { LetterView } from '@/components/letter/letter-view';
 import '@/styles/letter.css';
 
@@ -29,16 +29,16 @@ export default async function PresetPreviewPage({ params }: Params) {
     slug: preset,
     recipientName: '',
     design,
-    // Contoh memakai susunan "Surat Cinta" — merender seluruh block sekaligus
-    // akan jadi halaman yang tidak mewakili surat mana pun.
-    sections: OCCASIONS.love.sections.map((type, index) => ({
-      id: `${preset}-${type}`,
-      type,
-      order: index,
+    // Use the occasion built on this preset so the sample shows its own copy and art.
+    sections: defaultSectionsFor(`preview-${preset}`, '', occasionFor(preset)).map((row) => ({
+      id: `${preset}-${row.type}`,
+      type: row.type,
+      order: row.order,
       // galeri butuh media; contoh ini tidak punya, jadi dimatikan
-      enabled: type !== 'gallery',
+      enabled: row.type !== 'gallery',
       variant: '',
-      content: starterContent(type),
+      content: row.content,
+      style: row.style,
     })),
     media: [],
   };
@@ -51,4 +51,8 @@ export default async function PresetPreviewPage({ params }: Params) {
       <LetterView letter={bundle} />
     </>
   );
+}
+
+function occasionFor(preset: string): OccasionId {
+  return OCCASION_IDS.find((id) => OCCASIONS[id].preset === preset) ?? 'love';
 }

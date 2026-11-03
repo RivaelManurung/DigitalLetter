@@ -63,6 +63,10 @@ export const OCCASIONS = {
     label: 'Hari Valentine',
     note: 'Kartu valentine dengan hati yang melayang, alasan cinta, kutipan, taman bunga, dan galeri.',
     preset: 'valentine-sweetheart',
+    style: {
+      hero: { bgImage: '/image/valentine/hero.webp', bgOverlay: 0.25 },
+      reasons: { bgImage: '/image/valentine/reasons.webp', bgOverlay: 0.45 },
+    },
     sections: ['intro', 'hero', 'letter', 'reasons', 'quote', 'gallery', 'garden', 'finale'],
     content: {
       intro: { hint: 'ketuk untuk membuka kartumu', label: '14 Februari' },
@@ -112,6 +116,11 @@ export const OCCASIONS = {
     label: 'Ulang Tahun',
     note: 'Balon pesta, kotak musik Happy Birthday, daftar harapan, kenangan setahun, dan galeri.',
     preset: 'birthday-party',
+    style: {
+      hero: { bgImage: '/image/birthday/hero.webp', bgOverlay: 0.3 },
+      wish: { bgImage: '/image/birthday/wish.webp', bgOverlay: 0.5 },
+      finale: { bgImage: '/image/birthday/finale.webp', bgOverlay: 0.3 },
+    },
     sections: ['intro', 'hero', 'wish', 'memories', 'gallery', 'countdown', 'finale'],
     content: {
       intro: { hint: 'ketuk untuk membuka kadomu', label: 'selamat ulang tahun' },
@@ -877,6 +886,10 @@ export const OCCASIONS = {
     label: 'Permintaan Maaf',
     note: 'Hujan di balik jendela, surat yang jujur, cerita apa yang terjadi, dan janji untuk berubah.',
     preset: 'rainy-window',
+    style: {
+      hero: { bgImage: '/image/apology/hero.webp', bgOverlay: 0.25 },
+      finale: { bgImage: '/image/apology/finale.webp', bgOverlay: 0.35 },
+    },
     sections: ['intro', 'hero', 'letter', 'story', 'quote', 'finale'],
     content: {
       intro: { hint: 'ketuk untuk membaca', label: 'maaf' },

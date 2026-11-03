@@ -612,7 +612,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(255,111,145,0.35)',
     },
     fontPair: 'modern-luxe',
-    surface: { kind: 'gradient', vignette: 0.55, grain: 0.2 },
+    surface: { kind: 'gradient', vignette: 0.55, grain: 0.2, image: '/image/valentine/letter.webp', imageOverlay: 0.45 },
     motion: {
       speed: 1,
       reveal: 'pop',
@@ -651,7 +651,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(240,68,95,0.25)',
     },
     fontPair: 'playful-round',
-    surface: { kind: 'gradient', vignette: 0.1, grain: 0.12 },
+    surface: { kind: 'gradient', vignette: 0.1, grain: 0.12, image: '/image/birthday/hero.webp', imageOverlay: 0.62 },
     motion: {
       speed: 0.9,
       reveal: 'drop',
@@ -689,7 +689,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
       glow: 'rgba(156,195,230,0.25)',
     },
     fontPair: 'quiet-swiss',
-    surface: { kind: 'mesh', vignette: 0.7, grain: 0.35 },
+    surface: { kind: 'mesh', vignette: 0.7, grain: 0.35, image: '/image/apology/letter.webp', imageOverlay: 0.5 },
     motion: {
       speed: 1.2,
       reveal: 'ink',
@@ -703,7 +703,7 @@ export const DESIGN_PRESETS: Record<string, DesignSpec> = {
     shape: { radius: 14, glassBlur: 22 },
     variants: {
       intro: 'envelope',
-      hero: 'editorial',
+      hero: 'centered',
       letter: 'minimal',
       story: 'timeline',
       quote: 'large',
